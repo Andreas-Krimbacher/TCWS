@@ -1,0 +1,29 @@
+{
+  "name": "TCWS",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular": "1.2.0-rc.3",
+    "angularjs": "*",
+    "json3": "~3.2.5",
+    "angular-resource": "1.2.0-rc.3",
+    "angular-sanitize": "1.2.0-rc.3",
+    "es5-shim": "~2.1.0",
+    "angular-route": "1.2.0-rc.3",
+    "bootstrap": "~3.0.1"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components",
+    "bower_components",
+    "app/components",
+    "test",
+    "tests"
+  ],
+  "homepage": "https://github.com/Andreas-Krimbacher/TCWS",
+  "authors": [
+    "Andreas-Krimbacher <andreas.krimbacher@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true
+}
