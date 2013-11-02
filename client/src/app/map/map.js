@@ -44,13 +44,14 @@ angular.module('TCWS.map', [])
                     layers: [
                         new ol.layer.Tile({
                             source: new ol.source.MapQuestOpenAerial()
-                        })
-                    ],
+                        })],
                     view: new ol.View2D({
                         center: ol.proj.transform([37.41, 8.82], 'EPSG:4326', 'EPSG:3857'),
                         zoom: 4
                     })
                 });
+
+
 
             },
             setCenter: function(Lon,Lat,Zoom){
@@ -61,7 +62,32 @@ angular.module('TCWS.map', [])
                     })
                 );
             },
-            addLayer : function(layer){
+            addLayer : function(layerData){
+
+                var layer = new ol.layer.Vector({
+                    source: new ol.source.Vector({}),
+                    style: new ol.style.Style({
+                        symbolizers: [
+                            new ol.style.Fill({
+                                color: '#ffffff',
+                                opacity: 0.25
+                            }),
+                            new ol.style.Stroke({
+                                color: '#6666ff'
+                            })
+                        ]
+                    })
+                });
+
+                map.addLayer(layer);
+                var transform = ol.proj.getTransform(layerData.epsg, "EPSG:3857");
+                var geometry = null;
+                for(var i = 0, ii = layerData.gmlData.features.length;i < ii;++i) {
+                    geometry = layerData.gmlData.features[i].getGeometry();
+                    geometry.transform(transform)
+                }
+                layer.addFeatures(layerData.gmlData.features);
+
                 layers.push(layer);
             },
             getLayers : function(){

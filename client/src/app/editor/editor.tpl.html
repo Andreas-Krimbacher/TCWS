@@ -1,9 +1,26 @@
 <div id="header">
-    <h1>Editor</h1>
-    <button type="button" ng-click="zoomToZurich()" class="btn btn-warning">Zürich</button>
 </div>
 <div id="content">
-    <tcws-map></tcws-map>
+    <div id="view-left" >
+        <tcws-map></tcws-map>
+    </div>
+    <div id="view-right" ng-controller="ToolsCtrl">
+        <div id="nav-bar" ng-controller="NavbarCtrl">
+            <nav class="navbar navbar-inverse" role="navigation">
+
+                    <ul class="nav navbar-nav">
+                        <li ng-click="setCurrentTool('overview')" ng-class="{active: currentTool == 'overview'}"><a href="">Overview</a></li>
+                        <li ng-click="setCurrentTool('input')" ng-class="{active: currentTool == 'input'}"><a href="">Input</a></li>
+                        <li ng-click="setCurrentTool('preperation')" ng-class="{active: currentTool == 'preperation'}"><a href="">Preperation</a></li>
+                        <li ng-click="setCurrentTool('symbology')" ng-class="{active: currentTool == 'symbology'}"><a href="">Symbology</a></li>
+                    </ul>
+            </nav>
+        </div>
+        <div ng-include="toolTemplate"></div>
+    </div>
+    <div id="view-bottom" ng-controller="GridCtrl">
+        <div id="grid" class="gridStyle" ng-grid="gridOptions"></div>
+    </div>
 </div>
 <div id="footer">
 </div>

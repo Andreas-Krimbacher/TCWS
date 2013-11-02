@@ -43,7 +43,7 @@ module.exports = function (grunt) {
                     port: 9000,
                     // Change this to '0.0.0.0' to access the server from outside.
                     hostname: '0.0.0.0',
-                    bases: ['<%= configClient.app %>','<%= configClient.app %>/.tmp','client'],
+                    bases: ['<%= configClient.app %>','<%= configClient.app %>/.tmp','client','FileServer'],
                     server: path.resolve('server/server.js'),
                     watchChanges: true
                     //debug:true
