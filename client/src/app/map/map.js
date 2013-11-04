@@ -46,7 +46,7 @@ angular.module('TCWS.map', [])
                             source: new ol.source.MapQuestOpenAerial()
                         })],
                     view: new ol.View2D({
-                        center: ol.proj.transform([37.41, 8.82], 'EPSG:4326', 'EPSG:3857'),
+                        center: ol.proj.transform([8.486863,47.381258], 'EPSG:4326', 'EPSG:3857'),
                         zoom: 4
                     })
                 });

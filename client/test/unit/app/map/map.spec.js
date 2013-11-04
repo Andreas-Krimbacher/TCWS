@@ -16,12 +16,16 @@ describe('Map module', function () {
         });
     });
 
+
     describe('map module controller', function () {
         var $scope;
 
         beforeEach(inject(function ($rootScope) {
             $scope = $rootScope.$new();
         }));
+
+
+
 
         it('should add a layer', inject(function($controller) {
 
@@ -35,7 +39,6 @@ describe('Map module', function () {
             //verify the initial setup
             expect($scope.layers).toEqual([]);
             console.log($scope.layers);
-            debugger
 
             //execute and verify results
             $scope.addLayer('123');

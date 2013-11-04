@@ -1,0 +1,6 @@
+<div ng-controller="FileParamCtrl" id="param-view-file">
+<h4>Select File(s)</h4>
+    <input id="fileParamSelect" style="width:75%" ng-model="downloadFiles" ui-select2="selectOptions" data-placeholder="Select File(s)">
+
+    <button ng-click="importFiles()" type="button" class="btn">Import</button>
+</div>

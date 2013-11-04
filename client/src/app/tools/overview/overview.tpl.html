@@ -1,6 +1,17 @@
 <div id="tool-overview" class="tool" ng-controller="OverviewCtrl">
-    <h3>Overview</h3>
-
-    <button ng-repeat="layer in layerList" ng-click="showLayer(layer.id)" type="button" class="btn btn-default">{{layer.name}}</button>
-
+    <div class="tool-left">
+        <h4>Menu</h4>
+        <div class="list-group">
+            <a ng-click="selectMenu('layers')" href="" class="list-group-item" ng-class="{true:'active'}[currentMenu == 'layers']">
+                <h5 class="list-group-item-heading"><strong>Layers</strong></h5>
+            </a>
+            <a ng-click="selectMenu('publish')" href="" class="list-group-item" ng-class="{true:'active'}[currentMenu == 'publish']">
+                <h5 class="list-group-item-heading"><strong>Publish</strong></h5>
+            </a>
+            <a ng-click="selectMenu('options')" href="" class="list-group-item" ng-class="{true:'active'}[currentMenu == 'options']">
+                <h5 class="list-group-item-heading"><strong>Options</strong></h5>
+            </a>
+        </div>
+    </div>
+    <div class="tool-right" ng-include="overviewMenu"></div>
 </div>

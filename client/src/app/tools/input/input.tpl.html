@@ -1,3 +1,15 @@
 <div id="tool-input" class="tool" ng-controller="InputCtrl">
-    <button ng-click="getData()" type="button" class="btn" ng-class="{true:'btn-success', false:'btn-danger'}[hasData]">Get Austria</button>
+
+    <div class="tool-left">
+        <h4>Input Services</h4>
+
+        <div class="list-group">
+            <a ng-repeat="input in inputServices" ng-click="setInputService(input)" href="" class="list-group-item" ng-class="{true:'active'}[currentInputService.sourceId == input.sourceId]">
+                <h5 class="list-group-item-heading"><strong>{{input.name}}</strong></h5>
+                <p class="list-group-item-text">{{input.desc}}</p>
+            </a>
+        </div>
+    </div>
+    <div class="tool-right" ng-include="inputParamView"></div>
+
 </div>

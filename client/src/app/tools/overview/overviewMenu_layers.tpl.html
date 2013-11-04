@@ -1,0 +1,14 @@
+<div ng-controller="OverviewLayersCtrl" id="overview-layers">
+    <h4>Layers</h4>
+    <p ng-show="layerList.length == 0" class="text-info">Import layer data first!</p>
+
+    <ul class="list-group">
+        <li ng-repeat="(index,layer) in layerList" class="list-group-item"><div class="layer-name" title="{{layer.name}}">{{layer.name}}</div>
+            <div class="button-group">
+                <a title="Show in Map" class="glyphicon glyphicon-globe" ng-click="showInMap(layer)"></a>
+                <a title="Show in Table" class="glyphicon glyphicon-list-alt"  ng-click="showInGrid(layer)"></a>
+                <a title="Delete" class="glyphicon glyphicon-trash"  ng-click="remove(index)"></a>
+            </div>
+        </li>
+    </ul>
+</div>

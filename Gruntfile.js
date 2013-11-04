@@ -26,16 +26,16 @@ module.exports = function (grunt) {
                     '<%= configClient.app %>/app/**/**/*.js',
                     '<%= configClient.app %>/common/**/**/*.js'
                 ]
-            },
-            karma: {
-                files: [
-                    '<%= configClient.app %>/app/**/**/*.js',
-                    '<%= configClient.app %>/common/**/**/*.js',
-                    '<%= configClient.test %>/unit/app/**/**/*.js',
-                    '<%= configClient.test %>/unit/common/**/**/*.js'
-                ],
-                tasks: ['karma:unit:run'] //NOTE the :run flag
             }
+//            karma: {
+//                files: [
+//                    '<%= configClient.app %>/app/**/**/*.js',
+//                    '<%= configClient.app %>/common/**/**/*.js',
+//                    '<%= configClient.test %>/unit/app/**/**/*.js',
+//                    '<%= configClient.test %>/unit/common/**/**/*.js'
+//                ],
+//                tasks: ['karma:unit:run'] //NOTE the :run flag
+//            }
         },
         express: {
             livereload: {
@@ -74,8 +74,8 @@ module.exports = function (grunt) {
         },
         karma: {
             unit: {
-                configFile: '<%= configClient.test %>/karma.conf.js',
-                background: true
+                configFile: '<%= configClient.test %>/karma.conf.js'
+//                background: true
             }
         },
         protractor: {
@@ -92,13 +92,17 @@ module.exports = function (grunt) {
         'compass:server',
         'express:livereload',
         'open',
-        'karma:unit:start',
+//        'karma:unit:start',
         'watch'
     ]);
 
     grunt.registerTask('e2e', [
         'protractor:e2e'
     ]);
+
+//    grunt.registerTask('karma', [
+//        'karma:unit:start'
+//    ]);
 
     grunt.registerTask('default', ['server']);
 };

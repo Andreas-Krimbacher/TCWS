@@ -1,6 +1,8 @@
 img { max-width: none; }
 
 $green:#5cb85c;
+$borderSmall: 1px solid rgb(212,212,212);
+$borderThick: 2px solid rgb(212,212,212);
 
 #container{
   height: 100%;
@@ -40,7 +42,7 @@ $green:#5cb85c;
   margin-left: auto;
   margin-right: auto;
   right: 0;
-  border: 1px solid rgb(212,212,212);
+  border: $borderSmall;
 }
 
 #view-left{
@@ -98,13 +100,63 @@ $green:#5cb85c;
   overflow: auto;
 }
 
+.tool-right{
+  height: 100%;
+  position: absolute;
+  width: inherit;
+  right: 0px;
+  top: 0px;
+  left: 220px;
+  padding: 10px;
+  .param-view-file{
+    .file-select{
+      width: 75%;
+    }
+  }
+}
+
+#overview-layers{
+  a{
+    color: #333333;
+    cursor: pointer;
+    &:hover{
+      color: #428bca;
+    }
+  }
+  .list-group{
+    width: 50%;
+  }
+  .list-group-item{
+    padding: 5px 10px;
+    height: 32px;
+  }
+  .layer-name{
+    position: absolute;
+    right: 70px;
+    left: 10px;
+    overflow: hidden;
+  }
+  .button-group{
+    position: absolute;
+    right: 10px;
+  }
+}
+
+.tool-left{
+  height: 100%;
+  width: 220px;
+  padding: 10px;
+  position: absolute;
+  border-right: $borderThick;
+}
+
 #map {
   height: 100%;
   width: 100%;
 }
 
 #grid {
-  border: 1px solid rgb(212,212,212);
+  border:$borderSmall;
   width: 100%;
   height: 100%;
 }

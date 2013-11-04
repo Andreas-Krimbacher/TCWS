@@ -15,6 +15,8 @@ angular.module('TCWS.grid', ['ngGrid'])
 //            {
 //                $scope.gridOptions.columnDefs.push(data.columnDefs[i]);
 //            }
+            $scope.gridOptions.columnDefs.length = 0;
+            $scope.myData.length = 0;
             var length = data.values.length;
             for (var i=0;i<length;i++)
             {
