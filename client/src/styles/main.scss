@@ -117,14 +117,18 @@ $borderThick: 2px solid rgb(212,212,212);
 
 #overview-layers{
   a{
-    color: #333333;
+    color: #808080;
+    &.active{
+      color: #333333;
+    }
     cursor: pointer;
     &:hover{
       color: #428bca;
     }
   }
   .list-group{
-    width: 50%;
+    width: 70%;
+    white-space: nowrap;
   }
   .list-group-item{
     padding: 5px 10px;
@@ -133,13 +137,22 @@ $borderThick: 2px solid rgb(212,212,212);
   .layer-name{
     position: absolute;
     right: 70px;
-    left: 10px;
+    left: 34px;
     overflow: hidden;
   }
   .button-group{
     position: absolute;
     right: 10px;
   }
+  .base-layer{
+    .layer-name{
+      right: 34px;
+    }
+  }
+}
+
+.layer-icon{
+  position: absolute;
 }
 
 .tool-left{

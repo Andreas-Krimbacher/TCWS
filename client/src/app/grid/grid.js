@@ -6,21 +6,19 @@ angular.module('TCWS.grid', ['ngGrid'])
     .controller('GridCtrl', ['$scope','Grid',function ($scope,Grid) {
         $scope.myData = [];
         $scope.gridOptions = {
-            data: 'myData'
+            data: 'myData',
+            columnDefs: 'colDefs'
+            //enableColumnResize: true (not possible, bug)
         };
 
         Grid.registerViewUpdateCallback(function(data){
-//            var length = data.columnDefs.length;
-//            for (var i=0;i<length;i++)
-//            {
-//                $scope.gridOptions.columnDefs.push(data.columnDefs[i]);
-//            }
-            $scope.gridOptions.columnDefs.length = 0;
-            $scope.myData.length = 0;
-            var length = data.values.length;
-            for (var i=0;i<length;i++)
-            {
-                $scope.myData.push(data.values[i]);
+            if(data){
+                $scope.myData = data.values;
+                $scope.colDefs = data.columnDefs;
+            }
+            else{
+                $scope.myData = [];
+                $scope.colDefs = [];
             }
         });
 
@@ -37,7 +35,7 @@ angular.module('TCWS.grid', ['ngGrid'])
             var gridData = { values : data.attributes,columnDefs : []}
             for (var prop in gridData.values[0]) {
                 if (gridData.values[0].hasOwnProperty(prop)) {
-                    gridData.columnDefs.push({field: prop, displayName: prop, enableCellEdit: true})
+                    gridData.columnDefs.push({field: prop, displayName: data.labels[prop], enableCellEdit: false})
                 }
             }
             return gridData;
@@ -52,6 +50,9 @@ angular.module('TCWS.grid', ['ngGrid'])
                 var gridData = prepareData(data);
                 viewUpdateCallback(gridData);
                 currentData = data;
+            },
+            removeData : function(){
+                viewUpdateCallback(null);
             }
         }
     });

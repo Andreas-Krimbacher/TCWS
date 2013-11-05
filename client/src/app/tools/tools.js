@@ -2,8 +2,18 @@
  * Created by nd on 11/1/13.
  */
 angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.tools.preperation','TCWS.tools.symbology'])
-    .run(function($rootScope) {
+    .run(function($rootScope,Editor) {
         $rootScope.startTool = 'overview';
+
+        var inputServices = Editor.getInputServices();
+
+        Editor.importData({inputService: inputServices['1'], config:{layer:5}});
+        Editor.importData({inputService: inputServices['1'], config:{layer:9}});
+//        Editor.importData({inputService: inputServices['1'], config:{layer:3}});
+//        Editor.importData({inputService: inputServices['1'], config:{layer:4}});
+//        Editor.importData({inputService: inputServices['1'], config:{layer:7}});
+//        Editor.importData({inputService: inputServices['1'], config:{layer:9}});
+
     })
 
 

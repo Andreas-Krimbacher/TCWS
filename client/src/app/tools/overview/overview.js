@@ -1,7 +1,11 @@
-angular.module('TCWS.tools.overview', [])
+angular.module('TCWS.tools.overview', ['TCWS.components'])
+    .run(function($rootScope,DataStore) {
+        $rootScope.startOverviewMenu = 'layers';
+    })
 
     .controller('OverviewCtrl', ['$scope','DataStore',function ($scope,DataStore) {
-        $scope.currentMenu = null;
+        $scope.currentMenu = $scope.startOverviewMenu;
+        $scope.overviewMenu = '/app/tools/overview/overviewMenu_' + $scope.currentMenu + '.tpl.html';
 
         $scope.selectMenu = function(type){
             $scope.currentMenu = type;
@@ -10,19 +14,52 @@ angular.module('TCWS.tools.overview', [])
 
     }])
 
-    .controller('OverviewLayersCtrl', ['$scope','DataStore',function ($scope,DataStore) {
-        $scope.layerList = DataStore.getLayerListShort();
+    .controller('OverviewLayersCtrl', ['$scope','DataStore','Editor','OpenLayersMap',function ($scope,DataStore,Editor,OpenLayersMap) {
+        var currentBaseMap = null;
+        var layerInGrid = null;
 
-        $scope.showInMap = function(layer){
-            DataStore.showLayerInMap(layer.id);
+        $scope.layerList = Editor.getLayerListShort();
+        $scope.baseMaps = OpenLayersMap.getBaseMaps();
+
+        var length = $scope.baseMaps.length;
+        for (var i=0;i<length;i++)
+        {
+            if($scope.baseMaps[i].inMap) currentBaseMap = $scope.baseMaps[i];
+        }
+
+        $scope.setBaseMap = function(layer){
+
+            OpenLayersMap.setBaseMap(layer.id);
+
+            if(currentBaseMap) currentBaseMap.inMap = false;
+
+            currentBaseMap = layer;
+            layer.inMap = true;
+        };
+
+        $scope.toogleLayerInMap = function(layer){
+            if(layer.inMap){
+                Editor.removeLayerFromMap(layer.id);
+                layer.inMap = false;
+            }
+            else{
+                Editor.addLayerToMap(layer.id);
+                layer.inMap = true;
+            }
+
         };
 
         $scope.showInGrid = function(layer){
-            DataStore.showLayerInGrid(layer.id);
+            Editor.showLayerInGrid(layer.id);
+
+            if(layerInGrid) layerInGrid.inGrid = false;
+
+            layerInGrid = layer;
+            layer.inGrid = true;
         };
 
         $scope.remove = function(index){
-            DataStore.removeLayer($scope.layerList[index].id);
+            Editor.removeLayer($scope.layerList[index].id);
             $scope.layerList.splice(index,1);
         };
     }]);

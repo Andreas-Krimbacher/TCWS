@@ -2,9 +2,9 @@
  * Created by nd on 11/1/13.
  */
 angular.module('TCWS.tools.input', ['TCWS.dataStore','TCWS.settings','ui.select2'])
-    .controller('InputCtrl', ['$scope','Settings',function ($scope,Settings) {
+    .controller('InputCtrl', ['$scope','Editor',function ($scope,Editor) {
 
-        $scope.inputServices = Settings.getInputServices();
+        $scope.inputServices = Editor.getInputServices();
         $scope.currentInputService = null;
 
         $scope.setInputService = function(input){
@@ -15,7 +15,7 @@ angular.module('TCWS.tools.input', ['TCWS.dataStore','TCWS.settings','ui.select2
 
     }])
 
-    .controller('FileParamCtrl', ['$scope','DataStore',function ($scope,DataStore) {
+    .controller('FileParamCtrl', ['$scope','Editor',function ($scope,Editor) {
         $scope.importFiles = function(){
 
             //hack, because ng-model dont work.
@@ -25,13 +25,13 @@ angular.module('TCWS.tools.input', ['TCWS.dataStore','TCWS.settings','ui.select2
             for (var i=0;i<length;i++)
             {
                 var param = {
-                    sourceId : $scope.currentInputService.sourceId,
-                    layerId : $scope.inputParam.files[downloadFiles[i]].layerId,
-                    name : $scope.inputParam.files[downloadFiles[i]].name,
-                    path : $scope.inputParam.files[downloadFiles[i]].path
+                    inputService : $scope.currentInputService,
+                    config : {
+                        layer: $scope.inputParam.files[downloadFiles[i]].layerId
+                    }
                 };
 
-                DataStore.getDataFromFile(param).then(function(){
+                Editor.importData(param).then(function(){
                         $scope.hasData = true;
                     },
                     function(errorMessage){
@@ -42,11 +42,11 @@ angular.module('TCWS.tools.input', ['TCWS.dataStore','TCWS.settings','ui.select2
         };
 
         var files = [];
-        var length = $scope.inputParam.files.length;
-        for (var i=0;i<length;i++)
-        {
-            files.push({id:i,
-                text:$scope.inputParam.files[i].name})
+        for (var prop in $scope.inputParam.files) {
+            if ($scope.inputParam.files.hasOwnProperty(prop)) {
+                files.push({id:prop,
+                    text:$scope.inputParam.files[prop].name})
+            }
         }
 
         $scope.selectOptions = {

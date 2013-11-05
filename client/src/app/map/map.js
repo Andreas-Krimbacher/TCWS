@@ -30,7 +30,59 @@ angular.module('TCWS.map', [])
     .factory('OpenLayersMap', function () {
         // Service logic
         var map = null;
-        var layers = [];
+        var layers = {};
+
+        var basemaps = {};
+        var currentBasemap = null;
+
+        var createBaseMaps = function(){
+            basemaps.mapQuestOSM = { layer : new ol.layer.Tile({
+                source: new ol.source.MapQuestOSM()
+            }),
+                name : 'Map Quest OSM',
+                id : 'mapQuestOSM'
+            };
+
+            basemaps.mapQuestOpenArial = { layer : new ol.layer.Tile({
+                source: new ol.source.MapQuestOpenAerial()
+            }),
+                name : 'Map Quest Open Arial',
+                id : 'mapQuestOpenArial'
+            };
+
+            basemaps.osm = { layer :new ol.layer.Tile({
+                source: new ol.source.OSM()
+            }),
+                name : 'OSM',
+                id : 'OSM'
+            };
+
+            basemaps.mapBoxThema = { layer : new ol.layer.Tile({
+                source: new ol.source.TileJSON({
+                    url: 'http://api.tiles.mapbox.com/v3/mapbox.geography-class.jsonp',
+                    crossOrigin: 'anonymous'
+                })
+            }),
+                name : 'Map Box Thematic',
+                id : 'mapBoxThema'
+            };
+
+            var attribution = new ol.Attribution({
+                html: 'Tiles &copy; <a href="http://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Topo_Map/MapServer">ArcGIS</a>'
+            });
+
+            basemaps.esriTopo = { layer : new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                    attributions: [attribution],
+                    url: 'http://server.arcgisonline.com/ArcGIS/rest/services/' +
+                        'World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
+                })
+            }),
+                name : 'Esri Topo',
+                id : 'esriTopo'
+            };
+        };
 
 
         // Public API here
@@ -39,20 +91,34 @@ angular.module('TCWS.map', [])
                 return map;
             },
             createMap : function (divId) {
+                createBaseMaps();
+
                 map = new ol.Map({
                     target: divId,
-                    layers: [
-                        new ol.layer.Tile({
-                            source: new ol.source.MapQuestOpenAerial()
-                        })],
+                    layers: [],
                     view: new ol.View2D({
                         center: ol.proj.transform([8.486863,47.381258], 'EPSG:4326', 'EPSG:3857'),
                         zoom: 4
                     })
                 });
 
-
-
+                map.addLayer(basemaps.esriTopo.layer);
+                currentBasemap = basemaps.esriTopo;
+            },
+            getBaseMaps : function(){
+                var result = [];
+                for (var prop in basemaps) {
+                    if (basemaps.hasOwnProperty(prop)) {
+                        result.push({id : prop,
+                            name: basemaps[prop].name})
+                        if(result[result.length-1].id == currentBasemap.id) result[result.length-1].inMap = true;
+                    }
+                }
+                return result;
+            },
+            setBaseMap : function(id){
+                if(currentBasemap) map.removeLayer(currentBasemap.layer);
+                map.addLayer(basemaps[id].layer);
             },
             setCenter: function(Lon,Lat,Zoom){
                 map.setView(
@@ -88,10 +154,10 @@ angular.module('TCWS.map', [])
                 }
                 layer.addFeatures(layerData.gmlData.features);
 
-                layers.push(layer);
+                layers[layerData.id] = layer;
             },
-            getLayers : function(){
-                return layers;
+            removeLayer : function(id){
+                map.removeLayer(layers[id]);
             }
         }
     });
