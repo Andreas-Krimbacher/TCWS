@@ -105,7 +105,9 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                     '6' : {layerId: 6, type: 'area', name: 'CH 2', path: 'Areas/CH/ch2.xml', fileType: 'GML'},
                     '8' : {layerId: 8, type: 'attribute', name: 'oecd-canada', path: 'Attribute/oecd-canada.json', fileType: 'JSON-stat', param : paramOECD},
                     '7' : {layerId: 7, type: 'attribute', name: 'us gsp', path: 'Attribute/us-gsp.json', fileType: 'JSON-stat', param : usgsp},
-                    '9' : {layerId: 9, type: 'attribute', name: 'Switzerland Population', path: 'Attribute/swiss_population_2013.json', fileType: 'JSON-stat', param : swiss}}};
+                    '9' : {layerId: 9, type: 'attribute', name: 'Switzerland Pop Kant', path: 'Attribute/swiss_pop_cant_2012.json', fileType: 'JSON-stat', param : swiss},
+                    '10' : {layerId: 10, type: 'area', name: 'Swiss Districts', path: 'Areas/Swiss/district.xml', fileType: 'GML'},
+                    '11' : {layerId: 11, type: 'attribute', name: 'Swiss Pop Dist', path: 'Attribute/swiss_pop_dist_2012.csv', fileType: 'CSV'}}};
 
                 var inputServices = { '1' : {sourceId: 1, name: 'Hosted Data Files', desc: 'Files hosted on the Server. For free!', type : 'file' , param: fileService},
                     '2' : {sourceId: 2, name: 'Wikipedia', desc: 'Wikipedia Data Crawler Service.'},

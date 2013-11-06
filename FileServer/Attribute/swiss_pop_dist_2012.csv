@@ -1,0 +1,149 @@
+BEZIRK_ID,KT_ID,DIST,T,M,W
+District Id,Canton Id,District,Total,Man,Woman
+301,3,Amt Entlebuch,18749,9476,9273
+302,3,Amt Hochdorf,67818,33827,33991
+303,3,Amt Luzern,176710,85962,90748
+304,3,Amt Sursee,72373,36349,36024
+305,3,Amt Willisau,50432,25616,24816
+241,2,Arrondissement administratif Jura bernois,52251,25940,26311
+1901,19,Bezirk Aarau,72852,35714,37138
+101,1,Bezirk Affoltern,49446,24613,24833
+1821,18,Bezirk Albula,8212,4200,4012
+102,1,Bezirk Andelfingen,30038,15012,15026
+2011,20,Bezirk Arbon,53327,26633,26694
+1301,13,Bezirk Arlesheim,150386,72612,77774
+1902,19,Bezirk Baden,134756,67309,67447
+1903,19,Bezirk Bremgarten,71354,35636,35718
+2301,23,Bezirk Brig,25583,12476,13107
+1904,19,Bezirk Brugg,47487,23858,23629
+1103,11,Bezirk Bucheggberg,7560,3741,3819
+103,1,Bezirk Bülach,135985,68372,67613
+104,1,Bezirk Dielsdorf,82657,41652,41005
+111,1,Bezirk Dietikon,83770,42263,41507
+1104,11,Bezirk Dorneck,19789,9637,10152
+501,5,Bezirk Einsiedeln,14632,7398,7234
+2012,20,Bezirk Frauenfeld,63296,31583,31713
+1101,11,Bezirk Gäu,19054,9613,9441
+502,5,Bezirk Gersau,2118,1110,1008
+2304,23,Bezirk Goms,4629,2371,2258
+1105,11,Bezirk Gösgen,23433,11606,11827
+1501,15,Bezirk Hinterland,23540,11899,11641
+1823,18,Bezirk Hinterrhein,13003,6468,6535
+105,1,Bezirk Hinwil,90740,45177,45563
+503,5,Bezirk Höfe,27754,14773,12981
+106,1,Bezirk Horgen,118718,58131,60587
+1824,18,Bezirk Imboden,19181,9632,9549
+1825,18,Bezirk Inn,9574,4753,4821
+2013,20,Bezirk Kreuzlingen,44220,22105,22115
+1905,19,Bezirk Kulm,38405,19142,19263
+504,5,Bezirk Küssnacht (SZ),12401,6352,6049
+1826,18,Bezirk Landquart,24517,12239,12278
+1302,13,Bezirk Laufen,19057,9553,9504
+1906,19,Bezirk Laufenburg,30102,15386,14716
+1107,11,Bezirk Lebern,43766,21630,22136
+1907,19,Bezirk Lenzburg,55244,27701,27543
+2306,23,Bezirk Leuk,12320,6139,6181
+1303,13,Bezirk Liestal,57547,28415,29132
+1827,18,Bezirk Maloja / Distretto di Maloggia,18733,9324,9409
+505,5,Bezirk March,40221,20440,19781
+107,1,Bezirk Meilen,98090,47201,50889
+1502,15,Bezirk Mittelland,16560,8229,8331
+2014,20,Bezirk Münchwilen,43614,22104,21510
+1908,19,Bezirk Muri,33276,16825,16451
+1401,14,Bezirk Oberklettgau,4379,2202,2177
+1108,11,Bezirk Olten,52052,25802,26250
+108,1,Bezirk Pfäffikon,57336,28506,28830
+1829,18,Bezirk Plessur,40293,19634,20659
+1830,18,Bezirk Prättigau-Davos,26236,13088,13148
+2309,23,Bezirk Raron,10826,5410,5416
+1402,14,Bezirk Reiat,8267,4130,4137
+1909,19,Bezirk Rheinfelden,45012,22448,22564
+1403,14,Bezirk Schaffhausen,52117,25491,26626
+1404,14,Bezirk Schleitheim,3007,1511,1496
+506,5,Bezirk Schwyz,52704,26529,26175
+1005,10,Bezirk See / District du Lac,33924,16967,16957
+1006,10,Bezirk Sense,42014,21124,20890
+1304,13,Bezirk Sissach,33991,16864,17127
+1109,11,Bezirk Solothurn,16465,7972,8493
+1405,14,Bezirk Stein,5391,2646,2745
+1831,18,Bezirk Surselva,21335,10822,10513
+1102,11,Bezirk Thal,14220,7238,6982
+1110,11,Bezirk Thierstein,13982,6973,7009
+1406,14,Bezirk Unterklettgau,4794,2381,2413
+109,1,Bezirk Uster,122862,60586,62276
+2313,23,Bezirk Visp,28238,14168,14070
+1503,15,Bezirk Vorderland,13338,6744,6594
+1305,13,Bezirk Waldenburg,15556,7800,7756
+1106,11,Bezirk Wasseramt,48962,24174,24788
+2015,20,Bezirk Weinfelden,51756,26287,25469
+110,1,Bezirk Winterthur,158156,77890,80266
+1910,19,Bezirk Zofingen,66458,33224,33234
+112,1,Bezirk Zürich,380777,188451,192326
+1911,19,Bezirk Zurzach,32394,16465,15929
+2500,25,Canton de Genève,463101,223737,239364
+2101,21,Distretto di Bellinzona,49473,24082,25391
+1822,18,Distretto di Bernina,4690,2313,2377
+2102,21,Distretto di Blenio,5591,2812,2779
+2103,21,Distretto di Leventina,9524,4965,4559
+2104,21,Distretto di Locarno,62787,30061,32726
+2105,21,Distretto di Lugano,146045,70568,75477
+2106,21,Distretto di Mendrisio,49557,23956,25601
+1828,18,Distretto di Moesa,8146,4105,4041
+2107,21,Distretto di Riviera,12731,6463,6268
+2108,21,Distretto di Vallemaggia,5944,2966,2978
+2221,22,District d'Aigle,41736,20547,21189
+2303,23,District d'Entremont,14517,7402,7115
+2305,23,District d'Hérens,10623,5245,5378
+2401,24,District de Boudry,39133,19104,20029
+2302,23,District de Conthey,25377,12662,12715
+2601,26,District de Delémont,36609,18041,18568
+2229,22,District de l'Ouest lausannois,69913,34911,35002
+1001,10,District de la Broye,28448,14185,14263
+2222,22,District de la Broye-Vully,38418,19158,19260
+2402,24,District de la Chaux-de-Fonds,39448,19032,20416
+1002,10,District de la Glâne,21790,10920,10870
+1003,10,District de la Gruyère,49022,24395,24627
+2230,22,District de la Riviera-Pays-d'Enhaut,81200,38811,42389
+1004,10,District de la Sarine,99245,49248,49997
+1007,10,District de la Veveyse,16952,8487,8465
+2225,22,District de Lausanne,154096,74094,80002
+2226,22,District de Lavaux-Oron,57061,27464,29597
+2307,23,District de Martigny,43453,21427,22026
+2308,23,District de Monthey,42278,20968,21310
+2227,22,District de Morges,75725,37079,38646
+2404,24,District de Neuchâtel,53323,25896,27427
+2228,22,District de Nyon,91834,45336,46498
+2603,26,District de Porrentruy,24263,11921,12342
+2310,23,District de Saint-Maurice,12931,6445,6486
+2311,23,District de Sierre,47198,23379,23819
+2312,23,District de Sion,43759,21187,22572
+2602,26,District des Franches-Montagnes,10070,5015,5055
+2223,22,District du Gros-de-Vaud,39730,19811,19919
+2224,22,District du Jura-Nord vaudois,84643,41772,42871
+2403,24,District du Locle,14247,7035,7212
+2405,24,District du Val-de-Ruz,16405,8156,8249
+2406,24,District du Val-de-Travers,11998,5827,6171
+1600,16,Kanton Appenzell Innerrhoden,15717,8053,7664
+1200,12,Kanton Basel-Stadt,187425,89948,97477
+800,8,Kanton Glarus,39369,19904,19465
+700,7,Kanton Nidwalden,41584,21247,20337
+600,6,Kanton Obwalden,36115,18301,17814
+400,4,Kanton Uri,35693,18206,17487
+900,9,Kanton Zug,116575,58816,57759
+246,2,Verwaltungskreis Bern-Mittelland,395006,191199,203807
+242,2,Verwaltungskreis Biel/Bienne,95718,46665,49053
+245,2,Verwaltungskreis Emmental,94525,46729,47796
+249,2,Verwaltungskreis Frutigen-Niedersimmental,39347,19332,20015
+250,2,Verwaltungskreis Interlaken-Oberhasli,46648,22874,23774
+244,2,Verwaltungskreis Oberaargau,77964,38587,39377
+248,2,Verwaltungskreis Obersimmental-Saanen,16697,8313,8384
+243,2,Verwaltungskreis Seeland,69501,34429,35072
+247,2,Verwaltungskreis Thun,104960,50590,54370
+1723,17,Wahlkreis Rheintal,68792,34712,34080
+1722,17,Wahlkreis Rorschach,41585,20804,20781
+1725,17,Wahlkreis Sarganserland,39077,19534,19543
+1726,17,Wahlkreis See-Gaster,63669,31563,32106
+1721,17,Wahlkreis St. Gallen,119598,58425,61173
+1727,17,Wahlkreis Toggenburg,45084,22697,22387
+1724,17,Wahlkreis Werdenberg,36447,18580,17867
+1728,17,Wahlkreis Wil,72808,36304,36504

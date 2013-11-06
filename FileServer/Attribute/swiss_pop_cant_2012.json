@@ -1,0 +1,147 @@
+{
+	"dataset" : {
+		"label" : "Population Switzerland Kanton Level 2012",
+		"source" : "BFS",
+		"updated" : "2013-11-1",
+        "uri" : "http://www.pxweb.bfs.admin.ch/Database/German_01%20-%20Bev%C3%B6lkerung/01.2%20-%20Bev%C3%B6lkerungsstand%20und%20-bewegung/01.2%20-%20Bev%C3%B6lkerungsstand%20und%20-bewegung.asp?lang=1&prod=01&secprod=2&openChild=true",
+		"value" : [627340,313708,313632,
+            53438,26872,26566,
+            15717,8053,7664,
+            276537,135244,141293,
+            187425,89948,97477,
+            992617,484658,507959,
+            291395,145326,146069,
+            463101,223737,239364,
+            39369,19904,19465,
+            193920,96578,97342,
+            70942,34977,35965,
+            386082,191230,194852,
+            174554,85050,89504,
+            41584,21247,20337,
+            36115,18301,17814,
+            77955,38361,39594,
+            149830,76602,73228,
+            259283,128386,130897,
+            487060,242619,244441,
+            256213,128712,127501,
+            341652,165873,175779,
+            35693,18206,17487,
+            321732,159279,162453,
+            734356,358983,375373,
+            116575,58816,57759,
+            1408575,697854,710721],
+		"status" : "e",
+		"dimension" : {
+			"id" : ["area","concept", "year"],
+			"size" : [26, 3, 1],
+			"role" :{
+				"time" : ["year"],
+				"geo" : ["area"],
+				"metric" : ["concept"]
+			},
+			"concept" : {
+				"label" : "Indicator",
+				"category" : {
+                    "index" : {
+                        "T" : 0,
+                        "M" : 1,
+                        "W" : 2
+                    },
+					"label" : {
+						"T" : "Total",
+                        "M" : "Man",
+                        "W" : "Woman"
+					},
+					"unit" : {
+                        "T" : {
+                            "label": "people",
+                            "multiplier": 1,
+                            "decimals": 0
+                        },
+                        "M" : {
+                            "label": "people",
+                            "multiplier": 1,
+                            "decimals": 0
+                        },
+                        "W" : {
+                            "label": "people",
+                            "multiplier": 1,
+                            "decimals": 0
+                        }
+					}
+				}
+			},
+
+			"year" : {
+				"label" : "Year",
+				"category" : {
+					"index" : {
+						"2012" : 0
+					}
+				}
+			},
+
+			"area" : {
+				"label" : "Swiss Cantons",
+				"category" : {
+					"index" : {
+                        "AG":0,
+                        "AR":1,
+                        "AI":2,
+                        "BL":3,
+                        "BS":4,
+                        "BE":5,
+                        "FR":6,
+                        "GE":7,
+                        "GL":8,
+                        "GR":9,
+                        "JU":10,
+                        "LU":11,
+                        "NE":12,
+                        "NW":13,
+                        "OW":14,
+                        "SH":15,
+                        "SZ":16,
+                        "SO":17,
+                        "SG":18,
+                        "TG":19,
+                        "TI":20,
+                        "UR":21,
+                        "VS":22,
+                        "VD":23,
+                        "ZG":24,
+                        "ZH":25
+					},
+					"label" : {
+                        "AG":"Aargau",
+                        "AR":"Appenzell A.Rh.",
+                        "AI":"Appenzell I.Rh.",
+                        "BL":"Basel-Landschaft",
+                        "BS":"Basel-Stadt",
+                        "BE":"Bern",
+                        "FR":"Freiburg",
+                        "GE":"Genf",
+                        "GL":"Glarus",
+                        "GR":"Graubünden",
+                        "JU":"Jura",
+                        "LU":"Luzern",
+                        "NE":"Neuenburg",
+                        "NW":"Nidwalden",
+                        "OW":"Obwalden",
+                        "SH":"Schaffhausen",
+                        "SZ":"Schwyz",
+                        "SO":"Solothurn",
+                        "SG":"St. Gallen",
+                        "TG":"Thurgau",
+                        "TI":"Tessin",
+                        "UR":"Uri",
+                        "VS":"Wallis",
+                        "VD":"Waadt",
+                        "ZG":"Zug",
+                        "ZH":"Zürich"
+					}
+				}
+			}
+		}
+	}
+}

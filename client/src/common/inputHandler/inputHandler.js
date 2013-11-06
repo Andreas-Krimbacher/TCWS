@@ -95,6 +95,15 @@ angular.module('TCWS.inputHandler', [])
             return {data: resultData, labels : labels};
         };
 
+        var parseCSVFileData = function(fileData){
+            var data = $.csv.toObjects(fileData);
+
+            var result = {data : data,  labels : data[0]};
+            result.data.splice(0,1);
+
+            return result;
+        };
+
         // Public API here
         return {
             getDataFromFile : function(layerInfo,inputService){
@@ -150,7 +159,26 @@ angular.module('TCWS.inputHandler', [])
                             epsg : null,
                             attributes : JSONstatData.data,
                             labels : JSONstatData.labels,
-                            featureCount : JSONstatData.length
+                            featureCount : JSONstatData.data.length
+                        };
+
+                        return layerData;
+
+                    }
+                    else if(layerInfo.fileType == 'CSV'){
+                        var CSVData = parseCSVFileData(fileData);
+
+                        var layerData = {
+                            id : inputService.sourceId + '-' + layerInfo.layerId,
+                            name : layerInfo.name,
+                            layerId : layerInfo.layerId,
+                            sourceId : inputService.sourceId,
+                            type : 'attribute',
+                            gmlData : null,
+                            epsg : null,
+                            attributes : CSVData.data,
+                            labels : CSVData.labels,
+                            featureCount : CSVData.data.length
                         };
 
                         return layerData;

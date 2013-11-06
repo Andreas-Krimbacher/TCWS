@@ -47,6 +47,9 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                 var spatialColumn = null;
                 var attributeColumn = null;
 
+                var originalMappingTable = mappingTable;
+                var mappingTable = mappingTable.layers;
+
                 for (var prop in mappingTable) {
                     if (mappingTable.hasOwnProperty(prop)) {
                         if(dataStore.layers[prop].type == 'attribute'){
@@ -105,13 +108,19 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                     }
 
                     // get attributeMatchString
-                    for (prop in mappingTable[spatialLayer.id].index) {
-                        if (mappingTable[spatialLayer.id].index.hasOwnProperty(prop)) {
-                            if(mappingTable[spatialLayer.id].index[prop] == oldFeature.values_[spatialColumn]){
-                                attributeMatchString = mappingTable[attributeLayer.id].index[prop];
+                    if(originalMappingTable.directMatch){
+                        attributeMatchString = oldFeature.values_[spatialColumn];
+                    }
+                    else{
+                        for (prop in mappingTable[spatialLayer.id].index) {
+                            if (mappingTable[spatialLayer.id].index.hasOwnProperty(prop)) {
+                                if(mappingTable[spatialLayer.id].index[prop] == oldFeature.values_[spatialColumn]){
+                                    attributeMatchString = mappingTable[attributeLayer.id].index[prop];
+                                }
                             }
                         }
                     }
+
 
                     length2 = attributeLayer.attributes.length;
                     for (k=0;k<length2;k++)
