@@ -1,0 +1,32 @@
+<div ng-controller="PreparationFactoryCtrl" id="preparation-factory">
+    <h4>Factory</h4>
+
+    <div id="factory-spatial-layer-select">
+        <h6><strong>Spatial Layer</strong></h6>
+        <div id="factory-spatial-layer">
+            <input style="width:100%" ng-model="spatialLayer" ui-select2="selectOptionsSpatialLayer" data-placeholder="Select Layer">
+        </div>
+        <div id="factory-spatial-column" ng-hide="spatialColumnList.length == 0">
+            <input id="factorySpatialColumn" style="width:100%" ng-model="spatialColumn" ui-select2="selectOptionsSpatialColumn" data-placeholder="Select Column">
+        </div>
+    </div>
+
+    <div id="factory-attribute-layer-select">
+        <h6><strong>Attribute Layer</strong></h6>
+        <div id="factory-attribute-layer">
+            <input style="width:100%" ng-model="attributeLayer" ui-select2="selectOptionsAttributeLayer" data-placeholder="Select Layer">
+        </div>
+        <div id="factory-attribute-column" ng-hide="attributeColumnList.length == 0">
+            <input id="factoryAttributeColumn" style="width:100%" ng-model="attributeColumn" ui-select2="selectOptionsAttributeColumn" data-placeholder="Select Column">
+        </div>
+    </div>
+
+    <div class="mapping-table" ng-hide="!spatialColumn || !attributeColumn">
+        <h6><strong>Mapping Table</strong></h6>
+        <ul class="list-unstyled">
+            <li ng-repeat="value in mappingTable['1-9']['index']">{{mappingTable['1-5']['index'][$index]}} - {{mappingTable['1-9']['index'][$index]}}</li>
+        </ul>
+    </div>
+
+    <button ng-hide="!spatialColumn || !attributeColumn" ng-click="createLayer()" type="button" class="btn">Create Layer</button>
+</div>

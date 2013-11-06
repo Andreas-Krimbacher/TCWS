@@ -1,9 +1,9 @@
 angular.module('TCWS.tools.overview', ['TCWS.components'])
-    .run(function($rootScope,DataStore) {
+    .run(function($rootScope) {
         $rootScope.startOverviewMenu = 'layers';
     })
 
-    .controller('OverviewCtrl', ['$scope','DataStore',function ($scope,DataStore) {
+    .controller('OverviewCtrl', ['$scope',function ($scope) {
         $scope.currentMenu = $scope.startOverviewMenu;
         $scope.overviewMenu = '/app/tools/overview/overviewMenu_' + $scope.currentMenu + '.tpl.html';
 

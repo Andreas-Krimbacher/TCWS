@@ -35,7 +35,7 @@ angular.module('TCWS.grid', ['ngGrid'])
             var gridData = { values : data.attributes,columnDefs : []}
             for (var prop in gridData.values[0]) {
                 if (gridData.values[0].hasOwnProperty(prop)) {
-                    gridData.columnDefs.push({field: prop, displayName: data.labels[prop], enableCellEdit: false})
+                    gridData.columnDefs.push({field: prop, displayName: data.labels[prop], enableCellEdit: true})
                 }
             }
             return gridData;

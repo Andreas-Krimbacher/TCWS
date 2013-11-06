@@ -1,0 +1,167 @@
+angular.module('TCWS.tools.preparation', [])
+    .run(function($rootScope) {
+        $rootScope.startPreparationTool = 'factory';
+    })
+
+    .controller('PreparationCtrl', ['$scope',function ($scope) {
+        $scope.currentTool = $scope.startPreparationTool;
+        $scope.preparationTool = '/app/tools/preparation/preparationTool_' + $scope.currentTool + '.tpl.html';
+
+        $scope.selectTool = function(type){
+            $scope.currentTool = type;
+            $scope.preparationTool = '/app/tools/preparation/preparationTool_' + type + '.tpl.html';
+        };
+    }])
+
+    .controller('PreparationFactoryCtrl', ['$scope','Editor','DataStore',function ($scope,Editor,DataStore) {
+
+        var layerList = Editor.getLayerListShort();
+
+        var spatialLayerList = [];
+        var attributeLayerList = [];
+
+        $scope.spatialColumnList = [];
+        $scope.attributeColumnList = [];
+
+        var length = layerList.length;
+        for (var i=0;i<length;i++)
+        {
+            if(layerList[i].type != 'attribute') spatialLayerList.push({id:layerList[i].id,text:layerList[i].name});
+            else attributeLayerList.push({id:layerList[i].id,text:layerList[i].name})
+        }
+
+        $scope.selectOptionsSpatialLayer = {
+            allowClear:true,
+            data: spatialLayerList
+        };
+
+        $scope.selectOptionsAttributeLayer = {
+            allowClear:true,
+            data: attributeLayerList
+        };
+
+        $scope.selectOptionsSpatialColumn = {
+            allowClear:true,
+            data: $scope.spatialColumnList
+        };
+
+        $scope.selectOptionsAttributeColumn = {
+            allowClear:true,
+            data: $scope.attributeColumnList
+        };
+
+        $scope.$watch('spatialLayer', function (newValue, oldValue) {
+            if(newValue){
+                $scope.spatialLayerData = DataStore.getLayer(newValue.id);
+
+                $scope.spatialColumnList = [];
+                for (var prop in $scope.spatialLayerData.labels) {
+                    if ($scope.spatialLayerData.labels.hasOwnProperty(prop)) {
+                        $scope.spatialColumnList.push({id:prop,text:$scope.spatialLayerData.labels[prop]});
+                    }
+                }
+
+                //Hack because options get not updated
+                $('#factorySpatialColumn').select2({data : $scope.spatialColumnList})
+            }
+            else{
+                $scope.spatialColumnList = [];
+                $('#factorySpatialColumn').select2({data : []})
+            }
+        });
+
+        $scope.$watch('attributeLayer', function (newValue, oldValue) {
+            if(newValue){
+                $scope.attributeLayerData = DataStore.getLayer(newValue.id);
+
+                $scope.attributeColumnList = [];
+                for (var prop in $scope.attributeLayerData.labels) {
+                    if ($scope.attributeLayerData.labels.hasOwnProperty(prop)) {
+                        $scope.attributeColumnList.push({id:prop,text:$scope.attributeLayerData.labels[prop]});
+                    }
+                }
+
+                //Hack because options get not updated
+                $('#factoryAttributeColumn').select2({data : $scope.attributeColumnList})
+            }
+            else{
+                $scope.attributeColumnList = [];
+                $('#factoryAttributeColumn').select2({data : []})
+            }
+        });
+
+        $scope.mappingTable = {
+            "1-9" : {
+                "column" : "area",
+                "columnNewTable" : ['area','T','M','W'],
+                "index" :
+                {
+                    "0":"Aargau",
+                    "1":"Appenzell A.Rh.",
+                    "2":"Appenzell I.Rh.",
+                    "3":"Basel-Landschaft",
+                    "4":"Basel-Stadt",
+                    "5":"Bern",
+                    "6":"Freiburg",
+                    "7":"Genf",
+                    "8":"Glarus",
+                    "9":"Graubünden",
+                    "10":"Jura",
+                    "11":"Luzern",
+                    "12":"Neuenburg",
+                    "13":"Nidwalden",
+                    "14":"Obwalden",
+                    "15":"Schaffhausen",
+                    "16":"Schwyz",
+                    "17":"Solothurn",
+                    "18":"St. Gallen",
+                    "19":"Tessin",
+                    "20":"Thurgau",
+                    "21":"Uri",
+                    "22":"Waadt",
+                    "23":"Wallis",
+                    "24":"Zug",
+                    "25":"Zürich"
+                }
+            },
+            "1-5" : {
+                "column" : "NAME_1",
+                "columnNewTable" : ['ID_1'],
+                "index" :
+                {
+                    "0":"Aargau",
+                    "1":"Appenzell Ausserrhoden",
+                    "2":"Appenzell Innerrhoden",
+                    "3":"Basel-Landschaft",
+                    "4":"Basel-Stadt",
+                    "5":"Bern",
+                    "6":"Fribourg",
+                    "7":"Genève",
+                    "8":"Glarus",
+                    "9":"Graubünden",
+                    "10":"Jura",
+                    "11":"Lucerne",
+                    "12":"Neuchâtel",
+                    "13":"Nidwalden",
+                    "14":"Obwalden",
+                    "15":"Schaffhausen",
+                    "16":"Schwyz",
+                    "17":"Solothurn",
+                    "18":"Sankt Gallen",
+                    "19":"Ticino",
+                    "20":"Thurgau",
+                    "21":"Uri",
+                    "22":"Vaud",
+                    "23":"Valais",
+                    "24":"Zug",
+                    "25":"Zürich"
+                }
+            }
+        };
+
+        $scope.createLayer = function(){
+            DataStore.integrateLayer($scope.mappingTable,'Popoulation');
+        };
+
+
+    }]);

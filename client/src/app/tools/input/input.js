@@ -2,10 +2,17 @@
  * Created by nd on 11/1/13.
  */
 angular.module('TCWS.tools.input', ['TCWS.dataStore','TCWS.settings','ui.select2'])
+    .run(function($rootScope) {
+        $rootScope.startInputService = 1;
+    })
+
+
     .controller('InputCtrl', ['$scope','Editor',function ($scope,Editor) {
 
         $scope.inputServices = Editor.getInputServices();
-        $scope.currentInputService = null;
+        $scope.currentInputService = $scope.inputServices[$scope.startInputService];
+        $scope.inputParamView = '/app/tools/input/paramView_' + $scope.currentInputService.type + '.tpl.html';
+        $scope.inputParam = $scope.currentInputService.param;
 
         $scope.setInputService = function(input){
             $scope.currentInputService = input;

@@ -1,9 +1,9 @@
 /**
  * Created by nd on 11/1/13.
  */
-angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.tools.preperation','TCWS.tools.symbology'])
+angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.tools.preparation','TCWS.tools.symbology'])
     .run(function($rootScope,Editor) {
-        $rootScope.startTool = 'overview';
+        $rootScope.startTool = 'preparation';
 
         var inputServices = Editor.getInputServices();
 

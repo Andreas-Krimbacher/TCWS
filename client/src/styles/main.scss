@@ -174,7 +174,31 @@ $borderThick: 2px solid rgb(212,212,212);
   height: 100%;
 }
 
+#factory-spatial-layer-select{
+  width: 45%;
+  position: absolute;
+  #factory-spatial-column{
+    margin-top: 10px;
+  }
+}
 
+#factory-attribute-layer-select{
+  width: 45%;
+  position: absolute;
+  right: 0px;
+  #factory-attribute-column{
+    margin-top: 10px;
+  }
+}
+
+#preparation-factory{
+  .mapping-table{
+    margin-top: 120px;
+  }
+  button{
+    float: right;
+  }
+}
 
 
 
