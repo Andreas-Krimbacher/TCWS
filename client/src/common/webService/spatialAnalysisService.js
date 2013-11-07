@@ -14,6 +14,7 @@ angular.module('TCWS.webService.spatialAnalysisService', [])
                 return $http({
                     url: requestInfo.url,
                     method: "POST",
+                    params : requestInfo.requestParam,
                     data: requestInfo.requestData.layers[0].GML,
                     headers: {'Content-Type': 'application/xml'}
                 }).then(function(fileData){

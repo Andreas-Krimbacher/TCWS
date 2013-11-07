@@ -1,0 +1,39 @@
+CREATE OR REPLACE FUNCTION classify_quantil(classCount integer, tableName text, columnName text) RETURNS integer AS $$
+DECLARE
+    rowData RECORD;
+	cnt integer;
+	classSize integer;
+	classValue integer;
+	arr integer[];
+	index integer;
+BEGIN
+	EXECUTE '(SELECT count(*) FROM ' || tableName || ')' INTO cnt;
+	RAISE NOTICE 'Row Count %', cnt;
+
+	classSize = cnt/classCount;
+	RAISE NOTICE 'Class Size %', classSize;
+
+	index = 0;
+	classValue = 0;
+
+	EXECUTE 'ALTER TABLE ' || tableName || ' ADD COLUMN "class" integer';
+
+	FOR rowData IN EXECUTE 'SELECT ROW_NUMBER() OVER (ORDER BY ' || columnName || ') AS row, * FROM ' || tableName || ' ORDER BY ' || columnName  LOOP
+
+		IF (index % classSize) = 0 THEN
+			classValue = classValue + 1;
+		END IF;
+		IF classValue > classCount THEN
+			classValue = classCount;
+		END IF;
+
+		EXECUTE 'UPDATE ' || tableName || ' SET "class" = ' || classValue || ' WHERE ' || columnName || ' = (SELECT ' || columnName || ' FROM (SELECT ROW_NUMBER() OVER (ORDER BY ' || columnName || ') AS row, * FROM ' || tableName || ') AS a WHERE a.row = ' || rowData.row || ')';
+
+		RAISE NOTICE 'Class %', classValue;
+		index = index + 1;
+	END LOOP;
+
+    
+    RETURN 1;
+END;
+$$ LANGUAGE plpgsql;

@@ -181,6 +181,45 @@ angular.module('TCWS.inputHandler', [])
 
                         return layerData;
                     }
+                    else if(layerInfo.fileType == 'GML-OGR'){
+                        fileData = fileData.replace(/ogr:FeatureCollection/g,'wfs:FeatureCollection');
+                        fileData = fileData.replace('xmlns:ogr="http://ogr.maptools.org/"','xmlns:ogr="http://ogr.maptools.org/" \n xmlns:wfs="http://www.opengis.net/wfs"');
+
+                        var GMLData = parseGMLFileData(fileData);
+
+                        var layerData = {
+                            id : inputService.sourceId + '-' + layerInfo.layerId,
+                            name : layerInfo.name,
+                            layerId : layerInfo.layerId,
+                            sourceId : inputService.sourceId,
+                            type : 'area',
+                            gmlData : GMLData,
+                            epsg : GMLData.metadata.projection,
+                            attributes : [],
+                            labels : {},
+                            featureCount : null
+                        };
+
+                        var length = GMLData.features.length;
+                        for (var i=0;i<length;i++)
+                        {
+                            layerData.attributes[i] = {};
+                            for (var prop in GMLData.features[i].values_) {
+                                if (prop != 'geometry' && GMLData.features[i].values_.hasOwnProperty(prop)) {
+                                    layerData.attributes[i][prop] = GMLData.features[i].values_[prop];
+                                }
+                            }
+                        }
+                        layerData.featureCount = i;
+
+                        for (var prop in layerData.attributes[0]) {
+                            if (layerData.attributes[0].hasOwnProperty(prop)) {
+                                layerData.labels[prop] = prop;
+                            }
+                        }
+
+                        return layerData;
+                    }
                     else if(layerInfo.fileType == 'JSON-stat'){
                         var JSONstatData = parseJSONstatFileData(fileData,layerInfo.param);
 

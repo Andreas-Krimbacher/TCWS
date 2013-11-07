@@ -104,6 +104,8 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
                 DataStore.integrateLayer(mappingTable,'Pop District 2012');
             });
         });
+
+        Editor.importData({inputService: inputServices['1'], config:{layer:12}})
 //        Editor.importData({inputService: inputServices['1'], config:{layer:4}});
 //        Editor.importData({inputService: inputServices['1'], config:{layer:7}});
 //        Editor.importData({inputService: inputServices['1'], config:{layer:9}});

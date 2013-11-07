@@ -171,7 +171,31 @@ angular.module('TCWS.tools.preparation', ['TCWS.webService'])
 
     .controller('PreparationAnalyzeCtrl', ['$scope','Editor','WebService',function ($scope,Editor,WebService) {
 
-        var methods = [{id:1,text:'Calculate Area'}];
+        var requestMethods = [{id:1,text:'Calculate Area'},{id:2,text:'Classify Quantil'}];
+
+        var requestInfo = {'1' : {
+            service : 'sas',
+            url : 'http://localhost:9000/services/SAS',
+            requestParam : {
+                methodGroup : 'measure',
+                method : 'area'},
+            requestData : {
+                layers : []
+            }},
+            '2': {
+                service : 'sas',
+                url : 'http://localhost:9000/services/SAS',
+                requestParam : {
+                    methodGroup : 'classify',
+                    method : 'quantil',
+                    column : 'area_size',
+                    classCount : 5},
+                requestData : {
+                    layers : []
+                }}
+        };
+
+
         var layerListShort = Editor.getLayerListShort();
 
         var layerList = [];
@@ -190,22 +214,14 @@ angular.module('TCWS.tools.preparation', ['TCWS.webService'])
 
         $scope.selectOptionsMethod = {
             allowClear:true,
-            data: methods
+            data: requestMethods
         };
 
         $scope.executeMethod = function(){
-            var requestInfo = {
-                service : 'sas',
-                url : 'http://localhost:9000/services/SAS',
-                methodGroup : 'measure',
-                method : 'area',
-                requestParam : {},
-                requestData : {
-                    layers : [{id : $scope.layer.id}]
-                }
-            };
 
-            WebService.executeRequest(requestInfo);
+            var info = requestInfo[$scope.method.id];
+            info.requestData.layers.push({id : $scope.layer.id});
+            WebService.executeRequest(info);
 
         };
 
