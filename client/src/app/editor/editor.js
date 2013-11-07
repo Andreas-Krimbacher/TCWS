@@ -32,6 +32,20 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 if(layerInGrid == id) Grid.removeData();
                 DataStore.removeLayer(id);
             },
+            updateLayer : function(id,data){
+                DataStore.updateLayer(id,data);
+
+                var layer = DataStore.getLayer(id);
+
+                if(layersInMap[id]){
+                    OpenLayersMap.removeLayer(id);
+                    OpenLayersMap.addLayer(layer);
+                }
+                if(layerInGrid == id){
+                    Grid.removeData();
+                    Grid.showData(layer);
+                }
+            },
             addLayerToMap : function(id){
                 var layer = DataStore.getLayer(id);
                 if(layer){

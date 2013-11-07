@@ -102,7 +102,7 @@ angular.module('TCWS.map', [])
                     })
                 });
 
-                map.addLayer(basemaps.esriTopo.layer);
+                //map.addLayer(basemaps.esriTopo.layer);
                 currentBasemap = basemaps.esriTopo;
             },
             getBaseMaps : function(){
@@ -147,11 +147,12 @@ angular.module('TCWS.map', [])
 
                 map.addLayer(layer);
                 var transform = ol.proj.getTransform(layerData.epsg, "EPSG:3857");
-                var geometry = null;
                 for(var i = 0, ii = layerData.gmlData.features.length;i < ii;++i) {
-                    geometry = layerData.gmlData.features[i].getGeometry();
-                    geometry.transform(transform)
+                    layerData.gmlData.features[i].values_[layerData.gmlData.features[i].geometryName_].transform(transform)
                 }
+                layerData.epsg = "EPSG:3857";
+                layerData.gmlData.metadata.projection = "EPSG:3857";
+
                 layer.addFeatures(layerData.gmlData.features);
 
                 layers[layerData.id] = layer;

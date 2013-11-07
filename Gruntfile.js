@@ -44,9 +44,9 @@ module.exports = function (grunt) {
                     // Change this to '0.0.0.0' to access the server from outside.
                     hostname: '0.0.0.0',
                     bases: ['<%= configClient.app %>','<%= configClient.app %>/.tmp','client','FileServer'],
-                    server: path.resolve('server/server.js'),
-                    watchChanges: true
-                    //debug:true
+                    server: path.resolve('./server/server.js'),
+                    keepalive : true,
+                    watchChanges : true
                 }
             }
         },
@@ -92,7 +92,12 @@ module.exports = function (grunt) {
         'compass:server',
         'express:livereload',
         'open',
-//        'karma:unit:start',
+        'watch'
+    ]);
+
+    grunt.registerTask('clientwatch', [
+        'compass:server',
+        'open',
         'watch'
     ]);
 

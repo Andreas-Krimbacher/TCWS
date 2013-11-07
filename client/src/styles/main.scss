@@ -191,6 +191,8 @@ $borderThick: 2px solid rgb(212,212,212);
   }
 }
 
+
+
 #preparation-factory{
   .mapping-table{
     margin-top: 120px;
@@ -200,5 +202,12 @@ $borderThick: 2px solid rgb(212,212,212);
   }
 }
 
+#preparation-analyze{
+  button{
+    margin-top: 20px;
+  }
+}
 
-
+#factory-analyze-method-select{
+  width: 70%;
+}

@@ -1,6 +1,6 @@
-angular.module('TCWS.tools.preparation', [])
+angular.module('TCWS.tools.preparation', ['TCWS.webService'])
     .run(function($rootScope) {
-        $rootScope.startPreparationTool = 'factory';
+        $rootScope.startPreparationTool = 'analyze';
     })
 
     .controller('PreparationCtrl', ['$scope',function ($scope) {
@@ -162,11 +162,51 @@ angular.module('TCWS.tools.preparation', [])
             }
         };
 
-
-
         $scope.createLayer = function(){
             DataStore.integrateLayer($scope.mappingTable,'Pop Canton 2012');
         };
 
+
+    }])
+
+    .controller('PreparationAnalyzeCtrl', ['$scope','Editor','WebService',function ($scope,Editor,WebService) {
+
+        var methods = [{id:1,text:'Calculate Area'}];
+        var layerListShort = Editor.getLayerListShort();
+
+        var layerList = [];
+
+
+        var length = layerListShort.length;
+        for (var i=0;i<length;i++)
+        {
+            if(layerListShort[i].type != 'attribute') layerList.push({id:layerListShort[i].id,text:layerListShort[i].name});
+        }
+
+        $scope.selectOptionsLayer = {
+            allowClear:true,
+            data: layerList
+        };
+
+        $scope.selectOptionsMethod = {
+            allowClear:true,
+            data: methods
+        };
+
+        $scope.executeMethod = function(){
+            var requestInfo = {
+                service : 'sas',
+                url : 'http://localhost:9000/services/SAS',
+                methodGroup : 'measure',
+                method : 'area',
+                requestParam : {},
+                requestData : {
+                    layers : [{id : $scope.layer.id}]
+                }
+            };
+
+            WebService.executeRequest(requestInfo);
+
+        };
 
     }]);

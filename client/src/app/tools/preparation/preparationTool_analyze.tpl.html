@@ -1,1 +1,17 @@
-<h4>Analyze</h4>
+<div ng-controller="PreparationAnalyzeCtrl" id="preparation-analyze">
+    <h4>Analyze</h4>
+
+    <div id="factory-analyze-method-select">
+        <h6><strong>Method</strong></h6>
+        <div id="factory-analyze-method">
+            <input style="width:100%" ng-model="method" ui-select2="selectOptionsMethod" data-placeholder="Select Method">
+        </div>
+        <h6><strong>Layer</strong></h6>
+        <div>
+            <input style="width:100%" ng-model="layer" ui-select2="selectOptionsLayer" data-placeholder="Select Layer">
+        </div>
+    </div>
+
+
+    <button ng-hide="!method || !layer" ng-click="executeMethod()" type="button" class="btn">Execute Method</button>
+</div>

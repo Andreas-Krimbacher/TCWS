@@ -5,6 +5,8 @@ angular.module('TCWS.inputHandler', [])
     .factory('InputHandler', ['$http',function ($http) {
         // Service logic
 
+        var GMLParser = new ol.parser.ogc.GML_v2({readOptions:{axisOrientation: 'en'}});
+
         var getFileData = function(layerInfo){
             return $http({method: 'GET', url: layerInfo.path}).then(function(result){
                 return result.data;
@@ -12,8 +14,7 @@ angular.module('TCWS.inputHandler', [])
         };
 
         var parseGMLFileData = function(fileData){
-            var parser =  new ol.parser.ogc.GML_v2({readOptions:{axisOrientation: 'en'}});
-            return parser.readFeaturesFromString(fileData);
+            return GMLParser.readFeaturesFromString(fileData);
         };
 
         var parseJSONstatFileData = function(fileData,param){
@@ -106,6 +107,40 @@ angular.module('TCWS.inputHandler', [])
 
         // Public API here
         return {
+            getGMLParser : function(){
+                return GMLParser;
+            },
+            getDataFromGMLString : function(gmlData){
+                var GMLData = parseGMLFileData(gmlData);
+
+                var data = {
+                    gmlData : GMLData,
+                    epsg : GMLData.metadata.projection,
+                    attributes : [],
+                    labels : {},
+                    featureCount : null
+                };
+
+                var length = GMLData.features.length;
+                for (var i=0;i<length;i++)
+                {
+                    data.attributes[i] = {};
+                    for (var prop in GMLData.features[i].values_) {
+                        if (prop != 'geometry' && GMLData.features[i].values_.hasOwnProperty(prop)) {
+                            data.attributes[i][prop] = GMLData.features[i].values_[prop];
+                        }
+                    }
+                }
+                data.featureCount = i;
+
+                for (prop in data.attributes[0]) {
+                    if (data.attributes[0].hasOwnProperty(prop)) {
+                        data.labels[prop] = prop;
+                    }
+                }
+
+                return data;
+            },
             getDataFromFile : function(layerInfo,inputService){
                 return getFileData(layerInfo).then(function(fileData){
 

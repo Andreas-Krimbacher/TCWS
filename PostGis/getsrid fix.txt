@@ -1,0 +1,12 @@
+-- Function: getsrid(geometry)
+
+-- DROP FUNCTION getsrid(geometry);
+
+CREATE OR REPLACE FUNCTION getsrid(geometry)
+  RETURNS integer AS
+'$libdir/postgis-2.0', 'LWGEOM_get_srid'
+  LANGUAGE c IMMUTABLE STRICT
+  COST 1;
+ALTER FUNCTION getsrid(geometry)
+  OWNER TO postgres;
+COMMENT ON FUNCTION getsrid(geometry) IS 'args: g1 - Returns the spatial reference identifier for the ST_Geometry as defined in spatial_ref_sys table.';

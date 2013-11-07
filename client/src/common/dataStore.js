@@ -2,7 +2,7 @@
 
 angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
 
-    .factory('DataStore', function () {
+    .factory('DataStore',['InputHandler', function (InputHandler) {
         // Service logic
 
         var newIntegrationLayerId = 1;
@@ -34,8 +34,27 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
             getLayer : function(id){
                 return dataStore.layers[id];
             },
+            getLayerAsGML : function(id){
+                var parser = InputHandler.getGMLParser();
+
+                var clonedGMLData = parser.readFeaturesFromString(parser.write(dataStore.layers[id].gmlData,{axisOrientation: 'en'}));
+                var transform = ol.proj.getTransform(clonedGMLData.metadata.projection, "EPSG:4326");
+                for(var i = 0, ii = clonedGMLData.features.length;i < ii;++i) {
+                    clonedGMLData.features[i].values_[clonedGMLData.features[i].geometryName_].transform(transform)
+                }
+                clonedGMLData.metadata.projection = "EPSG:4326";
+
+                return parser.write(clonedGMLData,{axisOrientation: 'en'});
+            },
             addLayer : function(layer){
                 dataStore.layers[layer.id] = layer;
+            },
+            updateLayer : function(id,data){
+                for (var prop in data) {
+                    if (data.hasOwnProperty(prop)) {
+                        dataStore.layers[id][prop] = data[prop];
+                    }
+                }
             },
             removeLayer : function(id){
                 delete dataStore.layers[id];
@@ -75,7 +94,7 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                     layerId : layerId,
                     sourceId : sourceId,
                     type : spatialLayer.type,
-                    gmlData : {features : [], metadata : {projection : spatialLayer.gmlData.metadata}},
+                    gmlData : {features : [], metadata : {projection : spatialLayer.gmlData.metadata.projection}},
                     epsg : spatialLayer.epsg,
                     attributes : [],
                     labels : {},
@@ -85,12 +104,18 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                 var column,feature,oldFeature,attributeMatchString;
                 var length2,length3;
 
+
+                //Hack to clone the features feature.clone() dont work
+                var parser = InputHandler.getGMLParser();
+                var clonedGMLData = parser.readFeaturesFromString(parser.write(spatialLayer.gmlData,{axisOrientation: 'en'}));
+
+
                 var length = spatialLayer.gmlData.features.length;
                 for (var i=0;i<length;i++)
                 {
-                    oldFeature = spatialLayer.gmlData.features[i];
+                    oldFeature = clonedGMLData.features[i];
                     feature = new ol.Feature();
-                    feature.featureId_ = oldFeature.featureId_;
+                    feature.featureId_ = oldFeature.featureId_+'a';
                     feature.geometryName_ = oldFeature.geometryName_;
 
                     // copy geometry
@@ -149,7 +174,7 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                 {
                     layerData.attributes[i] = {};
                     for (prop in layerData.gmlData.features[i].values_) {
-                        if (prop != 'geometry' && layerData.gmlData.features[i].values_.hasOwnProperty(prop)) {
+                        if (prop != layerData.gmlData.features[i].geometryName_ && layerData.gmlData.features[i].values_.hasOwnProperty(prop)) {
                             layerData.attributes[i][prop] = layerData.gmlData.features[i].values_[prop];
                         }
                     }
@@ -159,4 +184,4 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                 dataStore.layers[layerData.id] = layerData;
             }
         }
-    });
+    }]);
