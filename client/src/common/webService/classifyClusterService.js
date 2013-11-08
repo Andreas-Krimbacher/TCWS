@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('TCWS.webService.spatialAnalysisService', [])
+angular.module('TCWS.webService.classifyClusterService', [])
 
-    .factory('SpatialAnalysisService', ['$http',function ($http) {
+    .factory('ClassifyClusterService', ['$http',function ($http) {
         // Service logic
 
 

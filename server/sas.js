@@ -4,32 +4,8 @@
  * @namespace
  * @author Andreas Krimbacher
  */
-var fs = require('fs');
-var pg = require('pg');
-var exec = require('child_process').exec;
+var db = require('./db');
 
-//set connection string here *******************************************************************************
-//**********************************************************************************************************
-//e.g.: var connectionString = "postgres://urban:urban@localhost:5432/urban";
-//**********************************************************************************************************
-
-var pgConfig = {database : 'TCWS',
-    schema : 'Service',
-    user : 'TCWS',
-    password : 'TCWS',
-    host : 'localhost',
-    port : '5432'};
-
-
-var connectionString = 'postgres://'+pgConfig.user+':'+pgConfig.password+'@'+pgConfig.host+':'+pgConfig.port+'/'+pgConfig.database;
-var client = new pg.Client(connectionString);
-client.connect();
-
-
-
-var tmpPath = '/home/nd/ooo/TCWS/FileServer/tmp/';
-var tmpInFileName = 'tmpInGmlData.xml';
-var tmpOutFileName = 'tmpOutGmlData.xml';
 var tmpTableName = 'tmp';
 var geomName = 'geometryProperty';
 
@@ -39,12 +15,10 @@ module.exports.handleRequest =  function(req, res) {
 
     if(req.query.methodGroup == 'measure' && req.query.method == 'area'){
 
-        importGML(req, function(){
+        db.importGML(req, function(){
 
-            var sql = 'ALTER TABLE "'+pgConfig.schema+'".'+tmpTableName+' ADD COLUMN area_size bigint;';
-            console.log(sql);
-            client.query(sql, function(err) {
-
+            var sql = 'ALTER TABLE "'+db.defaultSchema+'".'+tmpTableName+' ADD COLUMN area_size bigint;';
+            db.sql(sql, function(err) {
                 if(err) {
                     console.log(err);
                     res.end(err);
@@ -52,9 +26,10 @@ module.exports.handleRequest =  function(req, res) {
                 }
 
                 console.log("Column added!");
-                sql = 'UPDATE "'+pgConfig.schema+'".'+tmpTableName+' SET area_size = cast(ST_Area(ST_Transform("'+geomName+'", utmzone(ST_Centroid("'+geomName+'")))) as bigint);';
-                console.log(sql);
-                client.query(sql, function(err) {
+
+
+                sql = 'UPDATE "'+db.defaultSchema+'".'+tmpTableName+' SET area_size = cast(ST_Area(ST_Transform("'+geomName+'", utmzone(ST_Centroid("'+geomName+'")))) as bigint);';
+                db.sql(sql, function(err) {
 
                     if(err) {
                         console.log(err);
@@ -64,7 +39,12 @@ module.exports.handleRequest =  function(req, res) {
 
                     console.log("Area calculated!");
 
-                    exportGML(res);
+                    db.exportGML(function(data){
+                        console.log("Send response!");
+
+                        res.writeHead(200, {'Content-Type': 'text/plain'});
+                        res.end(data);
+                    });
 
                 });
 
@@ -72,129 +52,4 @@ module.exports.handleRequest =  function(req, res) {
 
         });
     }
-
-    if(req.query.methodGroup == 'classify' && req.query.method == 'quantil'){
-        importGML(req, function(){
-
-            var sql = 'SELECT classify_quantil('+req.query.classCount+',\'"'+pgConfig.schema+'".'+tmpTableName+'\', \''+req.query.column+'\')';
-            console.log(sql);
-            client.query(sql, function(err) {
-
-                if(err) {
-                    console.log(err);
-                    res.end(err);
-                    return
-                }
-
-                console.log("Quantil classified");
-
-                exportGML(res);
-
-            });
-
-        });
-
-    }
-};
-
-var importGML = function(req,callback){
-
-    fs.writeFile(tmpPath+tmpInFileName, req.rawBody, function(err) {
-        if(err) {
-            console.log(err);
-            res.end(err);
-            return
-        }
-        console.log("The file was uploaded!");
-
-        var sql = 'DROP TABLE IF EXISTS "'+pgConfig.schema+'".'+tmpTableName+';';
-        console.log(sql);
-        client.query(sql, function(err) {
-
-            if(err) {
-                console.log(err);
-                res.end(err);
-                return
-            }
-
-            console.log("DB initialized!");
-
-            var cmd = 'ogr2ogr -f PostgreSQL ';
-            cmd += '"PG:dbname='+pgConfig.database+' host='+pgConfig.host+' user='+pgConfig.user+' password='+pgConfig.password+' active_schema='+pgConfig.schema+'" ';
-            cmd += tmpPath+tmpInFileName+' -lco GEOMETRY_NAME='+geomName+' -nln '+tmpTableName;
-
-            console.log(cmd);
-            exec(cmd, function (err, stdout, stderr) {
-                if(err){
-                    res.end(err);
-                    return
-                }
-
-                console.log(stdout);
-                console.log(stderr);
-
-                console.log("Table imported!");
-
-                callback();
-
-            });
-
-        });
-
-    });
-};
-
-var exportGML = function(res){
-    var cmd = 'ogr2ogr -f "ESRI Shapefile" '+tmpPath+' ';
-    cmd += '"PG:dbname='+pgConfig.database+' host='+pgConfig.host+' user='+pgConfig.user+' password='+pgConfig.password+' active_schema='+pgConfig.schema+'" ';
-    cmd += ' -sql "SELECT * FROM '+tmpTableName+'" -nln '+tmpOutFileName+' -overwrite';
-
-    console.log(cmd);
-    exec(cmd, function (err, stdout, stderr) {
-        if(err){
-            res.end(err);
-            return
-        }
-
-        console.log(stdout);
-        console.log(stderr);
-
-        console.log("Output Shape created!");
-
-        var cmd = 'ogr2ogr -f "GML" -a_srs EPSG:4326 -t_srs EPSG:4326 -preserve_fid '+tmpPath+tmpOutFileName+' '+tmpPath+tmpOutFileName+'.shp';
-
-        console.log(cmd);
-        exec(cmd, function (err, stdout, stderr) {
-            if(err){
-                res.end(err);
-                return
-            }
-
-            console.log(stdout);
-            console.log(stderr);
-
-            console.log("Output GML created!");
-
-
-            fs.readFile(tmpPath+tmpOutFileName, 'utf8', function (err,data) {
-                if(err){
-                    res.end(err);
-                    return
-                }
-
-                data = data.replace(/ogr:FeatureCollection/g,'wfs:FeatureCollection');
-                data = data.replace('xmlns:ogr="http://ogr.maptools.org/"','xmlns:ogr="http://ogr.maptools.org/" \n xmlns:wfs="http://www.opengis.net/wfs"');
-
-                console.log(data);
-
-                console.log("Send response!");
-
-                res.writeHead(200, {'Content-Type': 'text/plain'});
-                res.end(data);
-            });
-
-
-        });
-
-    });
 };

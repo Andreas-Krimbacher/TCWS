@@ -6,12 +6,26 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
 
     }])
 
-    .factory('Editor', ['DataStore','InputHandler','OpenLayersMap','Grid',function (DataStore,InputHandler,OpenLayersMap,Grid) {
+    .factory('Editor', ['DataStore','InputHandler','OpenLayersMap','Grid','WebService',function (DataStore,InputHandler,OpenLayersMap,Grid,WebService) {
         // Service logic
 
         var layersInMap = {};
         var layerInGrid = null;
 
+        var _updateLayer = function(id,layerData){
+            DataStore.updateLayer(id,layerData);
+
+            var layer = DataStore.getLayer(id);
+
+            if(layersInMap[id]){
+                OpenLayersMap.removeLayer(id);
+                OpenLayersMap.addLayer(layer);
+            }
+            if(layerInGrid == id){
+                Grid.removeData();
+                Grid.showData(layer);
+            }
+        };
 
         // Public API here
         return {
@@ -32,18 +46,12 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 if(layerInGrid == id) Grid.removeData();
                 DataStore.removeLayer(id);
             },
-            updateLayer : function(id,data){
-                DataStore.updateLayer(id,data);
-
-                var layer = DataStore.getLayer(id);
-
-                if(layersInMap[id]){
-                    OpenLayersMap.removeLayer(id);
-                    OpenLayersMap.addLayer(layer);
-                }
-                if(layerInGrid == id){
-                    Grid.removeData();
-                    Grid.showData(layer);
+            updateLayer : function(id,layerData){
+                _updateLayer(id,layerData);
+            },
+            createUpdateLayer : function(method, methodInfo){
+                if(method == 'integrate'){
+                    DataStore.integrateLayer(methodInfo.mappingTable,methodInfo.layerId, methodInfo.layerName);
                 }
             },
             addLayerToMap : function(id){
@@ -130,6 +138,71 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
 
                 return inputServices;
             },
+            getProcessingServices : function(){
+                var area =
+                {
+                    methodId : '1',
+                    method : 'area',
+                    name : 'Calculate Area',
+                    methodGroup : 'measure',
+                    methodGroupName : 'Measure',
+                    requestParam :
+                    {
+                        methodGroup : 'measure',
+                        method : 'area'
+                    },
+                    resultInfo :
+                    {
+                        type : 'update'
+                    }
+                };
+
+                var sas =
+                {
+                    serviceType : 'sas',
+                    serviceId : '1',
+                    name: 'Spatial Analysis Service',
+                    url : 'http://localhost:9000/services/SAS',
+                    methods :
+                    {
+                        '1' : area
+                    }
+                };
+
+                var classifyQuantile =
+                {
+                    methodId : '1',
+                    method : 'quantile',
+                    name : 'Quantile Classification',
+                    methodGroup : 'classify',
+                    methodGroupName : 'Classify',
+                    requestParam :
+                    {
+                        methodGroup : 'classify',
+                        method : 'quantile',
+                        column : null,
+                        classCount : null
+                    },
+                    resultInfo :
+                    {
+                        type : 'update'
+                    }
+                };
+
+                var ccs =
+                {
+                    serviceType : 'ccs',
+                    serviceId : '2',
+                    name: 'Classify and Cluster Service',
+                    url : 'http://localhost:9000/services/CCS',
+                    methods :
+                    {
+                        '1' : classifyQuantile
+                    }
+                };
+
+                return {'1' : sas, '2': ccs} ;
+            },
             importData : function(param){
 
                 if(param.inputService.type == 'file'){
@@ -148,7 +221,82 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                         return false;
                     }
                 }
+            },
+            executeServiceRequest : function(parameters){
+                if(parameters.config.requestData.layersId.length != 0 && parameters.config.requestData.layersData.length == 0){
+                    var length = parameters.config.requestData.layersId.length;
+                    for (var i=0;i<length;i++)
+                    {
+                        parameters.config.requestData.layersData[i] = DataStore.getLayer(parameters.config.requestData.layersId[i]);
+                    }
+                }
+
+                var methodInfo = parameters.processingService.methods[parameters.config.methodId];
+
+                for (var prop in methodInfo.requestParam) {
+                    if (methodInfo.requestParam.hasOwnProperty(prop)) {
+
+                        if(!parameters.config.requestParam[prop]){
+                            parameters.config.requestParam[prop] = methodInfo.requestParam[prop];
+                        }
+
+                        if(!parameters.config.requestParam[prop]){
+                            console.log('Request Parameter "'+prop+'" not defined!')
+                        }
+
+                    }
+                }
+
+                return WebService.executeRequest(parameters).then(function(data){
+                    if(methodInfo.resultInfo.type == 'update'){
+                        _updateLayer(parameters.config.requestData.layersData[0].id, data);
+                    }
+                });
+            }
+        }
+    }])
+
+    .factory('ServiceChain', ['Editor','$q',function (Editor,$q) {
+        // Service logic
+
+        var _executeChainElement = function(serviceChainElement){
+
+            var promise = null;
+
+            if(serviceChainElement.type == 'import'){
+                promise = Editor.importData(serviceChainElement.config);
+            }
+
+            if(serviceChainElement.type == 'integrate'){
+                Editor.createUpdateLayer('integrate',serviceChainElement.config);
+            }
+
+            if(serviceChainElement.type == 'service'){
+                promise = Editor.executeServiceRequest(serviceChainElement.config);
+            }
+
+            return promise;
+        };
+
+        // Public API here
+        return {
+            executeServiceChain : function(serviceChain){
+                var defer = $q.defer();
+                var promise = defer.promise;
+
+                var addPromise = function(serviceChainElement) {
+                    promise = promise.then(function () {
+                        return _executeChainElement(serviceChainElement);
+                    })
+                };
+
+                var length = serviceChain.length;
+                for (var i=0;i<length;i++)
+                {
+                    addPromise(serviceChain[i]);
+                }
+
+                defer.resolve();
             }
         }
     }]);
-

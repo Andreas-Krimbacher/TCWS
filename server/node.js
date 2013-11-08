@@ -7,3 +7,4 @@ server.use("/", express.static(__dirname + '/../client'));
 server.use("/", express.static(__dirname + '/../FileServer'));
 
 server.listen(9000);
+console.log('Port: 9000')

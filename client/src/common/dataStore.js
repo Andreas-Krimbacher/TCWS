@@ -59,7 +59,7 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
             removeLayer : function(id){
                 delete dataStore.layers[id];
             },
-            integrateLayer : function(mappingTable,name){
+            integrateLayer : function(mappingTable,id,name){
 
                 var spatialLayer = null;
                 var attributeLayer = null;
@@ -82,14 +82,22 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                     }
                 }
 
-                var sourceId = integrationLayerSourceId;
-                var layerId = newIntegrationLayerId;
-                newIntegrationLayerId++;
+                if(id){
+                    var sourceId = null;
+                    var layerId = null;
+                }
+                else{
+                    var sourceId = integrationLayerSourceId;
+                    var layerId = newIntegrationLayerId;
+                    newIntegrationLayerId++;
+
+                    id = sourceId + '-' + layerId;
+                }
 
                 if(!name) name = spatialLayer.name + ' ' + attributeLayer.name;
 
                 var layerData = {
-                    id : sourceId + '-' + layerId,
+                    id : id,
                     name : name,
                     layerId : layerId,
                     sourceId : sourceId,

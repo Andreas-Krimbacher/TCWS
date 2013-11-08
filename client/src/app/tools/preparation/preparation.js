@@ -163,44 +163,40 @@ angular.module('TCWS.tools.preparation', ['TCWS.webService'])
         };
 
         $scope.createLayer = function(){
-            DataStore.integrateLayer($scope.mappingTable,'Pop Canton 2012');
+            Editor.createUpdateLayer('integrate', {mappingTable : $scope.mappingTable,layerName:'Pop Canton 2012'});
         };
 
 
     }])
 
-    .controller('PreparationAnalyzeCtrl', ['$scope','Editor','WebService',function ($scope,Editor,WebService) {
+    .controller('PreparationAnalyzeCtrl', ['$scope','Editor',function ($scope,Editor) {
 
-        var requestMethods = [{id:1,text:'Calculate Area'},{id:2,text:'Classify Quantil'}];
-
-        var requestInfo = {'1' : {
-            service : 'sas',
-            url : 'http://localhost:9000/services/SAS',
-            requestParam : {
-                methodGroup : 'measure',
-                method : 'area'},
-            requestData : {
-                layers : []
-            }},
-            '2': {
-                service : 'sas',
-                url : 'http://localhost:9000/services/SAS',
-                requestParam : {
-                    methodGroup : 'classify',
-                    method : 'quantil',
-                    column : 'area_size',
-                    classCount : 5},
-                requestData : {
-                    layers : []
-                }}
-        };
-
-
+        var processingServices = Editor.getProcessingServices();
         var layerListShort = Editor.getLayerListShort();
 
+        var requestMethods = [];
+        var count = 1;
+        for (var prop1 in processingServices) {
+            if (processingServices.hasOwnProperty(prop1)) {
+                requestMethods.push({ text : processingServices[prop1].name, children : []});
+                for (var prop2 in processingServices[prop1].methods) {
+                    if (processingServices[prop1].methods.hasOwnProperty(prop2)) {
+                        requestMethods[requestMethods.length-1].children.push(
+                            {
+                                id : count,
+                                text : processingServices[prop1].methods[prop2].name,
+                                serviceId : prop1,
+                                methodId : processingServices[prop1].methods[prop2].methodId
+                            }
+                        );
+                        count++;
+                    }
+                }
+            }
+        }
+
+
         var layerList = [];
-
-
         var length = layerListShort.length;
         for (var i=0;i<length;i++)
         {
@@ -218,11 +214,26 @@ angular.module('TCWS.tools.preparation', ['TCWS.webService'])
         };
 
         $scope.executeMethod = function(){
+            var info = {
+                processingService : processingServices[$scope.method.serviceId],
+                config: {
+                    methodId : $scope.method.methodId,
+                    requestData : {
+                        layersId : [$scope.layer.id],
+                        layersData : []
+                    },
+                    requestParam : {}
+                }
+            };
 
-            var info = requestInfo[$scope.method.id];
-            info.requestData.layers.push({id : $scope.layer.id});
-            WebService.executeRequest(info);
+            if(info.processingService.serviceType == 'ccs'){
+                info.config.requestParam = {
+                    column : 'area_size',
+                    classCount : 5
+                };
+            }
 
+            Editor.executeServiceRequest(info);
         };
 
     }]);
