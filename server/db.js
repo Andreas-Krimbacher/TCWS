@@ -37,9 +37,7 @@ module.exports.importGML = function(req,callback){
 
     fs.writeFile(tmpPath+tmpInFileName, req.rawBody, function(err) {
         if(err) {
-            console.log(err);
-            res.end(err);
-            return
+            callback(err);
         }
         console.log("The file was uploaded!");
 
@@ -48,9 +46,7 @@ module.exports.importGML = function(req,callback){
         client.query(sql, function(err) {
 
             if(err) {
-                console.log(err);
-                res.end(err);
-                return
+                callback(err);
             }
 
             console.log("DB initialized!");
@@ -62,8 +58,7 @@ module.exports.importGML = function(req,callback){
             console.log(cmd);
             exec(cmd, function (err, stdout, stderr) {
                 if(err){
-                    res.end(err);
-                    return
+                    callback(err);
                 }
 
                 console.log(stdout);
@@ -71,7 +66,7 @@ module.exports.importGML = function(req,callback){
 
                 console.log("Table imported!");
 
-                callback();
+                callback(err);
 
             });
 
@@ -88,8 +83,7 @@ module.exports.exportGML = function(callback){
     console.log(cmd);
     exec(cmd, function (err, stdout, stderr) {
         if(err){
-            res.end(err);
-            return
+            callback(err);
         }
 
         console.log(stdout);
@@ -102,8 +96,7 @@ module.exports.exportGML = function(callback){
         console.log(cmd);
         exec(cmd, function (err, stdout, stderr) {
             if(err){
-                res.end(err);
-                return
+                callback(err);
             }
 
             console.log(stdout);
@@ -114,8 +107,7 @@ module.exports.exportGML = function(callback){
 
             fs.readFile(tmpPath+tmpOutFileName, 'utf8', function (err,data) {
                 if(err){
-                    res.end(err);
-                    return
+                    callback(err);
                 }
 
                 data = data.replace(/ogr:FeatureCollection/g,'wfs:FeatureCollection');
@@ -123,7 +115,7 @@ module.exports.exportGML = function(callback){
 
                 console.log(data);
 
-                callback(data);
+                callback(err,data);
             });
 
 

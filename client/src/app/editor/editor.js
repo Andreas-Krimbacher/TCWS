@@ -119,18 +119,18 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                     datasetNumber : 0
                 };
 
-                var fileService = {files: {'1' : {layerId: 1, type: 'area', name: 'AUT 0', path: 'Areas/AUT/aut0.xml', fileType: 'GML'},
-                    '2' : {layerId: 2, type: 'area', name: 'AUT 1', path: 'Areas/AUT/aut1.xml', fileType: 'GML'},
-                    '3' : {layerId: 3, type: 'area', name: 'AUT 2', path: 'Areas/AUT/aut2.xml', fileType: 'GML'},
-                    '4' : {layerId: 4, type: 'area', name: 'CH 0', path: 'Areas/CH/ch0.xml', fileType: 'GML'},
-                    '5' : {layerId: 5, type: 'area', name: 'CH 1', path: 'Areas/CH/ch1.xml', fileType: 'GML'},
-                    '6' : {layerId: 6, type: 'area', name: 'CH 2', path: 'Areas/CH/ch2.xml', fileType: 'GML'},
+                var fileService = {files: {'1' : {layerId: 1, type: 'polygon', name: 'AUT 0', path: 'Areas/AUT/aut0.xml', fileType: 'GML'},
+                    '2' : {layerId: 2, type: 'polygon', name: 'AUT 1', path: 'Areas/AUT/aut1.xml', fileType: 'GML'},
+                    '3' : {layerId: 3, type: 'polygon', name: 'AUT 2', path: 'Areas/AUT/aut2.xml', fileType: 'GML'},
+                    '4' : {layerId: 4, type: 'polygon', name: 'CH 0', path: 'Areas/CH/ch0.xml', fileType: 'GML'},
+                    '5' : {layerId: 5, type: 'polygon', name: 'CH 1', path: 'Areas/CH/ch1.xml', fileType: 'GML'},
+                    '6' : {layerId: 6, type: 'polygon', name: 'CH 2', path: 'Areas/CH/ch2.xml', fileType: 'GML'},
                     '8' : {layerId: 8, type: 'attribute', name: 'oecd-canada', path: 'Attribute/oecd-canada.json', fileType: 'JSON-stat', param : paramOECD},
                     '7' : {layerId: 7, type: 'attribute', name: 'us gsp', path: 'Attribute/us-gsp.json', fileType: 'JSON-stat', param : usgsp},
                     '9' : {layerId: 9, type: 'attribute', name: 'Switzerland Pop Kant', path: 'Attribute/swiss_pop_cant_2012.json', fileType: 'JSON-stat', param : swiss},
-                    '10' : {layerId: 10, type: 'area', name: 'Swiss Districts', path: 'Areas/Swiss/district.xml', fileType: 'GML'},
+                    '10' : {layerId: 10, type: 'polygon', name: 'Swiss Districts', path: 'Areas/Swiss/district.xml', fileType: 'GML'},
                     '11' : {layerId: 11, type: 'attribute', name: 'Swiss Pop Dist', path: 'Attribute/swiss_pop_dist_2012.csv', fileType: 'CSV'},
-                    '12' : {layerId: 12, type: 'area', name: 'Swiss Cantons', path: 'Areas/Swiss/canton.xml', fileType: 'GML-OGR'}}};
+                    '12' : {layerId: 12, type: 'polygon', name: 'Swiss Cantons', path: 'Areas/Swiss/canton.xml', fileType: 'GML-OGR'}}};
 
                 var inputServices = { '1' : {sourceId: 1, name: 'Hosted Data Files', desc: 'Files hosted on the Server. For free!', type : 'file' , param: fileService},
                     '2' : {sourceId: 2, name: 'Wikipedia', desc: 'Wikipedia Data Crawler Service.'},

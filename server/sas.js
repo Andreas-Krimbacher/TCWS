@@ -15,7 +15,13 @@ module.exports.handleRequest =  function(req, res) {
 
     if(req.query.methodGroup == 'measure' && req.query.method == 'area'){
 
-        db.importGML(req, function(){
+        db.importGML(req, function(err){
+            if(err) {
+                console.log(err);
+                res.end(err);
+                return
+            }
+
 
             var sql = 'ALTER TABLE "'+db.defaultSchema+'".'+tmpTableName+' ADD COLUMN area_size bigint;';
             db.sql(sql, function(err) {
@@ -39,7 +45,13 @@ module.exports.handleRequest =  function(req, res) {
 
                     console.log("Area calculated!");
 
-                    db.exportGML(function(data){
+                    db.exportGML(function(err,data){
+                        if(err) {
+                            console.log(err);
+                            res.end(err);
+                            return
+                        }
+
                         console.log("Send response!");
 
                         res.writeHead(200, {'Content-Type': 'text/plain'});

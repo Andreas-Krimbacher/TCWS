@@ -1,8 +1,20 @@
 <div id="tool-symbology" class="tool" ng-controller="SymbologyCtrl">
     <div class="tool-left">
-        Symbology
+        <h4>Symbology</h4>
+        <div class="list-group">
+            <a ng-click="selectSymbologyView('point')" href="" class="list-group-item" ng-class="{true:'active'}[currentSymbologyView == 'point']">
+                <h5 class="list-group-item-heading"><strong>Point</strong></h5>
+            </a>
+            <a ng-click="selectSymbologyView('line')" href="" class="list-group-item" ng-class="{true:'active'}[currentSymbologyView == 'line']">
+                <h5 class="list-group-item-heading"><strong>Line</strong></h5>
+            </a>
+            <a ng-click="selectSymbologyView('polygon')" href="" class="list-group-item" ng-class="{true:'active'}[currentSymbologyView == 'polygon']">
+                <h5 class="list-group-item-heading"><strong>Polygon</strong></h5>
+            </a>
+            <a ng-click="selectSymbologyView('typo')" href="" class="list-group-item" ng-class="{true:'active'}[currentSymbologyView == 'typo']">
+                <h5 class="list-group-item-heading"><strong>Typography</strong></h5>
+            </a>
+        </div>
     </div>
-    <div class="tool-right">
-
-    </div>
+    <div class="tool-right" ng-include="symbologyView"></div>
 </div>

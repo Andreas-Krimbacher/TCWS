@@ -1,0 +1,32 @@
+<div ng-controller="SymbologyPolygonCtrl" id="symbology-polygon">
+    <h4>Polygon Symbology</h4>
+
+    <div id="symbology-polygon-style-select">
+        <h6><strong>Polygon Style</strong></h6>
+        <div>
+            <input id="symbologyPolygonStyle" style="width:100%" ng-model="polygonStyle" ui-select2="selectOptionsPolygonStyle" data-placeholder="Select Polygon Style">
+        </div>
+        <h6><strong>Sub-Style</strong></h6>
+        <div>
+            <input id="symbologyPolygonSubStyle" style="width:100%" ng-model="subStyle" ui-select2="selectOptionsSubStyle" data-placeholder="Select Sub-Style">
+        </div>
+    </div>
+
+    <div class="color-scheme" ng-show="currentStyle">
+        <div class="color-scheme-element" ng-repeat="colorValues in currentStyle.fillColors" ng-style="{'background-color':'{{colorValues}}'}"></div>
+    </div>
+
+    <div class="layer-select" ng-show="currentStyle">
+        <h6><strong>Select Layer</strong></h6>
+        <div>
+            <input style="width:100%" ng-model="layer" ui-select2="selectOptionsLayer" data-placeholder="Select Layer">
+        </div>
+        <h6><strong>Select Column</strong></h6>
+        <div ng-hide="columnList.length == 0">
+            <input id="columnInput" style="width:100%" ng-model="column" ui-select2="selectOptionsColumn" data-placeholder="Select Column">
+        </div>
+    </div>
+
+    <button ng-hide="!column" ng-click="applySymbology()" type="button" class="btn">Apply Symbology</button>
+
+</div>

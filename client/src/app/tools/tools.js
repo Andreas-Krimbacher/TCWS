@@ -3,7 +3,7 @@
  */
 angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.tools.preparation','TCWS.tools.symbology'])
     .run(function($rootScope,Editor,ServiceChain) {
-        $rootScope.startTool = 'preparation';
+        $rootScope.startTool = 'symbology';
 
         var inputServices = Editor.getInputServices();
         var processingServices = Editor.getProcessingServices();
@@ -120,7 +120,7 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'service' , config : service2 }
         ];
 
-        ServiceChain.executeServiceChain(serviceChain);
+        //ServiceChain.executeServiceChain(serviceChain);
 
 
         dataImport1 = {inputService: inputServices['1'], config:{layer:11}};
