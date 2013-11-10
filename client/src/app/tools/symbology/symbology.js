@@ -1,4 +1,4 @@
-angular.module('TCWS.tools.symbology', [])
+angular.module('TCWS.tools.symbology', ['TCWS.symbology'])
     .run(function($rootScope) {
         $rootScope.startSymbologyView = 'polygon';
     })
@@ -22,73 +22,59 @@ angular.module('TCWS.tools.symbology', [])
 
     }])
 
-    .controller('SymbologyPolygonCtrl', ['$scope','DataStore','Editor',function ($scope,DataStore,Editor) {
+    .controller('SymbologyPolygonCtrl', ['$scope','DataStore','Editor','Symbology',function ($scope,DataStore,Editor,Symbology) {
 
-        var colorScheme = ['#7FC97F','#BEAED4','#FDC086','#FFFF99','#386CB0'];
-
-        var polygonStyles = {
-            '1':{
-                id : 1,
-                name : 'Beautiful',
-                subStyles : {
-                    '1' : {
-                        subStyleId : 1,
-                        name : 'Qualitative',
-                        fillColors : colorScheme
-                    }
-                }
-            }
-        };
+        var polygonGroupSymbology = Symbology.getPolygonGroupSymbology();
 
         $scope.currentStyle = null;
 
-        var polygonStyleList = [];
-        var subStyleList = [];
+        var groupSymbologyList = [];
+        var polygonSymbologyList = [];
 
 
-        for (var prop in polygonStyles) {
-            if (polygonStyles.hasOwnProperty(prop)) {
-                polygonStyleList.push({id:polygonStyles[prop].id, text : polygonStyles[prop].name})
+        for (var prop in polygonGroupSymbology) {
+            if (polygonGroupSymbology.hasOwnProperty(prop)) {
+                groupSymbologyList.push({id:polygonGroupSymbology[prop].groupId, text : polygonGroupSymbology[prop].groupName})
             }
         }
 
-        $scope.selectOptionsPolygonStyle = {
+        $scope.selectOptionsGroupSymbology = {
             allowClear:true,
-            data: polygonStyleList
+            data: groupSymbologyList
         };
 
-        $scope.selectOptionsSubStyle = {
+        $scope.selectOptionsPolygonSymbology = {
             allowClear:true,
-            data: subStyleList
+            data: polygonSymbologyList
         };
 
-        $scope.$watch('polygonStyle', function (newValue, oldValue) {
+        $scope.$watch('groupSymbology', function (newValue, oldValue) {
             if(newValue){
 
-                $scope.subStyleList = [];
-                for (var prop in polygonStyles[$scope.polygonStyle.id].subStyles) {
-                    if (polygonStyles[$scope.polygonStyle.id].subStyles.hasOwnProperty(prop)) {
-                        $scope.subStyleList.push(
+                $scope.polygonSymbologyList = [];
+                for (var prop in polygonGroupSymbology[$scope.groupSymbology.id].symbologys) {
+                    if (polygonGroupSymbology[$scope.groupSymbology.id].symbologys.hasOwnProperty(prop)) {
+                        $scope.polygonSymbologyList.push(
                             {
                                 id : prop,
-                                text : polygonStyles[$scope.polygonStyle.id].subStyles[prop].name
+                                text : polygonGroupSymbology[$scope.groupSymbology.id].symbologys[prop].name
                             }
                         );
                     }
                 }
 
                 //Hack because options get not updated
-                $('#symbologyPolygonSubStyle').select2({data : $scope.subStyleList})
+                $('#polygonSymbology').select2({data : $scope.polygonSymbologyList})
             }
             else{
                 $scope.spatialColumnList = [];
-                $('#symbologyPolygonSubStyle').select2({data : []})
+                $('#polygonSymbology').select2({data : []})
             }
         });
 
-        $scope.$watch('subStyle', function (newValue, oldValue) {
+        $scope.$watch('polygonSymbology', function (newValue, oldValue) {
             if(newValue){
-                $scope.currentStyle = polygonStyles[$scope.polygonStyle.id].subStyles[$scope.subStyle.id];
+                $scope.currentStyle = polygonGroupSymbology[$scope.groupSymbology.id].symbologys[$scope.polygonSymbology.id];
             }
             else{
                 $scope.currentStyle = null;
@@ -139,7 +125,19 @@ angular.module('TCWS.tools.symbology', [])
         });
 
         $scope.applySymbology = function(){
-            Editor.applySymbology()
+
+            $scope.currentStyle.variableSymbology[0].column = $scope.column.id;
+            for (var prop in polygonGroupSymbology[$scope.groupSymbology.id].groupStyle) {
+                if (polygonGroupSymbology[$scope.groupSymbology.id].groupStyle.hasOwnProperty(prop)) {
+
+                    if(!$scope.currentStyle.style[prop]){
+                        $scope.currentStyle.style[prop] = polygonGroupSymbology[$scope.groupSymbology.id].groupStyle[prop];
+                    }
+
+                }
+            }
+
+            Editor.applySymbology($scope.layer.id,$scope.currentStyle)
         };
 
 

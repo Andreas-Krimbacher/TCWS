@@ -1,19 +1,20 @@
 <div ng-controller="SymbologyPolygonCtrl" id="symbology-polygon">
     <h4>Polygon Symbology</h4>
 
-    <div id="symbology-polygon-style-select">
-        <h6><strong>Polygon Style</strong></h6>
+    <div class="style-select">
+        <h6><strong>Symbology Group</strong></h6>
         <div>
-            <input id="symbologyPolygonStyle" style="width:100%" ng-model="polygonStyle" ui-select2="selectOptionsPolygonStyle" data-placeholder="Select Polygon Style">
+            <input id="groupSymbology" style="width:100%" ng-model="groupSymbology" ui-select2="selectOptionsGroupSymbology" data-placeholder="Select Symbology Group">
         </div>
-        <h6><strong>Sub-Style</strong></h6>
+        <h6><strong>Polygon Symbology</strong></h6>
         <div>
-            <input id="symbologyPolygonSubStyle" style="width:100%" ng-model="subStyle" ui-select2="selectOptionsSubStyle" data-placeholder="Select Sub-Style">
+            <input id="polygonSymbology" style="width:100%" ng-model="polygonSymbology" ui-select2="selectOptionsPolygonSymbology" data-placeholder="Select Polygon Symbology">
         </div>
-    </div>
 
-    <div class="color-scheme" ng-show="currentStyle">
-        <div class="color-scheme-element" ng-repeat="colorValues in currentStyle.fillColors" ng-style="{'background-color':'{{colorValues}}'}"></div>
+
+        <div class="color-scheme" ng-show="currentStyle">
+            <div class="color-scheme-element" ng-repeat="colorValues in currentStyle.variableSymbology[0].styles" ng-style="{'background-color':'{{colorValues['polygon-fill']}}'}"></div>
+        </div>
     </div>
 
     <div class="layer-select" ng-show="currentStyle">

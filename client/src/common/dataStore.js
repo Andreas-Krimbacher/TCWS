@@ -56,6 +56,44 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                     }
                 }
             },
+            applySymbology : function(id,symbology){
+                dataStore.layers[id].symbology = symbology;
+
+                var layerData = dataStore.layers[id];
+
+                var length1 = layerData.symbology.variableSymbology.length;
+                for (var i=0;i<length1;i++)
+                {
+                    if(layerData.symbology.variableSymbology[i].columnType == 'nominal' && layerData.symbology.variableSymbology[i].styleType == 'list'){
+
+                        var valuesArray = [];
+                        var length2 = layerData.gmlData.features.length;
+                        for (var k=0;k<length2;k++)
+                        {
+                            if(valuesArray.indexOf(layerData.gmlData.features[k].values_[layerData.symbology.variableSymbology[i].column]) == -1){
+                                valuesArray.push(layerData.gmlData.features[k].values_[layerData.symbology.variableSymbology[i].column]);
+                            }
+                        }
+
+                        if(valuesArray.length < layerData.symbology.variableSymbology[i].minValues || valuesArray.length > layerData.symbology.variableSymbology[i].maxValues){
+                            console.log('Wrong number of categories for Symbology!');
+                        }
+
+                        valuesArray.sort();
+
+                        var count = 0;
+                        for (var prop in layerData.symbology.variableSymbology[i].styles) {
+                            if (layerData.symbology.variableSymbology[i].styles.hasOwnProperty(prop)) {
+
+                                layerData.symbology.variableSymbology[i].values[prop] = valuesArray[count];
+                                count++;
+                                if(valuesArray.length == count) break;
+
+                            }
+                        }
+                    }
+                }
+            },
             removeLayer : function(id){
                 delete dataStore.layers[id];
             },

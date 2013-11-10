@@ -4,6 +4,26 @@ $green:#5cb85c;
 $borderSmall: 1px solid rgb(212,212,212);
 $borderThick: 2px solid rgb(212,212,212);
 
+.resize-map {
+  position: absolute;
+  top: 65px;
+  left: 11px;
+  background: rgba(0, 60, 136, 0.5);
+  border-radius: 2px;
+  padding-top: 2px;
+  z-index: 2900;
+  width: 22px;
+  height: 22px;
+  padding-left: 3px;
+  a{
+    color: white;
+  }
+  &:hover {
+    background: rgba(0,60,136,0.7);
+  }
+}
+
+
 #container{
   height: 100%;
   min-height: 400px;
@@ -212,7 +232,7 @@ $borderThick: 2px solid rgb(212,212,212);
   width: 70%;
 }
 
-#symbology-polygon-style-select{
+.style-select{
   width: 70%;
 }
 

@@ -17,17 +17,17 @@ angular.module('TCWS.map', [])
 
     .controller('MapCtrl', ['$scope','OpenLayersMap',function ($scope,OpenLayersMap) {
         OpenLayersMap.createMap('map');
-        //OpenLayersMap.setCenter(8.486863,47.381258,18);
 
-        $scope.layers = [];
+        $scope.bigMap = false;
 
-
-        $scope.addLayer = function(layer){
-            $scope.layers.push(layer);
+        $scope.resizeMap = function(bigMap){
+            $scope.$emit('resizeMap', bigMap);
+            $scope.bigMap = bigMap;
+            OpenLayersMap.updateSize();
         };
     }])
 
-    .factory('OpenLayersMap', function () {
+    .factory('OpenLayersMap', ['SymbologyFactory',function (SymbologyFactory) {
         // Service logic
         var map = null;
         var layers = {};
@@ -50,7 +50,7 @@ angular.module('TCWS.map', [])
                 id : 'mapQuestOpenArial'
             };
 
-            basemaps.osm = { layer :new ol.layer.Tile({
+            basemaps.OSM = { layer :new ol.layer.Tile({
                 source: new ol.source.OSM()
             }),
                 name : 'OSM',
@@ -90,6 +90,9 @@ angular.module('TCWS.map', [])
             getMap : function(){
                 return map;
             },
+            updateSize : function(){
+                map.updateSize();
+            },
             createMap : function (divId) {
                 createBaseMaps();
 
@@ -103,7 +106,7 @@ angular.module('TCWS.map', [])
                 });
 
                 //map.addLayer(basemaps.esriTopo.layer);
-                currentBasemap = basemaps.esriTopo;
+                //currentBasemap = basemaps.esriTopo;
             },
             getBaseMaps : function(){
                 var result = [];
@@ -111,14 +114,21 @@ angular.module('TCWS.map', [])
                     if (basemaps.hasOwnProperty(prop)) {
                         result.push({id : prop,
                             name: basemaps[prop].name})
-                        if(result[result.length-1].id == currentBasemap.id) result[result.length-1].inMap = true;
+                        if(currentBasemap && result[result.length-1].id == currentBasemap.id) result[result.length-1].inMap = true;
                     }
                 }
                 return result;
             },
             setBaseMap : function(id){
                 if(currentBasemap) map.removeLayer(currentBasemap.layer);
-                map.addLayer(basemaps[id].layer);
+                map.getLayers().insertAt(0,basemaps[id].layer);
+                currentBasemap = basemaps[id];
+            },
+            removeBaseMap : function(id){
+                if(currentBasemap.id == id){
+                    map.removeLayer(currentBasemap.layer);
+                    currentBasemap = null;
+                }
             },
             setCenter: function(Lon,Lat,Zoom){
                 map.setView(
@@ -130,35 +140,169 @@ angular.module('TCWS.map', [])
             },
             addLayer : function(layerData){
 
-                var layer = new ol.layer.Vector({
-                    source: new ol.source.Vector({}),
-                    style: new ol.style.Style({
+                if(!layerData.olLayer){
+
+                    var style;
+                    if(!layerData.symbology){
+                        style = SymbologyFactory.getDefaultStyle(layerData.type);
+                    }
+                    else{
+                        style = SymbologyFactory.getLayerStyle(layerData.symbology);
+                    }
+
+
+                    var layer = new ol.layer.Vector({
+                        source: new ol.source.Vector({}),
+                        style: style
+                    });
+
+
+                    var transform = ol.proj.getTransform(layerData.epsg, "EPSG:3857");
+                    for(var i = 0, ii = layerData.gmlData.features.length;i < ii;++i) {
+                        layerData.gmlData.features[i].values_[layerData.gmlData.features[i].geometryName_].transform(transform)
+                    }
+                    layerData.epsg = "EPSG:3857";
+                    layerData.gmlData.metadata.projection = "EPSG:3857";
+
+                    layer.addFeatures(layerData.gmlData.features);
+
+                    layerData.olLayer = layer;
+                }
+
+                map.addLayer(layerData.olLayer);
+
+                layers[layerData.id] = layerData.olLayer;
+            },
+            removeLayer : function(id){
+                map.removeLayer(layers[id]);
+                delete layers[id];
+            }
+        }
+    }])
+
+    .factory('SymbologyFactory', function () {
+        // Service logic
+
+        var _CartoCssToOLStyle = function(style,overallStyle){
+
+            if(overallStyle){
+                for (var prop in overallStyle) {
+                    if (overallStyle.hasOwnProperty(prop)) {
+                        if(!style[prop]) style[prop] = overallStyle[prop];
+                    }
+                }
+            }
+
+
+            var styles = {Fill:null,Stroke:null};
+
+            for (var prop in style) {
+                if (style.hasOwnProperty(prop)) {
+                    if(prop == 'line-color'){
+                        if(!styles.Stroke){
+                            styles.Stroke = new ol.style.Stroke();
+                        }
+
+                        styles.Stroke.setColor( new ol.expr.Literal(style[prop]) );
+                    }
+
+                    if(prop == 'line-width'){
+                        if(!styles.Stroke){
+                            styles.Stroke = new ol.style.Stroke();
+                        }
+
+                        styles.Stroke.setWidth( new ol.expr.Literal(style[prop]) );
+                    }
+
+                    if(prop == 'line-opacity'){
+                        if(!styles.Stroke){
+                            styles.Stroke = new ol.style.Stroke();
+                        }
+
+                        styles.Stroke.setOpacity( new ol.expr.Literal(style[prop]) );
+                    }
+
+                    if(prop == 'polygon-fill'){
+                        if(!styles.Fill){
+                            styles.Fill = new ol.style.Fill();
+                        }
+
+                        styles.Fill.setColor( new ol.expr.Literal(style[prop]) );
+                    }
+
+                    if(prop == 'polygon-opacity'){
+                        if(!styles.Fill){
+                            styles.Fill = new ol.style.Fill();
+                        }
+
+                        styles.Fill.setOpacity( new ol.expr.Literal(style[prop]) );
+                    }
+                }
+            }
+
+            var styleArray = [];
+            for (var prop in styles) {
+                if (styles[prop] && styles.hasOwnProperty(prop)) {
+                    styleArray.push(styles[prop]);
+                }
+            }
+
+            return styleArray;
+        };
+
+        // Public API here
+        return {
+            getLayerStyle : function(symbology){
+
+                var overallStyle = _CartoCssToOLStyle(symbology.style);
+
+                var rules = [];
+                var rule,symbolizer;
+
+                var length1 = symbology.variableSymbology.length;
+                for (var i=0;i<length1;i++)
+                {
+                    if(symbology.variableSymbology[i].styleType == 'list'){
+
+                        for (var prop in symbology.variableSymbology[i].values) {
+                            if (symbology.variableSymbology[i].values.hasOwnProperty(prop)) {
+
+                                symbolizer = _CartoCssToOLStyle(symbology.variableSymbology[i].styles[prop],symbology.style);
+
+                                rule = new ol.style.Rule({
+                                    filter: symbology.variableSymbology[i].column + ' == "'+symbology.variableSymbology[i].values[prop]+'"',
+                                    symbolizers: symbolizer
+                                });
+
+                                rules.push(rule)
+                            }
+                        }
+                    }
+                }
+
+                var layerStyle = new ol.style.Style(
+                    {
+                        rules: rules,
+                        symbolizers: overallStyle
+                    }
+                );
+
+                return layerStyle;
+            },
+            getDefaultStyle : function(type){
+                if(type == 'polygon'){
+                    var style = new ol.style.Style({
                         symbolizers: [
                             new ol.style.Fill({
-                                color: '#ffffff',
-                                opacity: 0.25
+                                opacity: 0
                             }),
                             new ol.style.Stroke({
                                 color: '#6666ff'
                             })
                         ]
-                    })
-                });
-
-                map.addLayer(layer);
-                var transform = ol.proj.getTransform(layerData.epsg, "EPSG:3857");
-                for(var i = 0, ii = layerData.gmlData.features.length;i < ii;++i) {
-                    layerData.gmlData.features[i].values_[layerData.gmlData.features[i].geometryName_].transform(transform)
+                    });
                 }
-                layerData.epsg = "EPSG:3857";
-                layerData.gmlData.metadata.projection = "EPSG:3857";
-
-                layer.addFeatures(layerData.gmlData.features);
-
-                layers[layerData.id] = layer;
-            },
-            removeLayer : function(id){
-                map.removeLayer(layers[id]);
+                return style;
             }
         }
     });

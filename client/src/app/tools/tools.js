@@ -2,8 +2,8 @@
  * Created by nd on 11/1/13.
  */
 angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.tools.preparation','TCWS.tools.symbology'])
-    .run(function($rootScope,Editor,ServiceChain) {
-        $rootScope.startTool = 'symbology';
+    .run(function($rootScope,Editor,ServiceChain,Symbology) {
+        $rootScope.startTool = 'overview';
 
         var inputServices = Editor.getInputServices();
         var processingServices = Editor.getProcessingServices();
@@ -111,13 +111,19 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             }
         };
 
+        var symbology = {
+            layerId : '555-1',
+            symbology : Symbology.getPolygonSymbology(1,1,['class'])
+        };
+
 
         serviceChain = [
             {type : 'import' , config : dataImport1 },
             {type : 'import' , config : dataImport2 },
             {type : 'integrate' , config : integrate },
             {type : 'service' , config : service1 },
-            {type : 'service' , config : service2 }
+            {type : 'service' , config : service2 },
+            {type : 'symbology' , config : symbology }
         ];
 
         //ServiceChain.executeServiceChain(serviceChain);
@@ -162,18 +168,24 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
                     layersData : []
                 },
                 requestParam : {
-                    column : 'area_size',
+                    column : 'T',
                     classCount : 5
                 }
             }
+        };
+
+        symbology = {
+            layerId : '555-2',
+            symbology : Symbology.getPolygonSymbology(1,1,['class'])
         };
 
         var serviceChain = [
             {type : 'import' , config : dataImport1 },
             {type : 'import' , config : dataImport2 },
             {type : 'integrate' , config : integrate },
-            {type : 'service' , config : service1 },
-            {type : 'service' , config : service2 }
+            //{type : 'service' , config : service1 },
+            {type : 'service' , config : service2 },
+            {type : 'symbology' , config : symbology }
         ];
 
         ServiceChain.executeServiceChain(serviceChain);

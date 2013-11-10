@@ -95,7 +95,7 @@ module.exports = function (grunt) {
         'watch'
     ]);
 
-    grunt.registerTask('clientwatch', [
+    grunt.registerTask('cw', [
         'compass:server',
         'open',
         'watch'

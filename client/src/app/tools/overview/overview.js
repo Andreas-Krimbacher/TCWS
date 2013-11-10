@@ -27,14 +27,22 @@ angular.module('TCWS.tools.overview', ['TCWS.components'])
             if($scope.baseMaps[i].inMap) currentBaseMap = $scope.baseMaps[i];
         }
 
-        $scope.setBaseMap = function(layer){
+        $scope.setBaseMap = function(baseMap){
 
-            OpenLayersMap.setBaseMap(layer.id);
+            if(currentBaseMap && currentBaseMap.id == baseMap.id){
+                OpenLayersMap.removeBaseMap(baseMap.id);
 
-            if(currentBaseMap) currentBaseMap.inMap = false;
+                currentBaseMap.inMap = false;
+                currentBaseMap = null;
+            }
+            else{
+                OpenLayersMap.setBaseMap(baseMap.id);
 
-            currentBaseMap = layer;
-            layer.inMap = true;
+                if(currentBaseMap) currentBaseMap.inMap = false;
+
+                currentBaseMap = baseMap;
+                baseMap.inMap = true;
+            }
         };
 
         $scope.toogleLayerInMap = function(layer){

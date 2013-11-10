@@ -3,6 +3,16 @@
 angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
     .controller('EditorCtrl', ['$scope', 'OpenLayersMap',function ($scope, OpenLayersMap) {
 
+        var smallMapSize = {'width' : '50%', 'height' : '60%'};
+        var bigMapSize = {'width' : '100%', 'height' : '100%'};
+
+        $scope.bigMap = false;
+
+        $scope.$on('resizeMap', function (event, bigMap) {
+            $scope.bigMap = bigMap;
+            if( $scope.bigMap) $('#view-left').css(bigMapSize);
+            else $('#view-left').css(smallMapSize);
+        });
 
     }])
 
@@ -252,6 +262,17 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                         _updateLayer(parameters.config.requestData.layersData[0].id, data);
                     }
                 });
+            },
+            applySymbology : function(id,symbology){
+                DataStore.applySymbology(id,symbology);
+
+                var layerData = DataStore.getLayer(id);
+                layerData.olLayer = null;
+                if(layersInMap[layerData.id]){
+                    OpenLayersMap.removeLayer(layerData.id);
+                    OpenLayersMap.addLayer(layerData);
+                }
+
             }
         }
     }])
@@ -273,6 +294,10 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
 
             if(serviceChainElement.type == 'service'){
                 promise = Editor.executeServiceRequest(serviceChainElement.config);
+            }
+
+            if(serviceChainElement.type == 'symbology'){
+                Editor.applySymbology(serviceChainElement.config.layerId,serviceChainElement.config.symbology);
             }
 
             return promise;

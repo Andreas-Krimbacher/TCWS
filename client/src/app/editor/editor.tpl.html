@@ -4,7 +4,7 @@
     <div id="view-left" >
         <tcws-map></tcws-map>
     </div>
-    <div id="view-right" ng-controller="ToolsCtrl">
+    <div id="view-right" ng-controller="ToolsCtrl" ng-hide="bigMap">
         <div id="nav-bar" ng-controller="NavbarCtrl">
             <nav class="navbar navbar-inverse" role="navigation">
 
@@ -18,7 +18,7 @@
         </div>
         <div ng-include="toolTemplate"></div>
     </div>
-    <div id="view-bottom" ng-controller="GridCtrl">
+    <div id="view-bottom" ng-controller="GridCtrl" ng-hide="bigMap">
         <div id="grid" class="gridStyle" ng-grid="gridOptions"></div>
     </div>
 </div>
