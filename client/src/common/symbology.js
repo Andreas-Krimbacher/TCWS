@@ -2,7 +2,7 @@
 
 angular.module('TCWS.symbology', [])
 
-    .factory('Symbology', function () {
+    .factory('Symbology', ['DiaML',function (DiaML) {
         // Service logic
 
         var colorScheme = {
@@ -44,14 +44,63 @@ angular.module('TCWS.symbology', [])
             }
         };
 
+        var pointGroupSymbology = {
+            '1':{
+                groupId : 1,
+                groupName : 'Pie Charts',
+                groupStyle : {},
+                symbologys : {
+                    '1' : {
+                        symbologyId : 1,
+                        name : 'Two Values Grouped',
+                        style : {},
+                        DiaML : {sourceType : 'file', config : {path : 'Symbology/DiaML/pie.xml'}, json : null, xml : null, type : 'diagram'},
+                        variableSymbology : [
+                            {
+                                columnType : 'metric',
+                                column : null,
+                                diaMLRef : 'column1'
+                            },
+                            {
+                                columnType : 'metric',
+                                column : null,
+                                diaMLRef : 'column2'
+                            },
+                            {
+                                columnType : 'metric',
+                                column : null,
+                                diaMLRef : 'column3'
+                            },
+                            {
+                                columnType : 'metric',
+                                column : null,
+                                diaMLRef : 'column4'
+                            }
+                        ]
+                    }
+                }
+            }
+        };
+
         // Public API here
         return {
             getPolygonGroupSymbology : function(){
 
+
                 return angular.copy(polygonGroupSymbology);
 
             },
-            getPolygonSymbology : function(groupId,symbologyId,colums){
+            getPointGroupSymbology : function(){
+
+                var result = angular.copy(pointGroupSymbology);
+                return DiaML.diaMLToJson(result['1'].symbologys['1'].DiaML).then(function(){
+
+                    return result;
+
+                });
+
+            },
+            getPolygonSymbology : function(groupId,symbologyId,columns){
 
                 var symbology = angular.copy(polygonGroupSymbology[groupId].symbologys[symbologyId]);
 
@@ -68,10 +117,237 @@ angular.module('TCWS.symbology', [])
                 var length = symbology.variableSymbology.length;
                 for (var i=0;i<length;i++)
                 {
-                    symbology.variableSymbology[i].column = colums[i];
+                    symbology.variableSymbology[i].column = columns[i];
                 }
 
                 return symbology;
+            },
+            getPointSymbology : function(groupId,symbologyId,columns){
+
+                var symbology = angular.copy(pointGroupSymbology[groupId].symbologys[symbologyId]);
+                var length = symbology.variableSymbology.length;
+                for (var i=0;i<length;i++)
+                {
+                    symbology.variableSymbology[i].column = columns[i];
+                }
+
+                return DiaML.diaMLToJson(symbology.DiaML).then(function(){
+                    return symbology;
+                });
             }
+        }
+    }])
+
+    .factory('DiaML', function ($http) {
+        // Service logic
+
+
+        // Public API here
+        return {
+            diaMLToJson : function(diaML){
+
+                if(!diaML.xml){
+                    if(diaML.sourceType == 'file'){
+                        return $http({method: 'GET', url: diaML.config.path}).then(function(result){
+                            var parser = new X2JS();
+                            diaML.json = parser.xml_str2json(result.data);
+
+                        });
+                    }
+                }
+                else{
+                    var parser = new X2JS();
+                    var json = parser.xml_str2json(diaML.xml);
+
+                    return json;
+                }
+            },
+            getCanvasDiagrams : function(diaML,values){
+
+                var primitive = diaML.symbol.primitive;
+                var diagramArrangement = diaML.symbol.diagram.diagramArrangement;
+                var diagramRelation = diaML.symbol.diagram.diagramRelation;
+
+                var maxStrokeWidth = 0;
+
+                var styles = {};
+
+                var length = diaML.symbol.style.length;
+                for (var i=0;i<length;i++)
+                {
+                    styles[diaML.symbol.style[i]._id] = {};
+                    for (var prop in diaML.symbol.style[i]) {
+                        if (diaML.symbol.style[i].hasOwnProperty(prop)) {
+
+                            if(prop != '_id'){
+                                styles[diaML.symbol.style[i]._id][prop] = diaML.symbol.style[i][prop].toString();
+
+                                if(prop == 'stroke-width' && (parseInt( styles[diaML.symbol.style[i]._id][prop] ) > maxStrokeWidth))
+                                    maxStrokeWidth = parseInt( styles[diaML.symbol.style[i]._id][prop] );
+                            }
+
+                        }
+                    }
+                }
+
+                if(primitive.sector && diagramArrangement.polar){
+
+                    //standard variables
+                    var groupCount = parseInt(diagramArrangement.polar.groups.toString());
+                    var relationCount = diagramRelation.length;
+
+                    var relationsPerGroup = relationCount / groupCount;
+
+                    var totalAngle = parseInt(diagramArrangement.polar.totalAngle.toString());
+                    var totalGroupAngle = totalAngle / groupCount;
+                    var minRadius = parseInt(diaML.symbol.diagram._minSize.toString());
+
+                    var diagrams = [];
+                    var valueObject = null;
+
+                    if(values){
+                        var smallestTotalSum = Infinity;
+                        var smallestPartSum = Infinity;
+
+                        var length0,count,counter;
+                        if(values) length0 = values.length;
+                        else length0 = 1;
+
+                        for (var k=0;k<length0;k++)
+                        {
+
+                            valueObject = values[k];
+
+                            var totalSum = 0;
+                            var partSum = [];
+                            count = 0;
+                            counter = 0;
+                            for (prop in valueObject) {
+                                if (valueObject.hasOwnProperty(prop)) {
+                                    if((counter % relationsPerGroup) == 0) count++;
+                                    partSum[count-1] = (partSum[count-1] || 0) + parseFloat(valueObject[prop]);
+
+                                    counter++;
+                                }
+                            }
+
+                            for (i=partSum.length; i--;) {
+                                totalSum += partSum[i];
+
+                                if( (partSum[i] != 0) && (partSum[i] < smallestPartSum)) smallestPartSum = partSum[i];
+                            }
+
+                            if((totalSum[i] != 0) && (totalSum < smallestTotalSum)) smallestTotalSum = totalSum;
+
+                            values[k].partSum = partSum;
+                            values[k].totalSum = totalSum;
+                        }
+                    }
+
+                    if(values) length0 = values.length;
+                    else length0 = 1;
+
+                    for (k=0;k<length0;k++)
+                    {
+                        if(values) valueObject = values[k];
+
+                        //angle
+                        var angle = primitive.sector.angle;
+                        var defaultAngleValues = primitive.sector.angle.toString().split(',');
+                        var angleValue;
+
+                        var startAngle = 0;
+                        var angleValues = [];
+
+                        if(angle._scale == 'dataValue'){
+                            count = 0;
+                            for (i=0;i<relationCount;i++)
+                            {
+                                if(valueObject){
+                                    if((i % relationsPerGroup) == 0) count++;
+                                    angleValue = ( parseFloat(valueObject[diagramRelation[i].dataRef.toString()]) / valueObject.partSum[count-1]) * totalGroupAngle;
+                                    angleValues[i] = {startAngle : startAngle, endAngle : startAngle + angleValue};
+                                    startAngle = startAngle + angleValue;
+                                }
+                                else{
+                                    angleValue = parseInt(defaultAngleValues[i]);
+                                    angleValues[i] = {startAngle : startAngle, endAngle : startAngle + angleValue};
+                                    startAngle = startAngle + angleValue;
+                                }
+                            }
+                        }
+
+                        //radius
+                        var radius = primitive.sector.r;
+                        var defaultRadiusValues = primitive.sector.r.toString().split(',');
+
+                        var radiusValues = [];
+                        var maxRadiusValue = 0;
+
+                        if(radius._scale == 'partSum'){
+                            count = 0;
+                            for (i=0;i<relationCount;i++)
+                            {
+                                if((i % relationsPerGroup) == 0) count++;
+//                                if(valueObject){
+//                                    radiusValues[i] = {radius : (valueObject.partSum[count-1] / smallestPartSum) * minRadius};
+//                                }
+//                                else{
+                                    radiusValues[i] = {radius : parseInt(defaultRadiusValues[count-1])};
+                                //}
+                                if(radiusValues[i].radius > maxRadiusValue) maxRadiusValue = radiusValues[i].radius;
+                            }
+                        }
+
+
+
+                        //styles
+                        var relationStyles = [];
+
+                        for (i=0;i<relationCount;i++)
+                        {
+                            relationStyles[i] = styles[diagramRelation[i].styleRef.toString()];
+                        }
+
+
+                        //draw diagrams
+
+                        var canvas = document.createElement('canvas');
+                        canvas.width = (maxRadiusValue + maxStrokeWidth)*2;
+                        canvas.height = (maxRadiusValue + maxStrokeWidth)*2;
+                        var ctx = canvas.getContext('2d');
+
+                        var cx = canvas.width / 2;
+                        var cy = canvas.height / 2;
+
+                        for (i=0;i<relationCount;i++)
+                        {
+                            ctx.beginPath();
+
+                            ctx.fillStyle = relationStyles[i].fill;
+                            ctx.strokeStyle =  relationStyles[i].stroke;
+                            ctx.lineWidth= relationStyles[i]['stroke-width'];
+
+                            ctx.moveTo(cx,cy);
+                            ctx.arc(cx,cy,radiusValues[i].radius,(angleValues[i].startAngle - 90) * (Math.PI/180),(angleValues[i].endAngle - 90) * (Math.PI/180));
+                            ctx.lineTo(cx,cy);
+
+                            ctx.stroke();
+                            ctx.fill();
+
+                            ctx.closePath();
+                        }
+
+                        diagrams.push({id : k, img : canvas.toDataURL(), width: canvas.width, height : canvas.height});
+                    }
+
+                }
+                else{
+                    console.log('DiaML Primitive not supported!')
+                }
+
+                return diagrams;
+            }
+
         }
     });

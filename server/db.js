@@ -28,12 +28,11 @@ var client = new pg.Client(connectionString);
 client.connect();
 
 var tmpPath = '/home/nd/ooo/TCWS/FileServer/tmp/';
-var tmpInFileName = 'tmpInGmlData.xml';
-var tmpOutFileName = 'tmpOutGmlData.xml';
-var tmpTableName = 'tmp';
 var geomName = 'geometryProperty';
 
-module.exports.importGML = function(req,callback){
+module.exports.importGML = function(req,tmpTableName,callback){
+
+    var tmpInFileName = tmpTableName + 'IN.xml';
 
     fs.writeFile(tmpPath+tmpInFileName, req.rawBody, function(err) {
         if(err) {
@@ -75,7 +74,10 @@ module.exports.importGML = function(req,callback){
     });
 };
 
-module.exports.exportGML = function(callback){
+module.exports.exportGML = function(tmpTableName,callback){
+
+    var tmpOutFileName = tmpTableName + 'OUT.xml';
+
     var cmd = 'ogr2ogr -f "ESRI Shapefile" '+tmpPath+' ';
     cmd += '"PG:dbname='+pgConfig.database+' host='+pgConfig.host+' user='+pgConfig.user+' password='+pgConfig.password+' active_schema='+pgConfig.schema+'" ';
     cmd += ' -sql "SELECT * FROM '+tmpTableName+'" -nln '+tmpOutFileName+' -overwrite';
@@ -113,7 +115,7 @@ module.exports.exportGML = function(callback){
                 data = data.replace(/ogr:FeatureCollection/g,'wfs:FeatureCollection');
                 data = data.replace('xmlns:ogr="http://ogr.maptools.org/"','xmlns:ogr="http://ogr.maptools.org/" \n xmlns:wfs="http://www.opengis.net/wfs"');
 
-                console.log(data);
+                //console.log(data);
 
                 callback(err,data);
             });
@@ -130,4 +132,17 @@ module.exports.sql = function(sql,callback){
 
         callback(err);
     });
+};
+
+var tmpTableId = 0;
+
+module.exports.getNextTmpTableName = function(){
+
+    var tmpTableName = 'tmpTable' + tmpTableId;
+    tmpTableId++;
+    if(tmpTableId > 1000000) tmpTableId = 0;
+
+    console.log(tmpTableName);
+
+    return tmpTableName;
 };

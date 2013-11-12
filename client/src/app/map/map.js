@@ -101,7 +101,7 @@ angular.module('TCWS.map', [])
                     layers: [],
                     view: new ol.View2D({
                         center: ol.proj.transform([8.486863,47.381258], 'EPSG:4326', 'EPSG:3857'),
-                        zoom: 4
+                        zoom: 6
                     })
                 });
 
@@ -147,7 +147,7 @@ angular.module('TCWS.map', [])
                         style = SymbologyFactory.getDefaultStyle(layerData.type);
                     }
                     else{
-                        style = SymbologyFactory.getLayerStyle(layerData.symbology);
+                        style = SymbologyFactory.getLayerStyle(layerData.type,layerData.symbology,layerData.gmlData.features);
                     }
 
 
@@ -252,40 +252,75 @@ angular.module('TCWS.map', [])
 
         // Public API here
         return {
-            getLayerStyle : function(symbology){
+            getLayerStyle : function(type,symbology,features){
 
-                var overallStyle = _CartoCssToOLStyle(symbology.style);
+                if(type == 'polygon'){
+                    var overallStyle = _CartoCssToOLStyle(symbology.style);
 
-                var rules = [];
-                var rule,symbolizer;
+                    var rules = [];
+                    var rule,symbolizer;
 
-                var length1 = symbology.variableSymbology.length;
-                for (var i=0;i<length1;i++)
-                {
-                    if(symbology.variableSymbology[i].styleType == 'list'){
+                    var length1 = symbology.variableSymbology.length;
+                    for (var i=0;i<length1;i++)
+                    {
+                        if(symbology.variableSymbology[i].styleType == 'list'){
 
-                        for (var prop in symbology.variableSymbology[i].values) {
-                            if (symbology.variableSymbology[i].values.hasOwnProperty(prop)) {
+                            for (var prop in symbology.variableSymbology[i].values) {
+                                if (symbology.variableSymbology[i].values.hasOwnProperty(prop)) {
 
-                                symbolizer = _CartoCssToOLStyle(symbology.variableSymbology[i].styles[prop],symbology.style);
+                                    symbolizer = _CartoCssToOLStyle(symbology.variableSymbology[i].styles[prop],symbology.style);
 
-                                rule = new ol.style.Rule({
-                                    filter: symbology.variableSymbology[i].column + ' == "'+symbology.variableSymbology[i].values[prop]+'"',
-                                    symbolizers: symbolizer
-                                });
+                                    rule = new ol.style.Rule({
+                                        filter: symbology.variableSymbology[i].column + ' == "'+symbology.variableSymbology[i].values[prop]+'"',
+                                        symbolizers: symbolizer
+                                    });
 
-                                rules.push(rule)
+                                    rules.push(rule)
+                                }
                             }
                         }
                     }
+
+                    var layerStyle = new ol.style.Style(
+                        {
+                            rules: rules,
+                            symbolizers: overallStyle
+                        }
+                    );
                 }
 
-                var layerStyle = new ol.style.Style(
+                if(type == 'point'){
+
+                    var rules = [];
+                    var rule,symbolizer;
+
+                    var length = features.length;
+                    for (var i=0;i<length;i++)
                     {
-                        rules: rules,
-                        symbolizers: overallStyle
+
+                        symbolizer = new ol.style.Icon({
+                            url: features[i].values_.diaML.img
+                        });
+
+                        //features[i].values_.diaMLID = features[i].values_.diaML.id;
+
+                        rule = new ol.style.Rule({
+                            filter:  'diaML.id == "'+features[i].values_.diaML.id+'"',
+                            symbolizers: [symbolizer]
+                        });
+
+                        rules.push(rule)
+
                     }
-                );
+
+
+                    var layerStyle = new ol.style.Style({
+                        rules: rules,
+                        symbolizers: []
+                    });
+
+                }
+
 
                 return layerStyle;
             },

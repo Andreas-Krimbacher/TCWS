@@ -22,7 +22,7 @@
         <div>
             <input style="width:100%" ng-model="layer" ui-select2="selectOptionsLayer" data-placeholder="Select Layer">
         </div>
-        <h6><strong>Select Column</strong></h6>
+        <h6 ng-hide="columnList.length == 0"><strong>Select Column</strong></h6>
         <div ng-hide="columnList.length == 0">
             <input id="columnInput" style="width:100%" ng-model="column" ui-select2="selectOptionsColumn" data-placeholder="Select Column">
         </div>

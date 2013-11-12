@@ -234,6 +234,14 @@ $borderThick: 2px solid rgb(212,212,212);
 
 .style-select{
   width: 70%;
+  .diaML-symbol{
+    width: 100%;
+    margin-top: 20px;
+    text-align: center;
+    background: lightgray;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
 }
 
 .color-scheme{
@@ -251,6 +259,12 @@ $borderThick: 2px solid rgb(212,212,212);
 }
 
 #symbology-polygon{
+  button{
+    margin-top: 20px;
+  }
+}
+
+#symbology-point{
   button{
     margin-top: 20px;
   }

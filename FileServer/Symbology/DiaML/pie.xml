@@ -1,0 +1,55 @@
+<symbol xmlns="http://www.carto.net/schnabel/mapsymbolbrewer"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.carto.net/schnabel/mapsymbolbrewer http://www.carto.net/schnabel/mapsymbolbrewer/schemas/diaml.xsd">
+    <style id="s0">
+        <fill>darkred</fill>
+        <fill-opacity unit="percent">80</fill-opacity>
+        <stroke>#fff</stroke>
+        <stroke-opacity unit="percent">100</stroke-opacity>
+        <stroke-width unit="pixel">3</stroke-width>
+    </style>
+    <style id="s1">
+        <fill>green</fill>
+        <fill-opacity unit="percent">80</fill-opacity>
+        <stroke>#fff</stroke>
+        <stroke-opacity unit="percent">100</stroke-opacity>
+        <stroke-width unit="pixel">3</stroke-width>
+    </style>
+    <primitive id="p0">
+        <sector proportional="area">
+            <r scale="partSum">20,25</r>
+            <angle scale="dataValue">160,200</angle>
+        </sector>
+    </primitive>
+    <diagram translationX="0" translationY="0" rotation="0" minSize="5" areaRatio="10">
+        <diagramArrangement>
+            <polar>
+                <groups>2</groups>
+                <centerDistance>0</centerDistance>
+                <totalAngle unit="degree">360</totalAngle>
+            </polar>
+        </diagramArrangement>
+        <diagramRelation>
+            <dataRef>column1</dataRef>
+            <primitiveRef>p0</primitiveRef>
+            <styleRef>s0</styleRef>
+        </diagramRelation>
+        <diagramRelation>
+            <dataRef>column2</dataRef>
+            <primitiveRef>p0</primitiveRef>
+            <styleRef>s1</styleRef>
+        </diagramRelation>
+        <diagramRelation>
+            <dataRef>column3</dataRef>
+            <primitiveRef>p0</primitiveRef>
+            <styleRef>s0</styleRef>
+        </diagramRelation>
+        <diagramRelation>
+            <dataRef>column4</dataRef>
+            <primitiveRef>p0</primitiveRef>
+            <styleRef>s1</styleRef>
+        </diagramRelation>
+        <guides/>
+        <labelData>no</labelData>
+    </diagram>
+</symbol>

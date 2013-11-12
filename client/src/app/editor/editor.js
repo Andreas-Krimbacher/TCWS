@@ -63,6 +63,21 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 if(method == 'integrate'){
                     DataStore.integrateLayer(methodInfo.mappingTable,methodInfo.layerId, methodInfo.layerName);
                 }
+
+                if(method == 'manipulateTable'){
+                    DataStore.manipulateTable(methodInfo.layerId,methodInfo.action,methodInfo.config);
+
+                    var layer = DataStore.getLayer(methodInfo.layerId);
+
+                    if(layersInMap[methodInfo.layerId]){
+                        OpenLayersMap.removeLayer(methodInfo.layerId);
+                        OpenLayersMap.addLayer(layer);
+                    }
+                    if(layerInGrid == methodInfo.layerId){
+                        Grid.removeData();
+                        Grid.showData(layer);
+                    }
+                }
             },
             addLayerToMap : function(id){
                 var layer = DataStore.getLayer(id);
@@ -140,7 +155,9 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                     '9' : {layerId: 9, type: 'attribute', name: 'Switzerland Pop Kant', path: 'Attribute/swiss_pop_cant_2012.json', fileType: 'JSON-stat', param : swiss},
                     '10' : {layerId: 10, type: 'polygon', name: 'Swiss Districts', path: 'Areas/Swiss/district.xml', fileType: 'GML'},
                     '11' : {layerId: 11, type: 'attribute', name: 'Swiss Pop Dist', path: 'Attribute/swiss_pop_dist_2012.csv', fileType: 'CSV'},
-                    '12' : {layerId: 12, type: 'polygon', name: 'Swiss Cantons', path: 'Areas/Swiss/canton.xml', fileType: 'GML-OGR'}}};
+                    '12' : {layerId: 12, type: 'polygon', name: 'Swiss Cantons Polygon', path: 'Areas/Swiss/canton.xml', fileType: 'GML-OGR'},
+                    '13' : {layerId: 13, type: 'attribute', name: 'Pop Cantons 2010,2011', path: 'Attribute/pop_swiss_2010_2011.csv', fileType: 'CSV'},
+                    '14' : {layerId: 14, type: 'attribute', name: 'Study Cantons 2010,2011', path: 'Attribute/study_swiss_2010_2011.csv', fileType: 'CSV'}}};
 
                 var inputServices = { '1' : {sourceId: 1, name: 'Hosted Data Files', desc: 'Files hosted on the Server. For free!', type : 'file' , param: fileService},
                     '2' : {sourceId: 2, name: 'Wikipedia', desc: 'Wikipedia Data Crawler Service.'},
@@ -167,6 +184,24 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                     }
                 };
 
+                var centroid =
+                {
+                    methodId : '1',
+                    method : 'centroid',
+                    name : 'Calculate Centroid',
+                    methodGroup : 'analyzeGeometry',
+                    methodGroupName : 'Analyze geometry',
+                    requestParam :
+                    {
+                        methodGroup : 'analyzeGeometry',
+                        method : 'centroid'
+                    },
+                    resultInfo :
+                    {
+                        type : 'new'
+                    }
+                };
+
                 var sas =
                 {
                     serviceType : 'sas',
@@ -175,7 +210,8 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                     url : 'http://localhost:9000/services/SAS',
                     methods :
                     {
-                        '1' : area
+                        '1' : area,
+                        '2' : centroid
                     }
                 };
 
@@ -257,14 +293,33 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                     }
                 }
 
+                for (prop in methodInfo.resultInfo) {
+                    if (methodInfo.resultInfo.hasOwnProperty(prop)) {
+
+                        if(!parameters.config.resultInfo[prop]){
+                            parameters.config.resultInfo[prop] = methodInfo.resultInfo[prop];
+                        }
+                    }
+                }
+
                 return WebService.executeRequest(parameters).then(function(data){
-                    if(methodInfo.resultInfo.type == 'update'){
+                    if(parameters.config.resultInfo.type == 'update'){
                         _updateLayer(parameters.config.requestData.layersData[0].id, data);
+                    }
+                    if(parameters.config.resultInfo.type == 'new'){
+
+                        var layer = data;
+                        layer.id = parameters.config.resultInfo.layersId[0];
+                        layer.type = parameters.config.resultInfo.layersType[0];
+                        layer.name = parameters.config.resultInfo.layersName[0];
+
+                        DataStore.addLayer(layer);
                     }
                 });
             },
-            applySymbology : function(id,symbology){
-                DataStore.applySymbology(id,symbology);
+            applySymbology : function(id,type,symbology){
+                if(type == 'polygon') DataStore.applyPolygonSymbology(id,symbology);
+                if(type == 'point') DataStore.applyPointSymbology(id,symbology);
 
                 var layerData = DataStore.getLayer(id);
                 layerData.olLayer = null;
@@ -292,12 +347,18 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 Editor.createUpdateLayer('integrate',serviceChainElement.config);
             }
 
+            if(serviceChainElement.type == 'manipulateTable'){
+                Editor.createUpdateLayer('manipulateTable', serviceChainElement.config);
+            }
+
             if(serviceChainElement.type == 'service'){
                 promise = Editor.executeServiceRequest(serviceChainElement.config);
             }
 
             if(serviceChainElement.type == 'symbology'){
-                Editor.applySymbology(serviceChainElement.config.layerId,serviceChainElement.config.symbology);
+                return serviceChainElement.config.symbology.then(function(symbology){
+                    Editor.applySymbology(serviceChainElement.config.layerId, serviceChainElement.config.symbologyType, symbology);
+                });
             }
 
             return promise;

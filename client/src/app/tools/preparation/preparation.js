@@ -60,13 +60,15 @@ angular.module('TCWS.tools.preparation', ['TCWS.webService'])
                         $scope.spatialColumnList.push({id:prop,text:$scope.spatialLayerData.labels[prop]});
                     }
                 }
+                $scope.selectOptionsSpatialColumn.data = $scope.spatialColumnList;
 
                 //Hack because options get not updated
-                $('#factorySpatialColumn').select2({data : $scope.spatialColumnList})
+                $('#factorySpatialColumn').select2( $scope.selectOptionsSpatialColumn)
             }
             else{
                 $scope.spatialColumnList = [];
-                $('#factorySpatialColumn').select2({data : []})
+                $scope.selectOptionsSpatialColumn.data = $scope.spatialColumnList;
+                $('#factorySpatialColumn').select2( $scope.selectOptionsSpatialColumn)
             }
         });
 
@@ -80,13 +82,15 @@ angular.module('TCWS.tools.preparation', ['TCWS.webService'])
                         $scope.attributeColumnList.push({id:prop,text:$scope.attributeLayerData.labels[prop]});
                     }
                 }
+                $scope.selectOptionsAttributeColumn.data = $scope.attributeColumnList;
 
                 //Hack because options get not updated
-                $('#factoryAttributeColumn').select2({data : $scope.attributeColumnList})
+                $('#factoryAttributeColumn').select2($scope.selectOptionsAttributeColumn)
             }
             else{
                 $scope.attributeColumnList = [];
-                $('#factoryAttributeColumn').select2({data : []})
+                $scope.selectOptionsAttributeColumn.data = $scope.attributeColumnList;
+                $('#factoryAttributeColumn').select2($scope.selectOptionsAttributeColumn)
             }
         });
 

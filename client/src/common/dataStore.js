@@ -2,7 +2,7 @@
 
 angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
 
-    .factory('DataStore',['InputHandler', function (InputHandler) {
+    .factory('DataStore',['InputHandler','DiaML', function (InputHandler,DiaML) {
         // Service logic
 
         var newIntegrationLayerId = 1;
@@ -56,7 +56,7 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                     }
                 }
             },
-            applySymbology : function(id,symbology){
+            applyPolygonSymbology : function(id,symbology){
                 dataStore.layers[id].symbology = symbology;
 
                 var layerData = dataStore.layers[id];
@@ -93,6 +93,36 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                         }
                     }
                 }
+            },
+            applyPointSymbology : function(id,symbology){
+                dataStore.layers[id].symbology = symbology;
+
+                var layerData = dataStore.layers[id];
+
+                var values = [];
+                var value;
+
+                var length1 = layerData.gmlData.features.length;
+                for (var i=0;i<length1;i++)
+                {
+                    value = {};
+                    var length2 = layerData.symbology.variableSymbology.length;
+                    for (var k=0;k<length2;k++)
+                    {
+                        value[layerData.symbology.variableSymbology[k].diaMLRef] = layerData.gmlData.features[i].values_[layerData.symbology.variableSymbology[k].column];
+                    }
+
+                    values.push(value);
+                }
+
+                var diagrams = DiaML.getCanvasDiagrams(layerData.symbology.DiaML.json, values);
+
+                length1 = layerData.gmlData.features.length;
+                for (i=0;i<length1;i++)
+                {
+                    layerData.gmlData.features[i].values_.diaML = diagrams[i];
+                }
+
             },
             removeLayer : function(id){
                 delete dataStore.layers[id];
@@ -228,6 +258,44 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                 layerData.featureCount = i;
 
                 dataStore.layers[layerData.id] = layerData;
+            },
+            manipulateTable : function(layerId,action,config){
+
+                var layerData = dataStore.layers[layerId];
+
+                if(action == '/' || action == '*' || action == '+' || action == '-'){
+
+                    var value1,value2,result;
+                    var length = layerData.gmlData.features.length;
+                    for (var i=0;i<length;i++)
+                    {
+                        value1 = layerData.gmlData.features[i].values_[config.column1] || config.value1;
+                        value2 = layerData.gmlData.features[i].values_[config.column2] || config.value2;
+
+                        if(action == '/') result = value1 / value2;
+                        if(action == '*') result = value1 * value2;
+                        if(action == '+') result = value1 + value2;
+                        if(action == '-') result = value1 - value2;
+
+                        layerData.gmlData.features[i].values_[config.targetColumn] =  result;
+                    }
+
+                    // create attribute data
+                    length = layerData.gmlData.features.length;
+                    for (i=0;i<length;i++)
+                    {
+                        layerData.attributes[i] = {};
+                        for (var prop in layerData.gmlData.features[i].values_) {
+                            if (prop != layerData.gmlData.features[i].geometryName_ && layerData.gmlData.features[i].values_.hasOwnProperty(prop)) {
+                                layerData.attributes[i][prop] = layerData.gmlData.features[i].values_[prop];
+                            }
+                        }
+                    }
+                    layerData.featureCount = i;
+
+                    layerData.labels[config.targetColumn] = config.targetColumnName;
+
+                }
             }
         }
     }]);

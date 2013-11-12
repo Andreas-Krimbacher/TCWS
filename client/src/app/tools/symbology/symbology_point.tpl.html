@@ -1,5 +1,34 @@
 <div ng-controller="SymbologyPointCtrl" id="symbology-point">
     <h4>Point Symbology</h4>
 
+    <div class="style-select">
+        <h6><strong>Symbology Group</strong></h6>
+        <div>
+            <input id="groupSymbology" style="width:100%" ng-model="groupSymbology" ui-select2="selectOptionsGroupSymbology" data-placeholder="Select Symbology Group">
+        </div>
+        <h6><strong>Point Symbology</strong></h6>
+        <div>
+            <input id="pointSymbology" style="width:100%" ng-model="pointSymbology" ui-select2="selectOptionsPointSymbology" data-placeholder="Select Point Symbology">
+        </div>
+
+        <div class="diaML-symbol" ng-show="currentStyle">
+            <img ng-src="{{symbolSrc}}"/>
+        </div>
+
+    </div>
+
+    <div class="layer-select" ng-show="currentStyle">
+        <h6><strong>Select Layer</strong></h6>
+        <div>
+            <input style="width:100%" ng-model="layer" ui-select2="selectOptionsLayer" data-placeholder="Select Layer">
+        </div>
+
+        <div ng-hide="columnList.length == 0">
+            <h6><strong>Select {{currentStyle.variableSymbology.length}} Column</strong></h6>
+            <input id="columnInput" style="width:100%" ng-model="column" ui-select2="selectOptionsColumn" data-placeholder="Select Column">
+        </div>
+    </div>
+
+    <button ng-hide="columnList.length == 0" ng-click="applySymbology()" type="button" class="btn">Apply Symbology</button>
 
 </div>

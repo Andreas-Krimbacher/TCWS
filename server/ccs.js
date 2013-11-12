@@ -6,15 +6,14 @@
  */
 var db = require('./db');
 
-var tmpTableName = 'tmp';
-
 module.exports.handleRequest =  function(req, res) {
-    console.dir(req.rawBody);
+    //console.dir(req.rawBody);
     console.dir(req.query);
 
+    var tmpTableName = db.getNextTmpTableName();
 
     if(req.query.methodGroup == 'classify' && req.query.method == 'quantile'){
-        db.importGML(req, function(err){
+        db.importGML(req,tmpTableName, function(err){
             if(err) {
                 console.log(err);
                 res.end(err);
@@ -32,7 +31,7 @@ module.exports.handleRequest =  function(req, res) {
 
                 console.log("Quantile classified");
 
-                db.exportGML(function(err,data){
+                db.exportGML(tmpTableName,function(err,data){
                     if(err) {
                         console.log(err);
                         res.end(err);
