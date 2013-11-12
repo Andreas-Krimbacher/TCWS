@@ -123,6 +123,10 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                     layerData.gmlData.features[i].values_.diaML = diagrams[i];
                 }
 
+                layerData.gmlData.features.sort(function(a,b) {
+                    return parseFloat(b.values_.diaML.size) - parseFloat(a.values_.diaML.size)
+                });
+
             },
             removeLayer : function(id){
                 delete dataStore.layers[id];

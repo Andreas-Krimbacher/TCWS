@@ -138,7 +138,7 @@ angular.module('TCWS.map', [])
                     })
                 );
             },
-            addLayer : function(layerData){
+            addLayer : function(layerData,zIndex){
 
                 if(!layerData.olLayer){
 
@@ -169,7 +169,9 @@ angular.module('TCWS.map', [])
                     layerData.olLayer = layer;
                 }
 
-                map.addLayer(layerData.olLayer);
+
+                if(zIndex) map.getLayers().insertAt(zIndex,layerData.olLayer);
+                else map.addLayer(layerData.olLayer);
 
                 layers[layerData.id] = layerData.olLayer;
             },

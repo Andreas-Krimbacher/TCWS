@@ -194,13 +194,16 @@ angular.module('TCWS.symbology', [])
 
                     //standard variables
                     var groupCount = parseInt(diagramArrangement.polar.groups.toString());
+                    var centerDistance = parseInt(diagramArrangement.polar.centerDistance.toString()) || 0;
                     var relationCount = diagramRelation.length;
 
                     var relationsPerGroup = relationCount / groupCount;
 
                     var totalAngle = parseInt(diagramArrangement.polar.totalAngle.toString());
                     var totalGroupAngle = totalAngle / groupCount;
+
                     var minRadius = parseInt(diaML.symbol.diagram._minSize.toString());
+                    var maxRadius = parseInt(diaML.symbol.diagram._maxSize.toString());
 
                     var diagrams = [];
                     var valueObject = null;
@@ -208,6 +211,9 @@ angular.module('TCWS.symbology', [])
                     if(values){
                         var smallestTotalSum = Infinity;
                         var smallestPartSum = Infinity;
+
+                        var biggestTotalSum = 0;
+                        var biggestPartSum = 0;
 
                         var length0,count,counter;
                         if(values) length0 = values.length;
@@ -235,14 +241,26 @@ angular.module('TCWS.symbology', [])
                                 totalSum += partSum[i];
 
                                 if( (partSum[i] != 0) && (partSum[i] < smallestPartSum)) smallestPartSum = partSum[i];
+                                if( (partSum[i] != 0) && (partSum[i] > biggestPartSum)) biggestPartSum = partSum[i];
                             }
 
-                            if((totalSum[i] != 0) && (totalSum < smallestTotalSum)) smallestTotalSum = totalSum;
+                            if((totalSum != 0) && (totalSum < smallestTotalSum)) smallestTotalSum = totalSum;
+                            if((totalSum != 0) && (totalSum > biggestTotalSum)) biggestTotalSum = totalSum;
 
                             values[k].partSum = partSum;
                             values[k].totalSum = totalSum;
                         }
                     }
+
+                    //linear scaling of r
+                    console.log(smallestTotalSum);
+                    console.log(smallestPartSum);
+                    console.log(biggestTotalSum);
+                    console.log(biggestPartSum);
+
+                    var k_total = (maxRadius - minRadius) / (biggestTotalSum - smallestTotalSum);
+                    var k_partSum = (maxRadius - minRadius) / (biggestPartSum - smallestPartSum);
+                    //
 
                     if(values) length0 = values.length;
                     else length0 = 1;
@@ -265,8 +283,13 @@ angular.module('TCWS.symbology', [])
                             {
                                 if(valueObject){
                                     if((i % relationsPerGroup) == 0) count++;
-                                    angleValue = ( parseFloat(valueObject[diagramRelation[i].dataRef.toString()]) / valueObject.partSum[count-1]) * totalGroupAngle;
-                                    angleValues[i] = {startAngle : startAngle, endAngle : startAngle + angleValue};
+                                    if(valueObject.partSum[count-1] == 0){
+                                        angleValue = totalGroupAngle / relationsPerGroup;
+                                    }
+                                    else{
+                                        angleValue = ( parseFloat(valueObject[diagramRelation[i].dataRef.toString()]) / valueObject.partSum[count-1]) * totalGroupAngle;
+                                    }
+                                    angleValues[i] = {startAngle : startAngle, endAngle : startAngle + angleValue, centerDirection : (totalGroupAngle*(count-1)) + (totalGroupAngle/2)};
                                     startAngle = startAngle + angleValue;
                                 }
                                 else{
@@ -289,12 +312,12 @@ angular.module('TCWS.symbology', [])
                             for (i=0;i<relationCount;i++)
                             {
                                 if((i % relationsPerGroup) == 0) count++;
-//                                if(valueObject){
-//                                    radiusValues[i] = {radius : (valueObject.partSum[count-1] / smallestPartSum) * minRadius};
-//                                }
-//                                else{
+                                if(valueObject){
+                                    radiusValues[i] = {radius : ((valueObject.partSum[count-1] - smallestPartSum) * k_partSum) + minRadius };
+                                }
+                                else{
                                     radiusValues[i] = {radius : parseInt(defaultRadiusValues[count-1])};
-                                //}
+                                }
                                 if(radiusValues[i].radius > maxRadiusValue) maxRadiusValue = radiusValues[i].radius;
                             }
                         }
@@ -313,32 +336,49 @@ angular.module('TCWS.symbology', [])
                         //draw diagrams
 
                         var canvas = document.createElement('canvas');
-                        canvas.width = (maxRadiusValue + maxStrokeWidth)*2;
-                        canvas.height = (maxRadiusValue + maxStrokeWidth)*2;
+                        canvas.width = (maxRadiusValue + maxStrokeWidth + centerDistance)*2;
+                        canvas.height = (maxRadiusValue + maxStrokeWidth + centerDistance)*2;
                         var ctx = canvas.getContext('2d');
 
-                        var cx = canvas.width / 2;
-                        var cy = canvas.height / 2;
+                        var cx0 = canvas.width / 2;
+                        var cy0 = canvas.height / 2;
+
+                        var cx = cx0;
+                        var cy = cy0;
+
+                        var direction;
 
                         for (i=0;i<relationCount;i++)
                         {
-                            ctx.beginPath();
+                            if(parseFloat(valueObject[diagramRelation[i].dataRef.toString()]) != 0){
+                                ctx.beginPath();
 
-                            ctx.fillStyle = relationStyles[i].fill;
-                            ctx.strokeStyle =  relationStyles[i].stroke;
-                            ctx.lineWidth= relationStyles[i]['stroke-width'];
+                                ctx.fillStyle = relationStyles[i].fill;
+                                ctx.strokeStyle =  relationStyles[i].stroke;
+                                ctx.lineWidth= relationStyles[i]['stroke-width'];
 
-                            ctx.moveTo(cx,cy);
-                            ctx.arc(cx,cy,radiusValues[i].radius,(angleValues[i].startAngle - 90) * (Math.PI/180),(angleValues[i].endAngle - 90) * (Math.PI/180));
-                            ctx.lineTo(cx,cy);
+                                if(centerDistance != 0){
+                                    direction = angleValues[i].centerDirection - 90;
 
-                            ctx.stroke();
-                            ctx.fill();
+                                    cx = cx0 + Math.cos(direction * (Math.PI/180)) * centerDistance;
+                                    cy = cy0 + Math.sin(direction * (Math.PI/180)) * centerDistance;
+                                }
 
-                            ctx.closePath();
+                                ctx.moveTo(cx,cy);
+                                ctx.arc(cx,cy,radiusValues[i].radius,(angleValues[i].startAngle - 90) * (Math.PI/180),(angleValues[i].endAngle - 90) * (Math.PI/180));
+                                ctx.lineTo(cx,cy);
+
+                                ctx.stroke();
+                                ctx.fill();
+
+                                ctx.closePath();
+                            }
+                            else{
+                                console.log('Skipped 0 value!');
+                            }
                         }
 
-                        diagrams.push({id : k, img : canvas.toDataURL(), width: canvas.width, height : canvas.height});
+                        diagrams.push({id : k, img : canvas.toDataURL(), width: canvas.width, height : canvas.height, size : (canvas.width * canvas.height)});
                     }
 
                 }

@@ -21,11 +21,11 @@
             <angle scale="dataValue">160,200</angle>
         </sector>
     </primitive>
-    <diagram translationX="0" translationY="0" rotation="0" minSize="5" areaRatio="10">
+    <diagram translationX="0" translationY="0" rotation="0" minSize="5" maxSize="50" areaRatio="10">
         <diagramArrangement>
             <polar>
                 <groups>2</groups>
-                <centerDistance>0</centerDistance>
+                <centerDistance>3</centerDistance>
                 <totalAngle unit="degree">360</totalAngle>
             </polar>
         </diagramArrangement>
@@ -42,12 +42,12 @@
         <diagramRelation>
             <dataRef>column3</dataRef>
             <primitiveRef>p0</primitiveRef>
-            <styleRef>s0</styleRef>
+            <styleRef>s1</styleRef>
         </diagramRelation>
         <diagramRelation>
             <dataRef>column4</dataRef>
             <primitiveRef>p0</primitiveRef>
-            <styleRef>s1</styleRef>
+            <styleRef>s0</styleRef>
         </diagramRelation>
         <guides/>
         <labelData>no</labelData>

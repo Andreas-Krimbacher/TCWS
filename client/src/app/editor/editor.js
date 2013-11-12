@@ -79,10 +79,10 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                     }
                 }
             },
-            addLayerToMap : function(id){
+            addLayerToMap : function(id,zIndex){
                 var layer = DataStore.getLayer(id);
                 if(layer){
-                    OpenLayersMap.addLayer(layer);
+                    OpenLayersMap.addLayer(layer,zIndex);
                     layersInMap[id] = true;
                     return true;
                 }
@@ -355,10 +355,20 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 promise = Editor.executeServiceRequest(serviceChainElement.config);
             }
 
-            if(serviceChainElement.type == 'symbology'){
+            if(serviceChainElement.type == 'symbologyAsync'){
                 return serviceChainElement.config.symbology.then(function(symbology){
                     Editor.applySymbology(serviceChainElement.config.layerId, serviceChainElement.config.symbologyType, symbology);
                 });
+            }
+
+            if(serviceChainElement.type == 'symbologySync'){
+                Editor.applySymbology(serviceChainElement.config.layerId, serviceChainElement.config.symbologyType, serviceChainElement.config.symbology);
+
+            }
+
+            if(serviceChainElement.type == 'show'){
+                if(serviceChainElement.config.place == 'map') Editor.addLayerToMap(serviceChainElement.config.layerId,serviceChainElement.config.zIndex);
+                if(serviceChainElement.config.place == 'grid') Editor.showLayerInGrid(serviceChainElement.config.layerId);
             }
 
             return promise;

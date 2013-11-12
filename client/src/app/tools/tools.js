@@ -3,16 +3,218 @@
  */
 angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.tools.preparation','TCWS.tools.symbology'])
     .run(function($rootScope,Editor,ServiceChain,Symbology) {
-        $rootScope.startTool = 'symbology';
+        $rootScope.startTool = 'overview';
+
 
         var inputServices = Editor.getInputServices();
         var processingServices = Editor.getProcessingServices();
+
+        //Service chain choropleth districts
+
+        var dataImport1 = {inputService: inputServices['1'], config:{layer:11}};
+        var dataImport2 = {inputService: inputServices['1'], config:{layer:10}};
+
+        var mappingTable = {
+            directMatch : true,
+            layers : {
+                "1-10" : {
+                    "column" : "BEZIRK",
+                    "columnNewTable" : []
+                },
+                "1-11" : {
+                    "column" : "BEZIRK_ID",
+                    "columnNewTable" : ['BEZIRK_ID','KT_ID','DIST','T','M','W']
+                }
+            }
+        };
+        var integrate = {mappingTable : mappingTable, layerName : 'Choropleth 2012', layerId : '556-2'};
+
+        var service1 = {
+            processingService : processingServices['1'],
+            config: {
+                methodId : '1',
+                requestData : {
+                    layersId : ['556-2'],
+                    layersData : []
+                },
+                requestParam : {},
+                resultInfo : {}
+            }
+        };
+
+        var service2 = {
+            processingService : processingServices['2'],
+            config: {
+                methodId : '1',
+                requestData : {
+                    layersId : ['556-2'],
+                    layersData : []
+                },
+                requestParam : {
+                    column : 'T',
+                    classCount : 5
+                },
+                resultInfo : {}
+            }
+        };
+
+        var symbology = {
+            layerId : '556-2',
+            symbologyType : 'polygon',
+            symbology : Symbology.getPolygonSymbology(1,1,['class'])
+        };
+
+        var show = {
+            layerId : '556-2',
+            place : 'map'
+        };
+
+        var serviceChain = [
+            {type : 'import' , config : dataImport1 },
+            {type : 'import' , config : dataImport2 },
+            {type : 'integrate' , config : integrate },
+            {type : 'service' , config : service1 },
+            {type : 'service' , config : service2 },
+            {type : 'symbologySync' , config : symbology },
+            {type : 'show' , config : show }
+        ];
+
+        ServiceChain.executeServiceChain(serviceChain);
+
+        //service chain diaml study
 
         var dataImport1 = {inputService: inputServices['1'], config:{layer:12}};
         var dataImport2 = {inputService: inputServices['1'], config:{layer:13}};
         var dataImport3 = {inputService: inputServices['1'], config:{layer:14}};
 
-//        var mappingTable = {
+        var mappingTable1 = {
+            directMatch : true,
+            layers : {
+                "1-12" : {
+                    "column" : "KURZ",
+                    "columnNewTable" : []
+                },
+                "1-13" : {
+                    "column" : "CANTON_ID",
+                    "columnNewTable" : ['CANTON_ID','POP_M_2010','POP_M_2011','POP_W_2010','POP_W_2011']
+                }
+            }
+        };
+        var integrate1 = {mappingTable : mappingTable1, layerName : 'Pop Canton 2010,2011', layerId : '555-1'};
+
+        var mappingTable2 = {
+            directMatch : true,
+            layers : {
+                "555-1" : {
+                    "column" : "CANTON_ID",
+                    "columnNewTable" : ['CANTON_ID','POP_M_2010','POP_M_2011','POP_W_2010','POP_W_2011']
+                },
+                "1-14" : {
+                    "column" : "CANTON_ID",
+                    "columnNewTable" : ['S_M_2010','S_M_2011','S_W_2010','S_W_2011']
+                }
+            }
+        };
+        var integrate2 = {mappingTable : mappingTable2, layerName : 'Study Canton 2010,2011', layerId : '555-2'};
+
+        var service1 = {
+            processingService : processingServices['1'],
+            config: {
+                methodId : '2',
+                requestData : {
+                    layersId : ['555-2'],
+                    layersData : []
+                },
+                requestParam : {},
+                resultInfo : {
+                    layersId : ['555-3'],
+                    layersType : ['point'],
+                    layersName : ['DiaML 2010,2011']
+                }
+            }
+        };
+
+        var manipulateTable1 = {
+            layerId : '555-3',
+            action : '/',
+            config : {
+                column2 : 'pop_m_2010',
+                column1 : 's_m_2010',
+                targetColumn : 's_m_2010',
+                targetColumnName : '[%] Swiss Man 2010'
+            }
+        };
+
+        var manipulateTable2 = {
+            layerId : '555-3',
+            action : '/',
+            config : {
+                column2 : 'pop_m_2011',
+                column1 : 's_m_2011',
+                targetColumn : 's_m_2011',
+                targetColumnName : '[%] Swiss Man 2011'
+            }
+        };
+
+        var manipulateTable3 = {
+            layerId : '555-3',
+            action : '/',
+            config : {
+                column2 : 'pop_w_2010',
+                column1 : 's_w_2010',
+                targetColumn : 's_w_2010',
+                targetColumnName : '[%] Swiss Woman 2010'
+            }
+        };
+
+        var manipulateTable4 = {
+            layerId : '555-3',
+            action : '/',
+            config : {
+                column2 : 'pop_w_2011',
+                column1 : 's_w_2011',
+                targetColumn : 's_w_2011',
+                targetColumnName : '[%] Swiss Woman 2011'
+            }
+        };
+
+        var symbology = {
+            layerId : '555-3',
+            symbologyType : 'point',
+            symbology : Symbology.getPointSymbology(1,1,['s_w_2011','s_m_2011','s_m_2010','s_w_2010'])
+        };
+
+        var show1 = {
+            layerId : '555-3',
+            place : 'map'
+        };
+
+        var show2 = {
+            layerId : '555-3',
+            place : 'grid'
+        };
+
+
+        serviceChain = [
+            {type : 'import' , config : dataImport1 },
+            {type : 'import' , config : dataImport2 },
+            {type : 'import' , config : dataImport3 },
+            {type : 'integrate' , config : integrate1 },
+            {type : 'integrate' , config : integrate2 },
+            {type : 'service' , config : service1 },
+            //{type : 'service' , config : service2 },
+            {type : 'manipulateTable' , config : manipulateTable1 },
+            {type : 'manipulateTable' , config : manipulateTable2 },
+            {type : 'manipulateTable' , config : manipulateTable3 },
+            {type : 'manipulateTable' , config : manipulateTable4 },
+            {type : 'symbologyAsync' , config : symbology },
+            {type : 'show' , config : show1 },
+            {type : 'show' , config : show2 }
+        ];
+
+        ServiceChain.executeServiceChain(serviceChain);
+
+        //        var mappingTable = {
 //            directMatch : false,
 //            layers : {
 //                "1-9" : {
@@ -83,202 +285,6 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
 //                }
 //            }
 //        };
-
-        var mappingTable1 = {
-            directMatch : true,
-            layers : {
-                "1-12" : {
-                    "column" : "KURZ",
-                    "columnNewTable" : []
-                },
-                "1-13" : {
-                    "column" : "CANTON_ID",
-                    "columnNewTable" : ['CANTON_ID','POP_M_2010','POP_M_2011','POP_W_2010','POP_W_2011']
-                }
-            }
-        };
-        var integrate1 = {mappingTable : mappingTable1, layerName : 'Pop Canton 2010,2011', layerId : '555-1'};
-
-        var mappingTable2 = {
-            directMatch : true,
-            layers : {
-                "555-1" : {
-                    "column" : "CANTON_ID",
-                    "columnNewTable" : ['CANTON_ID','POP_M_2010','POP_M_2011','POP_W_2010','POP_W_2011']
-                },
-                "1-14" : {
-                    "column" : "CANTON_ID",
-                    "columnNewTable" : ['S_M_2010','S_M_2011','S_W_2010','S_W_2011']
-                }
-            }
-        };
-        var integrate2 = {mappingTable : mappingTable2, layerName : 'Study Canton 2010,2011', layerId : '555-2'};
-
-        var service1 = {
-            processingService : processingServices['1'],
-            config: {
-                methodId : '2',
-                requestData : {
-                    layersId : ['555-2'],
-                    layersData : []
-                },
-                requestParam : {},
-                resultInfo : {
-                    layersId : ['555-3'],
-                    layersType : ['point'],
-                    layersName : ['Study Canton 2010,2011']
-                }
-            }
-        };
-
-        var service2 = {
-            processingService : processingServices['1'],
-            config: {
-                methodId : '2',
-                requestData : {
-                    layersId : ['555-2'],
-                    layersData : []
-                },
-                requestParam : {},
-                resultInfo : {
-                    layersId : ['555-4'],
-                    layersType : ['point'],
-                    layersName : ['Points']
-                }
-            }
-        };
-
-        var manipulateTable1 = {
-            layerId : '555-3',
-            action : '/',
-            config : {
-                column2 : 'pop_m_2010',
-                column1 : 's_m_2010',
-                targetColumn : 's_m_2010',
-                targetColumnName : '[%] Swiss Man 2010'
-            }
-        };
-
-        var manipulateTable2 = {
-            layerId : '555-3',
-            action : '/',
-            config : {
-                column2 : 'pop_m_2011',
-                column1 : 's_m_2011',
-                targetColumn : 's_m_2011',
-                targetColumnName : '[%] Swiss Man 2011'
-            }
-        };
-
-        var manipulateTable3 = {
-            layerId : '555-3',
-            action : '/',
-            config : {
-                column2 : 'pop_w_2010',
-                column1 : 's_w_2010',
-                targetColumn : 's_w_2010',
-                targetColumnName : '[%] Swiss Woman 2010'
-            }
-        };
-
-        var manipulateTable4 = {
-            layerId : '555-3',
-            action : '/',
-            config : {
-                column2 : 'pop_w_2011',
-                column1 : 's_w_2011',
-                targetColumn : 's_w_2011',
-                targetColumnName : '[%] Swiss Woman 2011'
-            }
-        };
-
-        var symbology = {
-            layerId : '555-3',
-            symbologyType : 'point',
-            symbology : Symbology.getPointSymbology(1,1,['s_m_2010','s_m_2011','s_w_2010','s_w_2011'])
-        };
-
-
-        serviceChain = [
-            {type : 'import' , config : dataImport1 },
-            {type : 'import' , config : dataImport2 },
-            {type : 'import' , config : dataImport3 },
-            {type : 'integrate' , config : integrate1 },
-            {type : 'integrate' , config : integrate2 },
-            {type : 'service' , config : service1 },
-            {type : 'service' , config : service2 },
-            {type : 'manipulateTable' , config : manipulateTable1 },
-            {type : 'manipulateTable' , config : manipulateTable2 },
-            {type : 'manipulateTable' , config : manipulateTable3 },
-            {type : 'manipulateTable' , config : manipulateTable4 },
-//            {type : 'service' , config : service2 },
-            {type : 'symbology' , config : symbology }
-        ];
-
-        ServiceChain.executeServiceChain(serviceChain);
-
-
-        dataImport1 = {inputService: inputServices['1'], config:{layer:11}};
-        dataImport2 = {inputService: inputServices['1'], config:{layer:10}};
-
-        mappingTable = {
-            directMatch : true,
-            layers : {
-                "1-10" : {
-                    "column" : "BEZIRK",
-                    "columnNewTable" : []
-                },
-                "1-11" : {
-                    "column" : "BEZIRK_ID",
-                    "columnNewTable" : ['BEZIRK_ID','KT_ID','DIST','T','M','W']
-                }
-            }
-        };
-        integrate = {mappingTable : mappingTable, layerName : 'Pop District 2012', layerId : '555-2'};
-
-        service1 = {
-            processingService : processingServices['1'],
-            config: {
-                methodId : '1',
-                requestData : {
-                    layersId : ['555-2'],
-                    layersData : []
-                },
-                requestParam : {}
-            }
-        };
-
-        service2 = {
-            processingService : processingServices['2'],
-            config: {
-                methodId : '1',
-                requestData : {
-                    layersId : ['555-2'],
-                    layersData : []
-                },
-                requestParam : {
-                    column : 'T',
-                    classCount : 5
-                }
-            }
-        };
-
-        symbology = {
-            layerId : '555-2',
-            symbology : Symbology.getPolygonSymbology(1,1,['class'])
-        };
-
-        var serviceChain = [
-            {type : 'import' , config : dataImport1 },
-            {type : 'import' , config : dataImport2 },
-            {type : 'integrate' , config : integrate },
-//            {type : 'service' , config : service1 },
-//            {type : 'service' , config : service2 },
-//            {type : 'symbology' , config : symbology }
-        ];
-
-//        ServiceChain.executeServiceChain(serviceChain);
-
     })
 
 
