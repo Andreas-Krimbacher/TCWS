@@ -101,7 +101,7 @@ angular.module('TCWS.map', [])
                     layers: [],
                     view: new ol.View2D({
                         center: ol.proj.transform([8.486863,47.381258], 'EPSG:4326', 'EPSG:3857'),
-                        zoom: 6
+                        zoom: 8
                     })
                 });
 
@@ -178,12 +178,53 @@ angular.module('TCWS.map', [])
             removeLayer : function(id){
                 map.removeLayer(layers[id]);
                 delete layers[id];
+            },
+            selectFeature : function(layerId, featureId){
+
+                if(!layers[layerId]) return;
+
+                var features = layers[layerId].featureCache_.idLookup_;
+                for (var prop in features) {
+                    if (features.hasOwnProperty(prop)) {
+                        if(features[prop].getId() == featureId){
+                            layers[layerId].setRenderIntent('selected',[features[prop]]);
+                            break;
+                        }
+                    }
+                }
+            },
+            unSelectFeature : function(layerId, featureId){
+
+                if(!layers[layerId]) return;
+
+                var features = layers[layerId].featureCache_.idLookup_;
+                for (var prop in features) {
+                    if (features.hasOwnProperty(prop)) {
+                        if(features[prop].getId() == featureId){
+                            layers[layerId].setRenderIntent('default',[features[prop]]);
+                            break;
+                        }
+                    }
+                }
             }
         }
     }])
 
     .factory('SymbologyFactory', function () {
         // Service logic
+
+        var _selectRule =
+            new ol.style.Rule({
+                filter: 'renderIntent("selected")',
+                symbolizers: [
+                    new ol.style.Fill({
+                        color: '#9E320E',
+                        opacity: 0.6
+                    })
+                ]
+            });
+
+
 
         var _CartoCssToOLStyle = function(style,overallStyle){
 
@@ -221,7 +262,7 @@ angular.module('TCWS.map', [])
                             styles.Stroke = new ol.style.Stroke();
                         }
 
-                        styles.Stroke.setOpacity( new ol.expr.Literal(style[prop]) );
+                        styles.Stroke.setOpacity( new ol.expr.Literal(1 - style[prop]) );
                     }
 
                     if(prop == 'polygon-fill'){
@@ -237,7 +278,48 @@ angular.module('TCWS.map', [])
                             styles.Fill = new ol.style.Fill();
                         }
 
-                        styles.Fill.setOpacity( new ol.expr.Literal(style[prop]) );
+                        styles.Fill.setOpacity( new ol.expr.Literal(1 - style[prop]) );
+                    }
+
+                    if(prop == 'marker-type'){
+                        if(!styles.Shape){
+                            styles.Shape = new ol.style.Shape({fill: new ol.style.Fill()})
+                        }
+
+                        //hack: ellipse not supported only circle
+                        if(style[prop] == 'ellipse') var shapeType = ol.style.ShapeType.CIRCLE;
+
+                        styles.Shape.setType( shapeType );
+                    }
+
+                    if(prop == 'marker-fill'){
+                        if(!styles.Shape){
+                            styles.Shape = new ol.style.Shape({fill: new ol.style.Fill()})
+                        }
+
+                        var fill = styles.Shape.getFill();
+                        fill.setColor( new ol.expr.Literal(style[prop]) );
+
+                        styles.Shape.setFill( fill );
+                    }
+
+                    if(prop == 'marker-fill-opacity'){
+                        if(!styles.Shape){
+                            styles.Shape = new ol.style.Shape({fill: new ol.style.Fill()})
+                        }
+
+                        var fill = styles.Shape.getFill();
+                        fill.setOpacity( new ol.expr.Literal(1 - style[prop]) );
+
+                        styles.Shape.setFill( fill );
+                    }
+
+                    if(prop == 'marker-width'){
+                        if(!styles.Shape){
+                            styles.Shape = new ol.style.Shape({fill: new ol.style.Fill()})
+                        }
+
+                        styles.Shape.setSize( new ol.expr.Literal(style[prop]) );
                     }
                 }
             }
@@ -259,7 +341,7 @@ angular.module('TCWS.map', [])
                 if(type == 'polygon'){
                     var overallStyle = _CartoCssToOLStyle(symbology.style);
 
-                    var rules = [];
+                    var rules = [_selectRule];
                     var rule,symbolizer;
 
                     var length1 = symbology.variableSymbology.length;
@@ -293,33 +375,46 @@ angular.module('TCWS.map', [])
 
                 if(type == 'point'){
 
-                    var rules = [];
+                    var rules = [_selectRule];
                     var rule,symbolizer;
 
-                    var length = features.length;
-                    for (var i=0;i<length;i++)
-                    {
+                    if(symbology.styleType == 'diaML'){
+                        var length = features.length;
+                        for (var i=0;i<length;i++)
+                        {
 
-                        symbolizer = new ol.style.Icon({
-                            url: features[i].values_.diaML.img
+                            symbolizer = new ol.style.Icon({
+                                url: features[i].values_.diaML.img
+                            });
+
+                            //features[i].values_.diaMLID = features[i].values_.diaML.id;
+
+                            rule = new ol.style.Rule({
+                                filter:  'diaML.id == "'+features[i].values_.diaML.id+'"',
+                                symbolizers: [symbolizer]
+                            });
+
+                            rules.push(rule)
+
+                        }
+
+                        var layerStyle = new ol.style.Style({
+                            rules: rules,
+                            symbolizers: []
                         });
-
-                        //features[i].values_.diaMLID = features[i].values_.diaML.id;
-
-                        rule = new ol.style.Rule({
-                            filter:  'diaML.id == "'+features[i].values_.diaML.id+'"',
-                            symbolizers: [symbolizer]
-                        });
-
-                        rules.push(rule)
 
                     }
 
+                    if(symbology.styleType == 'cartoCss'){
+                        var overallStyle = _CartoCssToOLStyle(symbology.style);
 
-                    var layerStyle = new ol.style.Style({
-                        rules: rules,
-                        symbolizers: []
-                    });
+                        //to do: variableSymbology implementation
+
+                        var layerStyle = new ol.style.Style({
+                            rules: rules,
+                            symbolizers: overallStyle
+                        });
+                    }
 
                 }
 
@@ -329,6 +424,7 @@ angular.module('TCWS.map', [])
             getDefaultStyle : function(type){
                 if(type == 'polygon'){
                     var style = new ol.style.Style({
+                        rules: [_selectRule],
                         symbolizers: [
                             new ol.style.Fill({
                                 opacity: 0

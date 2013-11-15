@@ -79,7 +79,7 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'show' , config : show }
         ];
 
-        ServiceChain.executeServiceChain(serviceChain);
+//        ServiceChain.executeServiceChain(serviceChain);
 
         //service chain diaml study
 
@@ -212,7 +212,94 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'show' , config : show2 }
         ];
 
+//        ServiceChain.executeServiceChain(serviceChain);
+
+
+        var dataImport1 = {inputService: inputServices['1'], config:{layer:12}};
+        var dataImport2 = {inputService: inputServices['1'], config:{layer:11}};
+        var dataImport3 = {inputService: inputServices['1'], config:{layer:10}};
+
+        var mappingTable = {
+            directMatch : true,
+            layers : {
+                "1-10" : {
+                    "column" : "BEZIRK",
+                    "columnNewTable" : []
+                },
+                "1-11" : {
+                    "column" : "BEZIRK_ID",
+                    "columnNewTable" : ['BEZIRK_ID','KT_ID','DIST','T','M','W']
+                }
+            }
+        };
+        var integrate = {mappingTable : mappingTable, layerName : 'Dot Map 2012', layerId : '557-1'};
+
+
+        var service1 = {
+            processingService : processingServices['3'],
+            config: {
+                methodId : '1',
+                requestData : {
+                    layersId : ['557-1'],
+                    layersData : []
+                },
+                requestParam : {
+                    attribute : 't',
+                    keepAttribute : 'bezirk_id|kt_id|dist',
+                    dotValue : 1000,
+                    dotDistance : 0.001
+                },
+                resultInfo : {
+                    layersId : ['557-2'],
+                    layersType : ['point'],
+                    layersName : ['Dot Map']
+                }
+            }
+        };
+
+        var symbology1 = {
+            layerId : '1-12',
+            symbologyType : 'polygon',
+            symbology : Symbology.getPolygonSymbology(2,1)
+        };
+
+        var symbology2 = {
+            layerId : '557-2',
+            symbologyType : 'point',
+            symbology : Symbology.getPointSymbology(2,1)
+        };
+
+        var show1 = {
+            layerId : '1-12',
+            place : 'map'
+        };
+
+        var show2 = {
+            layerId : '557-2',
+            place : 'map'
+        };
+
+        serviceChain = [
+            {type : 'import' , config : dataImport1 },
+            {type : 'import' , config : dataImport2 },
+            {type : 'import' , config : dataImport3 },
+            {type : 'integrate' , config : integrate },
+//            {type : 'integrate' , config : integrate2 },
+            {type : 'service' , config : service1 },
+//            //{type : 'service' , config : service2 },
+//            {type : 'manipulateTable' , config : manipulateTable1 },
+//            {type : 'manipulateTable' , config : manipulateTable2 },
+//            {type : 'manipulateTable' , config : manipulateTable3 },
+//            {type : 'manipulateTable' , config : manipulateTable4 },
+            {type : 'symbologySync' , config : symbology1 },
+            {type : 'symbologySync' , config : symbology2 },
+            {type : 'show' , config : show2 },
+            {type : 'show' , config : show1 }
+        ];
+
+
         ServiceChain.executeServiceChain(serviceChain);
+
 
         //        var mappingTable = {
 //            directMatch : false,

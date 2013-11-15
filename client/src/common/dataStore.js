@@ -97,35 +97,38 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
             applyPointSymbology : function(id,symbology){
                 dataStore.layers[id].symbology = symbology;
 
-                var layerData = dataStore.layers[id];
+                if(symbology.styleType == 'diaML'){
 
-                var values = [];
-                var value;
+                    var layerData = dataStore.layers[id];
 
-                var length1 = layerData.gmlData.features.length;
-                for (var i=0;i<length1;i++)
-                {
-                    value = {};
-                    var length2 = layerData.symbology.variableSymbology.length;
-                    for (var k=0;k<length2;k++)
+                    var values = [];
+                    var value;
+
+                    var length1 = layerData.gmlData.features.length;
+                    for (var i=0;i<length1;i++)
                     {
-                        value[layerData.symbology.variableSymbology[k].diaMLRef] = layerData.gmlData.features[i].values_[layerData.symbology.variableSymbology[k].column];
+                        value = {};
+                        var length2 = layerData.symbology.variableSymbology.length;
+                        for (var k=0;k<length2;k++)
+                        {
+                            value[layerData.symbology.variableSymbology[k].diaMLRef] = layerData.gmlData.features[i].values_[layerData.symbology.variableSymbology[k].column];
+                        }
+
+                        values.push(value);
                     }
 
-                    values.push(value);
+                    var diagrams = DiaML.getCanvasDiagrams(layerData.symbology.DiaML.json, values);
+
+                    length1 = layerData.gmlData.features.length;
+                    for (i=0;i<length1;i++)
+                    {
+                        layerData.gmlData.features[i].values_.diaML = diagrams[i];
+                    }
+
+                    layerData.gmlData.features.sort(function(a,b) {
+                        return parseFloat(b.values_.diaML.size) - parseFloat(a.values_.diaML.size)
+                    });
                 }
-
-                var diagrams = DiaML.getCanvasDiagrams(layerData.symbology.DiaML.json, values);
-
-                length1 = layerData.gmlData.features.length;
-                for (i=0;i<length1;i++)
-                {
-                    layerData.gmlData.features[i].values_.diaML = diagrams[i];
-                }
-
-                layerData.gmlData.features.sort(function(a,b) {
-                    return parseFloat(b.values_.diaML.size) - parseFloat(a.values_.diaML.size)
-                });
 
             },
             removeLayer : function(id){

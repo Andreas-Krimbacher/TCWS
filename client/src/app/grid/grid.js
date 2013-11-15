@@ -4,20 +4,45 @@
 angular.module('TCWS.grid', ['ngGrid'])
 
     .controller('GridCtrl', ['$scope','Grid',function ($scope,Grid) {
-        $scope.myData = [];
+
+        var afterSelectionChange = function(rowItem, event){
+
+            if(!rowItem[0]) rowItem = [rowItem];
+
+            var length = rowItem.length;
+            for (var i=0;i<length;i++)
+            {
+                if(!rowItem[i].entity._featureId) return;
+
+                var feature = {featureId : rowItem[i].entity._featureId, layerId : layerId};
+
+                if(rowItem[i].selected) $scope.$emit('featureSelectedInGrid', feature);
+                else $scope.$emit('featureUnSelectedInGrid', feature);
+            }
+
+
+        };
+
+        var layerId = null;
+
+        $scope.gridData = [];
+        $scope.colDefs = [];
         $scope.gridOptions = {
-            data: 'myData',
-            columnDefs: 'colDefs'
+            data: 'gridData',
+            columnDefs: 'colDefs',
+            afterSelectionChange : afterSelectionChange
             //enableColumnResize: true (not possible, bug)
         };
 
         Grid.registerViewUpdateCallback(function(data){
             if(data){
-                $scope.myData = data.values;
+                layerId = data.layerId;
+                $scope.gridData = data.values;
                 $scope.colDefs = data.columnDefs;
             }
             else{
-                $scope.myData = [];
+                layerId = null;
+                $scope.gridData = [];
                 $scope.colDefs = [];
             }
         });
@@ -32,9 +57,18 @@ angular.module('TCWS.grid', ['ngGrid'])
         var currentData = null;
 
         var prepareData = function(data){
-            var gridData = { values : data.attributes,columnDefs : []}
-            for (var prop in gridData.values[0]) {
-                if (gridData.values[0].hasOwnProperty(prop)) {
+            var gridData = { values : data.attributes,columnDefs : [], layerId : data.id}
+
+            if(data.type != 'attribute'){
+                var length = data.gmlData.features.length;
+                for (var i=0;i<length;i++)
+                {
+                    gridData.values[i]._featureId = data.gmlData.features[i].getId();
+                }
+            }
+            
+            for (var prop in data.labels) {
+                if (data.labels.hasOwnProperty(prop)) {
                     gridData.columnDefs.push({field: prop, displayName: data.labels[prop], enableCellEdit: true})
                 }
             }

@@ -1,0 +1,38 @@
+http://stackoverflow.com/a/5648991
+
+CREATE or replace FUNCTION random_point(geometry)
+RETURNS geometry
+AS $$
+DECLARE 
+    env geometry;
+    corner1 geometry;
+    corner2 geometry;
+    minx real;
+    miny real;
+    maxx real;
+    maxy real;
+    x real;
+    y real;
+    ret geometry;
+begin
+
+select ST_Envelope($1) into env;
+select ST_PointN(ST_ExteriorRing(env),1) into corner1;
+select ST_PointN(ST_ExteriorRing(env),3) into corner2;
+select st_x(corner1) into minx;
+select st_x(corner2) into maxx;
+select st_y(corner1) into miny;
+select st_y(corner2) into maxy;
+loop
+    select minx+random()*(maxx-minx) into x;
+    select miny+random()*(maxy-miny) into y;
+    select ST_SetSRID(st_point(x,y), st_srid($1)) into ret;
+    if ST_Contains($1,ret) then
+        return ret ;
+    end if;
+end loop;
+end;
+$$
+LANGUAGE plpgsql
+volatile
+RETURNS NULL ON NULL INPUT;

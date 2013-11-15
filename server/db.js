@@ -138,7 +138,7 @@ var tmpTableId = 0;
 
 module.exports.getNextTmpTableName = function(){
 
-    var tmpTableName = 'tmpTable' + tmpTableId;
+    var tmpTableName = 'tmptable' + tmpTableId;
     tmpTableId++;
     if(tmpTableId > 1000000) tmpTableId = 0;
 

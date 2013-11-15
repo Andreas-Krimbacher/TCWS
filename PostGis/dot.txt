@@ -1,0 +1,70 @@
+CREATE or replace FUNCTION dot(geometry geometry,pointCount integer,minDistance float)
+RETURNS SETOF geometry
+AS $$
+DECLARE 
+	point geometry;
+	resultPoints geometry[];
+
+	count integer;
+	loopCount integer;
+	arrayLength bigint;
+
+	distance real;
+	validPoint boolean;
+BEGIN
+
+IF pointCount = 0 THEN
+	RETURN;
+END IF;
+
+count = 0;
+loopCount = 0;
+arrayLength = 0;
+
+LOOP
+	validPoint = true;
+
+        SELECT random_point(geometry) INTO point;
+
+	FOR i IN 1..(arrayLength) LOOP
+		SELECT ST_Distance(point,resultPoints[i]) INTO distance;
+
+		IF distance < minDistance THEN
+			validPoint = false;
+			--RAISE NOTICE 'dist is %', distance;
+			EXIT;
+		END IF;
+
+		--RAISE NOTICE 'i is %', i;
+		
+	END LOOP;
+        
+	IF validPoint THEN
+		resultPoints[arrayLength+1] = point;
+		arrayLength = arrayLength + 1;
+
+		count = count + 1;
+		--RAISE NOTICE 'point count is %', count;
+		
+		RETURN NEXT point;
+	END IF;
+
+	loopCount = loopCount + 1;
+	--RAISE NOTICE 'loop count is %', loopCount;
+    
+	IF count = pointCount THEN
+		EXIT;
+	END IF;
+
+	IF loopCount > 1000 THEN
+		RAISE EXCEPTION 'loop count to high %', loopCount;
+		EXIT;
+	END IF;
+end loop;
+
+RETURN;
+
+end;
+$$
+LANGUAGE plpgsql
+volatile

@@ -1,0 +1,53 @@
+CREATE OR REPLACE FUNCTION dot_map(schemaName text, tableName text, dotTableSuffix text, geomColumn text, attributeColumn text, keepAttributeColumn text, dotValue bigint, minDistance float ) RETURNS integer AS $$
+DECLARE
+	rowData RECORD;
+	pointCount bigint;
+	attributeValue real;
+	keepAttribute text[];
+	keepAttributeCount integer;
+	keepAttributeSql text;
+
+	schemaTableName text;
+BEGIN
+	schemaTableName = '"' || schemaName || '".' || tableName;
+
+	keepAttributeSql = '';
+	keepAttributeCount = 0;
+
+	IF keepAttributeColumn <> '' THEN
+		keepAttribute = string_to_array(keepAttributeColumn, '|');
+		keepAttributeCount = array_length(keepAttribute, 1);
+	END IF;
+
+	FOR i IN 1..(keepAttributeCount) LOOP
+		FOR rowData IN EXECUTE 'SELECT column_name,data_type FROM information_schema.columns WHERE table_name=''' || tableName || ''';' LOOP
+			IF keepAttribute[i] = rowData.column_name THEN
+				keepAttributeSql = keepAttributeSql || ',' || rowData.column_name || ' ' || rowData.data_type;
+			END IF;
+		END LOOP;
+	END LOOP;
+
+	EXECUTE 'DROP TABLE IF EXISTS ' || schemaTableName || '_' || dotTableSuffix || ';';
+	EXECUTE 'CREATE TABLE ' || schemaTableName || '_' || dotTableSuffix || ' ("' || geomColumn || '" geometry(Geometry,4326), dot_value integer ' || keepAttributeSql ||');';
+
+	FOR rowData IN EXECUTE 'SELECT ROW_NUMBER() OVER () AS row, * FROM ' || schemaTableName || ';' LOOP
+
+		EXECUTE 'SELECT ' || attributeColumn || ' FROM (SELECT ROW_NUMBER() OVER () AS row, * FROM ' || schemaTableName || ') AS a WHERE a.row = ' || rowData.row || ';' INTO attributeValue;
+
+		pointCount = round(attributeValue / dotValue);
+		--RAISE NOTICE 'point count %', pointCount;
+
+		keepAttributeSql = '';
+
+		FOR i IN 1..(keepAttributeCount) LOOP
+			keepAttributeSql = keepAttributeSql || ',' || '(SELECT "' || keepAttribute[i] || '" FROM ' || schemaTableName || ' LIMIT 1 OFFSET ' || (rowData.row-1) || ') ' || keepAttribute[i];
+		END LOOP;
+
+		EXECUTE 'INSERT INTO ' || schemaTableName || '_' || dotTableSuffix || ' SELECT dot( (SELECT "' || geomColumn || '" FROM ' || schemaTableName || ' LIMIT 1 OFFSET ' || (rowData.row-1) || ') , ' || pointCount || ', ' || minDistance || ' ), ' || dotValue || ' dot_value ' || keepAttributeSql || ';';
+
+	END LOOP;
+
+    
+    RETURN 1;
+END;
+$$ LANGUAGE plpgsql;

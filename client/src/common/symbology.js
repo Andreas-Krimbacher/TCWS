@@ -19,15 +19,17 @@ angular.module('TCWS.symbology', [])
                 groupName : 'Beautiful',
                 groupStyle : {
                     'polygon-fill' : '#ffffff',
-                    'polygon-opacity' : 1,
+                    'polygon-opacity' : 0,
                     'line-color' : '#5cb85c',
                     'line-width' : 1
                 },
+                styleType : 'cartoCss',
                 symbologys : {
                     '1' : {
                         symbologyId : 1,
                         name : 'Qualitative',
                         style : {},
+                        styleType : 'cartoCss',
                         variableSymbology : [
                             {
                                 columnType : 'nominal',
@@ -41,6 +43,25 @@ angular.module('TCWS.symbology', [])
                         ]
                     }
                 }
+            },
+            '2':{
+                groupId : 1,
+                groupName : 'Simple Styles',
+                groupStyle : {
+                    'line-color' : '#000000',
+                    'line-width' : 2,
+                    'line-opacity' : 0.8
+                },
+                styleType : 'cartoCss',
+                symbologys : {
+                    '1' : {
+                        symbologyId : 1,
+                        name : 'Light Boarder',
+                        style : {},
+                        styleType : 'cartoCss',
+                        variableSymbology : []
+                    }
+                }
             }
         };
 
@@ -49,11 +70,13 @@ angular.module('TCWS.symbology', [])
                 groupId : 1,
                 groupName : 'Pie Charts',
                 groupStyle : {},
+                styleType : 'cartoCss',
                 symbologys : {
                     '1' : {
                         symbologyId : 1,
                         name : 'Two Values Grouped',
                         style : {},
+                        styleType : 'diaML',
                         DiaML : {sourceType : 'file', config : {path : 'Symbology/DiaML/pie.xml'}, json : null, xml : null, type : 'diagram'},
                         variableSymbology : [
                             {
@@ -77,6 +100,28 @@ angular.module('TCWS.symbology', [])
                                 diaMLRef : 'column4'
                             }
                         ]
+                    }
+                }
+            },
+            '2':{
+                groupId : 1,
+                groupName : 'Dot Maps',
+                groupStyle : {
+                    'marker-type' : 'ellipse',
+                    'marker-fill' : '#570387',
+                    'marker-fill-opacity' : '0'
+                },
+                styleType : 'cartoCss',
+                symbologys : {
+                    '1' : {
+                        symbologyId : 1,
+                        name : 'Dot Map Small',
+                        style : {
+                            'marker-width' : '2',
+                            'marker-height' : '2'
+                        },
+                        styleType : 'cartoCss',
+                        variableSymbology : []
                     }
                 }
             }
@@ -131,9 +176,25 @@ angular.module('TCWS.symbology', [])
                     symbology.variableSymbology[i].column = columns[i];
                 }
 
-                return DiaML.diaMLToJson(symbology.DiaML).then(function(){
+                if(symbology.styleType == 'diaML'){
+                    return DiaML.diaMLToJson(symbology.DiaML).then(function(){
+                        return symbology;
+                    });
+                }
+                if(symbology.styleType == 'cartoCss'){
+
+                    for (var prop in pointGroupSymbology[groupId].groupStyle) {
+                        if (pointGroupSymbology[groupId].groupStyle.hasOwnProperty(prop)) {
+
+                            if(!symbology.style[prop]){
+                                symbology.style[prop] = pointGroupSymbology[groupId].groupStyle[prop];
+                            }
+
+                        }
+                    }
+
                     return symbology;
-                });
+                }
             }
         }
     }])

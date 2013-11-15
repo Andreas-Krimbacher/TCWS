@@ -8,6 +8,7 @@ var express = require('express');
 
 var SAS = require('./sas');
 var CCS = require('./ccs');
+var CTS = require('./cts');
 
 //Server
 var app = express();
@@ -26,7 +27,7 @@ var anyBodyParser = function(req, res, next) {
 
 app.post('/services/SAS', anyBodyParser, SAS.handleRequest);
 app.post('/services/CCS', anyBodyParser, CCS.handleRequest);
-
+app.post('/services/CTS', anyBodyParser, CTS.handleRequest);
 
 //export module
 module.exports = app;

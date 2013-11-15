@@ -14,6 +14,13 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
             else $('#view-left').css(smallMapSize);
         });
 
+        $scope.$on('featureSelectedInGrid', function (event, feature) {
+            OpenLayersMap.selectFeature(feature.layerId, feature.featureId);
+        });
+        $scope.$on('featureUnSelectedInGrid', function (event, feature) {
+            OpenLayersMap.unSelectFeature(feature.layerId, feature.featureId);
+        });
+
     }])
 
     .factory('Editor', ['DataStore','InputHandler','OpenLayersMap','Grid','WebService',function (DataStore,InputHandler,OpenLayersMap,Grid,WebService) {
@@ -247,7 +254,41 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                     }
                 };
 
-                return {'1' : sas, '2': ccs} ;
+                var dotMap =
+                {
+                    methodId : '1',
+                    method : 'dotFromArea',
+                    name : 'Dot Map From Area',
+                    methodGroup : 'dotMap',
+                    methodGroupName : 'Dot Maps',
+                    requestParam :
+                    {
+                        methodGroup : 'dotMap',
+                        method : 'dotFromArea',
+                        attribute : null,
+                        keepAttribute : null,
+                        dotValue : null,
+                        dotDistance : null
+                    },
+                    resultInfo :
+                    {
+                        type : 'new'
+                    }
+                };
+
+                var cts =
+                {
+                    serviceType : 'cts',
+                    serviceId : '3',
+                    name: 'Cartographic Technique Service',
+                    url : 'http://localhost:9000/services/CTS',
+                    methods :
+                    {
+                        '1' : dotMap
+                    }
+                };
+
+                return {'1' : sas, '2': ccs, '3': cts} ;
             },
             importData : function(param){
 

@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('TCWS.webService', ['TCWS.webService.spatialAnalysisService','TCWS.webService.classifyClusterService'])
+angular.module('TCWS.webService', ['TCWS.webService.spatialAnalysisService','TCWS.webService.classifyClusterService','TCWS.webService.cartographicTechniqueService'])
 
-    .factory('WebService', ['$http','SpatialAnalysisService','ClassifyClusterService','DataStore','InputHandler',function ($http,SpatialAnalysisService,ClassifyClusterService,DataStore,InputHandler) {
+    .factory('WebService', ['$http','SpatialAnalysisService','ClassifyClusterService','CartographicTechniqueService','DataStore','InputHandler',function ($http,SpatialAnalysisService,ClassifyClusterService,CartographicTechniqueService,DataStore,InputHandler) {
         // Service logic
 
 
@@ -27,7 +27,15 @@ angular.module('TCWS.webService', ['TCWS.webService.spatialAnalysisService','TCW
                 }
 
                 if(requestInfo.processingService.serviceType == 'ccs'){
-                    return SpatialAnalysisService.executeRequest(requestInfo).then(function(gmlData){
+                    return ClassifyClusterService.executeRequest(requestInfo).then(function(gmlData){
+                        var layerData = InputHandler.getDataFromGMLString(gmlData);
+
+                        return layerData;
+                    });
+                }
+
+                if(requestInfo.processingService.serviceType == 'cts'){
+                    return CartographicTechniqueService.executeRequest(requestInfo).then(function(gmlData){
                         var layerData = InputHandler.getDataFromGMLString(gmlData);
 
                         return layerData;
