@@ -21,9 +21,11 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
             OpenLayersMap.unSelectFeature(feature.layerId, feature.featureId);
         });
 
+
+
     }])
 
-    .factory('Editor', ['DataStore','InputHandler','OpenLayersMap','Grid','WebService',function (DataStore,InputHandler,OpenLayersMap,Grid,WebService) {
+    .factory('Editor', ['$rootScope','DataStore','InputHandler','OpenLayersMap','Grid','WebService',function ($rootScope,DataStore,InputHandler,OpenLayersMap,Grid,WebService) {
         // Service logic
 
         var layersInMap = {};
@@ -91,6 +93,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 if(layer){
                     OpenLayersMap.addLayer(layer,zIndex);
                     layersInMap[id] = true;
+                    $rootScope.$broadcast('updateLayerOverview');
                     return true;
                 }
                 else{
@@ -113,6 +116,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 if(layer){
                     Grid.showData(layer);
                     layerInGrid = id;
+                    $rootScope.$broadcast('updateLayerOverview');
                     return true;
                 }
                 else{
@@ -162,7 +166,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                     '9' : {layerId: 9, type: 'attribute', name: 'Switzerland Pop Kant', path: 'Attribute/swiss_pop_cant_2012.json', fileType: 'JSON-stat', param : swiss},
                     '10' : {layerId: 10, type: 'polygon', name: 'Swiss Districts', path: 'Areas/Swiss/district.xml', fileType: 'GML'},
                     '11' : {layerId: 11, type: 'attribute', name: 'Swiss Pop Dist', path: 'Attribute/swiss_pop_dist_2012.csv', fileType: 'CSV'},
-                    '12' : {layerId: 12, type: 'polygon', name: 'Swiss Cantons Polygon', path: 'Areas/Swiss/canton.xml', fileType: 'GML-OGR'},
+                    '12' : {layerId: 12, type: 'polygon', name: 'Swiss Cantons Polygon', path: 'Areas/Swiss/canton_nolake.xml', fileType: 'GML-OGR'},
                     '13' : {layerId: 13, type: 'attribute', name: 'Pop Cantons 2010,2011', path: 'Attribute/pop_swiss_2010_2011.csv', fileType: 'CSV'},
                     '14' : {layerId: 14, type: 'attribute', name: 'Study Cantons 2010,2011', path: 'Attribute/study_swiss_2010_2011.csv', fileType: 'CSV'}}};
 
@@ -356,6 +360,10 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
 
                         DataStore.addLayer(layer);
                     }
+
+                    $rootScope.$broadcast('updateLayerOverview');
+
+
                 });
             },
             applySymbology : function(id,type,symbology){

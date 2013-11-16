@@ -4,10 +4,10 @@ $green:#5cb85c;
 $borderSmall: 1px solid rgb(212,212,212);
 $borderThick: 2px solid rgb(212,212,212);
 
-.resize-map {
+
+
+.ol-control-icon {
   position: absolute;
-  top: 65px;
-  left: 11px;
   background: rgba(0, 60, 136, 0.5);
   border-radius: 2px;
   padding-top: 2px;
@@ -23,6 +23,15 @@ $borderThick: 2px solid rgb(212,212,212);
   }
 }
 
+.resize-map-icon {
+  top: 65px;
+  left: 11px;
+}
+
+.edit-map-icon {
+  top: 95px;
+  left: 11px;
+}
 
 #container{
   height: 100%;
@@ -121,13 +130,14 @@ $borderThick: 2px solid rgb(212,212,212);
 }
 
 .tool-right{
-  height: 100%;
+  bottom: 0px;
   position: absolute;
   width: inherit;
   right: 0px;
   top: 0px;
   left: 220px;
   padding: 10px;
+  overflow: auto;
   .param-view-file{
     .file-select{
       width: 75%;
@@ -136,6 +146,9 @@ $borderThick: 2px solid rgb(212,212,212);
 }
 
 #overview-layers{
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
   a{
     color: #808080;
     &.active{
@@ -147,7 +160,7 @@ $borderThick: 2px solid rgb(212,212,212);
     }
   }
   .list-group{
-    width: 70%;
+    width: 100%;
     white-space: nowrap;
   }
   .list-group-item{
@@ -223,17 +236,21 @@ $borderThick: 2px solid rgb(212,212,212);
 }
 
 #preparation-analyze{
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  #factory-analyze-method-select{
+    width: 100%;
+  }
   button{
     margin-top: 20px;
   }
 }
 
-#factory-analyze-method-select{
-  width: 70%;
-}
+
 
 .style-select{
-  width: 70%;
+  width: 100%;
   .diaML-symbol{
     width: 100%;
     margin-top: 20px;
@@ -255,16 +272,22 @@ $borderThick: 2px solid rgb(212,212,212);
 }
 
 .layer-select{
-  width: 70%;
+  width: 100%;
 }
 
 #symbology-polygon{
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
   button{
     margin-top: 20px;
   }
 }
 
 #symbology-point{
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
   button{
     margin-top: 20px;
   }

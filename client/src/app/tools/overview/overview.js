@@ -14,7 +14,7 @@ angular.module('TCWS.tools.overview', ['TCWS.components'])
 
     }])
 
-    .controller('OverviewLayersCtrl', ['$scope','DataStore','Editor','OpenLayersMap',function ($scope,DataStore,Editor,OpenLayersMap) {
+    .controller('OverviewLayersCtrl', ['$scope','DataStore','Editor','OpenLayersMap','$http',function ($scope,DataStore,Editor,OpenLayersMap,$http) {
         var currentBaseMap = null;
         var layerInGrid = null;
 
@@ -26,6 +26,17 @@ angular.module('TCWS.tools.overview', ['TCWS.components'])
         {
             if($scope.baseMaps[i].inMap) currentBaseMap = $scope.baseMaps[i];
         }
+
+
+        $scope.$on('updateLayerOverview', function (event) {
+            $scope.layerList = Editor.getLayerListShort();
+            $scope.baseMaps = OpenLayersMap.getBaseMaps();
+            var length = $scope.baseMaps.length;
+            for (var i=0;i<length;i++)
+            {
+                if($scope.baseMaps[i].inMap) currentBaseMap = $scope.baseMaps[i];
+            }
+        });
 
         $scope.setBaseMap = function(baseMap){
 
@@ -70,4 +81,16 @@ angular.module('TCWS.tools.overview', ['TCWS.components'])
             Editor.removeLayer($scope.layerList[index].id);
             $scope.layerList.splice(index,1);
         };
+
+        $scope.saveLayerToFile = function(layer){
+            var gmlString = DataStore.getLayerAsGML(layer.id);
+            $http({
+                url: 'http://localhost:9000/services/saveFile',
+                method: "POST",
+                params : {path : 'NewFile/',fileName: layer.id + '.xml'},
+                data: gmlString,
+                headers: {'Content-Type': 'application/xml'}
+            })
+        };
+
     }]);

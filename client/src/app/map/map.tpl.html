@@ -1,2 +1,7 @@
-<div class="resize-map ol-unselectable" ng-click="resizeMap(!bigMap)"><a class="glyphicon" ng-class="{true:'glyphicon-resize-small', false:'glyphicon-fullscreen'}[bigMap]" href=""></a></div>
+<div class="ol-control-icon resize-map-icon ol-unselectable" ng-click="resizeMap(!bigMap)">
+    <a class="glyphicon" ng-class="{true:'glyphicon-resize-small', false:'glyphicon-fullscreen'}[bigMap]" href=""></a>
+</div>
+<div class="ol-control-icon edit-map-icon ol-unselectable" ng-click="setModifyInteraction(!modifyInteractionState)">
+    <a class="glyphicon" ng-class="{true:'glyphicon-stop', false:'glyphicon-edit'}[modifyInteractionState]" href=""></a>
+</div>
 <div id="map"></div>

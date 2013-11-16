@@ -25,6 +25,13 @@ angular.module('TCWS.map', [])
             $scope.bigMap = bigMap;
             OpenLayersMap.updateSize();
         };
+
+        $scope.modifyInteractionState = false;
+
+        $scope.setModifyInteraction = function(state){
+            OpenLayersMap.setModifyInteraction(state);
+            $scope.modifyInteractionState = !$scope.modifyInteractionState;
+        };
     }])
 
     .factory('OpenLayersMap', ['SymbologyFactory',function (SymbologyFactory) {
@@ -34,6 +41,9 @@ angular.module('TCWS.map', [])
 
         var basemaps = {};
         var currentBasemap = null;
+
+        var _selectInteraction = null;
+        var _modifyInteraction = null;
 
         var createBaseMaps = function(){
             basemaps.mapQuestOSM = { layer : new ol.layer.Tile({
@@ -93,8 +103,21 @@ angular.module('TCWS.map', [])
             updateSize : function(){
                 map.updateSize();
             },
+            setModifyInteraction : function(state){
+                if(state){
+                    map.addInteraction(_selectInteraction);
+                    map.addInteraction(_modifyInteraction);
+                }
+                else{
+                    map.removeInteraction(_selectInteraction);
+                    map.removeInteraction(_modifyInteraction);
+                }
+            },
             createMap : function (divId) {
                 createBaseMaps();
+
+                _selectInteraction = new ol.interaction.Select();
+                _modifyInteraction = new ol.interaction.Modify();
 
                 map = new ol.Map({
                     target: divId,
@@ -187,7 +210,7 @@ angular.module('TCWS.map', [])
                 for (var prop in features) {
                     if (features.hasOwnProperty(prop)) {
                         if(features[prop].getId() == featureId){
-                            layers[layerId].setRenderIntent('selected',[features[prop]]);
+                            features[prop].setRenderIntent('selected');
                             break;
                         }
                     }
@@ -201,7 +224,7 @@ angular.module('TCWS.map', [])
                 for (var prop in features) {
                     if (features.hasOwnProperty(prop)) {
                         if(features[prop].getId() == featureId){
-                            layers[layerId].setRenderIntent('default',[features[prop]]);
+                            features[prop].setRenderIntent('default');
                             break;
                         }
                     }
@@ -223,6 +246,42 @@ angular.module('TCWS.map', [])
                     })
                 ]
             });
+
+        var _temporaryRule = new ol.style.Rule({
+            filter: 'renderIntent("temporary")',
+            symbolizers: [
+                new ol.style.Shape({
+                    fill: new ol.style.Fill({
+                        color: '#0099ff',
+                        opacity: 1
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'white',
+                        opacity: 0.75
+                    }),
+                    size: 14,
+                    zIndex: 1
+                })
+            ]
+        })
+
+        var _futureRule = new ol.style.Rule({
+            filter: 'renderIntent("future")',
+            symbolizers: [
+                new ol.style.Shape({
+                    fill: new ol.style.Fill({
+                        color: '#00ff33',
+                        opacity: 1
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'white',
+                        opacity: 0.75
+                    }),
+                    size: 14,
+                    zIndex: 1
+                })
+            ]
+        });
 
 
 
@@ -341,7 +400,7 @@ angular.module('TCWS.map', [])
                 if(type == 'polygon'){
                     var overallStyle = _CartoCssToOLStyle(symbology.style);
 
-                    var rules = [_selectRule];
+                    var rules = [_selectRule,_temporaryRule,_futureRule];
                     var rule,symbolizer;
 
                     var length1 = symbology.variableSymbology.length;
@@ -375,7 +434,7 @@ angular.module('TCWS.map', [])
 
                 if(type == 'point'){
 
-                    var rules = [_selectRule];
+                    var rules = [_selectRule,_temporaryRule,_futureRule];
                     var rule,symbolizer;
 
                     if(symbology.styleType == 'diaML'){
@@ -424,7 +483,7 @@ angular.module('TCWS.map', [])
             getDefaultStyle : function(type){
                 if(type == 'polygon'){
                     var style = new ol.style.Style({
-                        rules: [_selectRule],
+                        rules: [_selectRule,_temporaryRule,_futureRule],
                         symbolizers: [
                             new ol.style.Fill({
                                 opacity: 0
