@@ -64,6 +64,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 if(layersInMap[id]) OpenLayersMap.removeLayer(id);
                 if(layerInGrid == id) Grid.removeData();
                 DataStore.removeLayer(id);
+                $rootScope.$broadcast('updateLayerList');
             },
             updateLayer : function(id,layerData){
                 _updateLayer(id,layerData);
@@ -88,12 +89,12 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                     }
                 }
             },
-            addLayerToMap : function(id,zIndex){
+            addLayerToMap : function(id){
                 var layer = DataStore.getLayer(id);
                 if(layer){
-                    OpenLayersMap.addLayer(layer,zIndex);
+                    OpenLayersMap.addLayer(layer);
                     layersInMap[id] = true;
-                    $rootScope.$broadcast('updateLayerOverview');
+                    $rootScope.$broadcast('updateLayerList');
                     return true;
                 }
                 else{
@@ -105,18 +106,24 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 if(layer){
                     OpenLayersMap.removeLayer(layer.id);
                     layersInMap[id] = false;
+                    $rootScope.$broadcast('updateLayerList');
                     return true;
                 }
                 else{
                     return false;
                 }
             },
+            updateLayerStackIndexFromArray : function(layerArray){
+                DataStore.updateLayerStackIndexFromArray(layerArray);
+                OpenLayersMap.updateLayerStackFromArray(layerArray);
+                $rootScope.$broadcast('updateLayerList');
+            },
             showLayerInGrid : function(id){
                 var layer = DataStore.getLayer(id);
                 if(layer){
                     Grid.showData(layer);
                     layerInGrid = id;
-                    $rootScope.$broadcast('updateLayerOverview');
+                    $rootScope.$broadcast('updateLayerList');
                     return true;
                 }
                 else{
@@ -306,6 +313,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                         return InputHandler.getDataFromFile(layerInfo,param.inputService).then(function(layerData){
 
                             DataStore.addLayer(layerData);
+                            $rootScope.$broadcast('updateLayerList');
                         });
                     }
                     else{
@@ -361,7 +369,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                         DataStore.addLayer(layer);
                     }
 
-                    $rootScope.$broadcast('updateLayerOverview');
+                    $rootScope.$broadcast('updateLayerList');
 
 
                 });
@@ -416,7 +424,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
             }
 
             if(serviceChainElement.type == 'show'){
-                if(serviceChainElement.config.place == 'map') Editor.addLayerToMap(serviceChainElement.config.layerId,serviceChainElement.config.zIndex);
+                if(serviceChainElement.config.place == 'map') Editor.addLayerToMap(serviceChainElement.config.layerId);
                 if(serviceChainElement.config.place == 'grid') Editor.showLayerInGrid(serviceChainElement.config.layerId);
             }
 

@@ -14,6 +14,30 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
             }
         };
 
+        var _addLayerStackIndex = function(layer){
+            var highestIndex = 0;
+
+            for (var prop in dataStore.layers) {
+                if (dataStore.layers.hasOwnProperty(prop)) {
+                    if((dataStore.layers[prop].type == layer.type) && (dataStore.layers[prop].layerStackIndex > highestIndex)){
+                        highestIndex = dataStore.layers[prop].layerStackIndex;
+                    }
+                }
+            }
+
+            if(highestIndex == 0){
+                if(layer.type == 'raster') highestIndex = 200;
+                if(layer.type == 'polygon') highestIndex = 300;
+                if(layer.type == 'line') highestIndex = 400;
+                if(layer.type == 'point') highestIndex = 500;
+                if(layer.type == 'attribute') highestIndex = 600;
+            }
+
+            layer.layerStackIndex = highestIndex + 1;
+        };
+
+
+
         // Public API here
         return {
             getLayerListShort : function(){
@@ -24,7 +48,8 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                         result.push({
                             id : prop,
                             name : dataStore.layers[prop].name,
-                            type : dataStore.layers[prop].type
+                            type : dataStore.layers[prop].type,
+                            layerStackIndex : dataStore.layers[prop].layerStackIndex
                         });
                     }
                 }
@@ -47,7 +72,15 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                 return parser.write(clonedGMLData,{axisOrientation: 'en'});
             },
             addLayer : function(layer){
+                _addLayerStackIndex(layer);
                 dataStore.layers[layer.id] = layer;
+            },
+            updateLayerStackIndexFromArray : function(layerArray){
+                var length = layerArray.length;
+                for (var i=0;i<length;i++)
+                {
+                    dataStore.layers[layerArray[i].id].layerStackIndex = layerArray[i].layerStackIndex;
+                }
             },
             updateLayer : function(id,data){
                 for (var prop in data) {
@@ -264,6 +297,7 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                 }
                 layerData.featureCount = i;
 
+                _addLayerStackIndex(layerData);
                 dataStore.layers[layerData.id] = layerData;
             },
             manipulateTable : function(layerId,action,config){

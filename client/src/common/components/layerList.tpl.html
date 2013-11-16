@@ -1,0 +1,26 @@
+<div class="layer-list">
+    <div ng-repeat="type in layerTypes" ng-show="layerLists[type].length > 0">
+        <ul ng-if="layerLists[type].length > 1 && !options.disableSort && type != 'attribute'" ui-sortable="{stop:sortStop[type]}" ng-model="layerLists[type]" class="list-group">
+            <li ng-repeat="(index,layer) in layerLists[type]" class="list-group-item">
+                <tcws-layer-icon type="layer.type"></tcws-layer-icon>
+                <div class="layer-name pointer" title="{{layer.name}}" ng-style="{right:((iconCount * 16)+ 20) + 'px'}"  ng-dblclick="saveLayerToFile(layer)">{{layer.name}}</div>
+                <div class="button-group">
+                    <a ng-hide="layer.type == 'attribute' || !icons.map" title="Show in Map" class="glyphicon glyphicon-globe" ng-class="{'active' : layer.inMap}" ng-click="toogleLayerInMap(layer)"></a>
+                    <a ng-hide="!icons.grid" title="Show in Table" class="glyphicon glyphicon-list-alt" ng-class="{'active' : layer.inGrid}"  ng-click="showLayerInGrid(layer)"></a>
+                    <a ng-hide="!icons.remove" title="Delete" class="glyphicon glyphicon-trash active"  ng-click="removeLayer(layer)"></a>
+                </div>
+            </li>
+        </ul>
+        <ul ng-if="layerLists[type].length == 1 || options.disableSort || type == 'attribute'" class="list-group">
+            <li ng-repeat="(index,layer) in layerLists[type]" class="list-group-item">
+                <tcws-layer-icon type="layer.type"></tcws-layer-icon>
+                <div class="layer-name" title="{{layer.name}}" ng-style="{right:((iconCount * 16)+ 20) + 'px'}"  ng-dblclick="saveLayerToFile(layer)">{{layer.name}}</div>
+                <div class="button-group">
+                    <a ng-hide="layer.type == 'attribute' || !icons.map" title="Show in Map" class="glyphicon glyphicon-globe" ng-class="{'active' : layer.inMap}" ng-click="toogleLayerInMap(layer)"></a>
+                    <a ng-hide="!icons.grid" title="Show in Table" class="glyphicon glyphicon-list-alt" ng-class="{'active' : layer.inGrid}"  ng-click="showLayerInGrid(layer)"></a>
+                    <a ng-hide="!icons.remove" title="Delete" class="glyphicon glyphicon-trash active"  ng-click="removeLayer(layer)"></a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

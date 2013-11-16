@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('TCWS', ['ngRoute','ngSanitize','TCWS.editor'])
+angular.module('TCWS', ['ngRoute','ngSanitize','ngAnimate','TCWS.editor'])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/editor', {

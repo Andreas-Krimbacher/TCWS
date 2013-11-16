@@ -4,4 +4,10 @@
 <div class="ol-control-icon edit-map-icon ol-unselectable" ng-click="setModifyInteraction(!modifyInteractionState)">
     <a class="glyphicon" ng-class="{true:'glyphicon-stop', false:'glyphicon-edit'}[modifyInteractionState]" href=""></a>
 </div>
+
+<div ng-show="bigMap" class="ol-control-layer-list"  ng-class="{'big-layer-list':bigLayerList}" ng-mouseenter="bigLayerList = true" ng-mouseleave="bigLayerList = false">
+    <tcws-layer-list options="overlayLayerListOptions"></tcws-layer-list>
+    <tcws-layer-list options="baseLayerListOptions"></tcws-layer-list>
+</div>
+
 <div id="map"></div>

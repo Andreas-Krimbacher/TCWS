@@ -79,7 +79,7 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'show' , config : show }
         ];
 
-//        ServiceChain.executeServiceChain(serviceChain);
+        ServiceChain.executeServiceChain(serviceChain);
 
         //service chain diaml study
 
@@ -202,7 +202,6 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'integrate' , config : integrate1 },
             {type : 'integrate' , config : integrate2 },
             {type : 'service' , config : service1 },
-            //{type : 'service' , config : service2 },
             {type : 'manipulateTable' , config : manipulateTable1 },
             {type : 'manipulateTable' , config : manipulateTable2 },
             {type : 'manipulateTable' , config : manipulateTable3 },
@@ -212,8 +211,9 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'show' , config : show2 }
         ];
 
-//        ServiceChain.executeServiceChain(serviceChain);
+        ServiceChain.executeServiceChain(serviceChain);
 
+        //service chain dot map
 
         var dataImport1 = {inputService: inputServices['1'], config:{layer:12}};
         var dataImport2 = {inputService: inputServices['1'], config:{layer:11}};
@@ -284,13 +284,7 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'import' , config : dataImport2 },
             {type : 'import' , config : dataImport3 },
             {type : 'integrate' , config : integrate },
-//            {type : 'integrate' , config : integrate2 },
             {type : 'service' , config : service1 },
-//            //{type : 'service' , config : service2 },
-//            {type : 'manipulateTable' , config : manipulateTable1 },
-//            {type : 'manipulateTable' , config : manipulateTable2 },
-//            {type : 'manipulateTable' , config : manipulateTable3 },
-//            {type : 'manipulateTable' , config : manipulateTable4 },
             {type : 'symbologySync' , config : symbology1 },
             {type : 'symbologySync' , config : symbology2 },
             {type : 'show' , config : show2 },

@@ -14,7 +14,9 @@
     "angular-ui-select2": "~0.0.2",
     "x2js": "*",
     "jsonstat": "*",
-    "jquery-csv": "*"
+    "jquery-csv": "*",
+    "angular-ui-sortable": "~0.0.1",
+    "angular-animate": "~1.2.0"
   },
   "ignore": [
     "**/.*",

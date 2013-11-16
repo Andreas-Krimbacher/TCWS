@@ -18,7 +18,7 @@
     <primitive id="p0">
         <sector proportional="area">
             <r scale="partSum">20,25</r>
-            <angle scale="dataValue">160,200</angle>
+            <angle scale="dataValue">40,140,70,110</angle>
         </sector>
     </primitive>
     <diagram translationX="0" translationY="0" rotation="0" minSize="5" maxSize="50" areaRatio="10">

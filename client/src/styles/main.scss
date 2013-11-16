@@ -4,34 +4,101 @@ $green:#5cb85c;
 $borderSmall: 1px solid rgb(212,212,212);
 $borderThick: 2px solid rgb(212,212,212);
 
+body{
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default;
+}
 
+.pointer{
+  cursor: pointer;
+}
 
 .ol-control-icon {
   position: absolute;
-  background: rgba(0, 60, 136, 0.5);
-  border-radius: 2px;
-  padding-top: 2px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 4px;
   z-index: 2900;
-  width: 22px;
-  height: 22px;
-  padding-left: 4px;
+  padding: 2px;
   a{
     color: white;
-  }
-  &:hover {
-    background: rgba(0,60,136,0.7);
+    width: 22px !important;
+    height: 22px;
+    border-radius: 2px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 22px;
+    top:  0px;
+    background: rgba(0,60,136,0.5);
+    margin: 1px;
+    padding-right: 1px;
+    padding-top: 1px;
+    &:hover {
+      background: rgba(0,60,136,0.7);
+    }
   }
 }
 
 .resize-map-icon {
   top: 65px;
-  left: 11px;
+  left: 8px;
 }
 
 .edit-map-icon {
   top: 95px;
-  left: 11px;
+  left: 8px;
+  .glyphicon-stop{
+    padding-right: 2px;
+    padding-top: 0px;
+  }
 }
+
+.ol-control-layer-list{
+  position: absolute;
+  top: 12px;
+  width: 57px;
+  right: 10px;
+  z-index: 2900;
+  .list-group-item{
+    background: #ffffff;
+    border: 1px solid #dddddd;
+  }
+  a{
+    color: #dddddd !important;
+    &.active{
+      color: #333333 !important;
+    }
+    cursor: pointer;
+    &:hover{
+      color: rgba(0,60,136,0.7) !important;
+    }
+  }
+}
+
+
+.ol-control-layer-list.big-layer-list-add,
+.ol-control-layer-list.big-layer-list-remove {
+  -webkit-transition:0.5s linear all;
+  -moz-transition:0.5s linear all;
+  -o-transition:0.5s linear all;
+  transition:0.5s linear all;
+}
+
+.ol-control-layer-list.big-layer-list-add,
+.ol-control-layer-list.big-layer-list-remove.big-layer-list-remove-active {
+  width: 57px;
+}
+
+.ol-control-layer-list.big-layer-list,
+.ol-control-layer-list.big-layer-list-remove,
+.ol-control-layer-list.big-layer-list-add.big-layer-list-add-active {
+  width: 200px;
+}
+
 
 #container{
   height: 100%;
@@ -145,10 +212,7 @@ $borderThick: 2px solid rgb(212,212,212);
   }
 }
 
-#overview-layers{
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+.layer-list{
   a{
     color: #808080;
     &.active{
@@ -176,16 +240,18 @@ $borderThick: 2px solid rgb(212,212,212);
   .button-group{
     position: absolute;
     right: 10px;
-  }
-  .base-layer{
-    .layer-name{
-      right: 34px;
-    }
+    top: 6px;
   }
 }
 
 .layer-icon{
   position: absolute;
+}
+
+#overview-layers{
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .tool-left{

@@ -45,7 +45,7 @@ angular.module('TCWS.symbology', [])
                 }
             },
             '2':{
-                groupId : 1,
+                groupId : 2,
                 groupName : 'Simple Styles',
                 groupStyle : {
                     'line-color' : '#000000',
@@ -104,7 +104,7 @@ angular.module('TCWS.symbology', [])
                 }
             },
             '2':{
-                groupId : 1,
+                groupId : 2,
                 groupName : 'Dot Maps',
                 groupStyle : {
                     'marker-type' : 'ellipse',
@@ -342,8 +342,8 @@ angular.module('TCWS.symbology', [])
                             count = 0;
                             for (i=0;i<relationCount;i++)
                             {
+                                if((i % relationsPerGroup) == 0) count++;
                                 if(valueObject){
-                                    if((i % relationsPerGroup) == 0) count++;
                                     if(valueObject.partSum[count-1] == 0){
                                         angleValue = totalGroupAngle / relationsPerGroup;
                                     }
@@ -355,7 +355,7 @@ angular.module('TCWS.symbology', [])
                                 }
                                 else{
                                     angleValue = parseInt(defaultAngleValues[i]);
-                                    angleValues[i] = {startAngle : startAngle, endAngle : startAngle + angleValue};
+                                    angleValues[i] = {startAngle : startAngle, endAngle : startAngle + angleValue, centerDirection : (totalGroupAngle*(count-1)) + (totalGroupAngle/2)};
                                     startAngle = startAngle + angleValue;
                                 }
                             }
@@ -411,7 +411,7 @@ angular.module('TCWS.symbology', [])
 
                         for (i=0;i<relationCount;i++)
                         {
-                            if(parseFloat(valueObject[diagramRelation[i].dataRef.toString()]) != 0){
+                            if(!values || parseFloat(valueObject[diagramRelation[i].dataRef.toString()]) != 0){
                                 ctx.beginPath();
 
                                 ctx.fillStyle = relationStyles[i].fill;

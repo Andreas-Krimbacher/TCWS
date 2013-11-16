@@ -1,28 +1,11 @@
 <div ng-controller="OverviewLayersCtrl" id="overview-layers">
     <h4>Layers</h4>
-    <p ng-show="layerList.length == 0" class="text-info">Import layer data first!</p>
 
     <h6><strong>Overlay Layers</strong></h6>
-    <ul class="list-group area-layer">
-        <li ng-repeat="(index,layer) in layerList" class="list-group-item">
-            <tcws-layer-icon type="layer.type"></tcws-layer-icon>
-            <div class="layer-name" title="{{layer.name}}"  ng-dblclick="saveLayerToFile(layer)">{{layer.name}}</div>
-            <div class="button-group">
-                <a ng-hide="layer.type == 'attribute'" title="Show in Map" class="glyphicon glyphicon-globe" ng-class="{'active' : layer.inMap}" ng-click="toogleLayerInMap(layer)"></a>
-                <a title="Show in Table" class="glyphicon glyphicon-list-alt" ng-class="{'active' : layer.inGrid}"  ng-click="showInGrid(layer)"></a>
-                <a title="Delete" class="glyphicon glyphicon-trash active"  ng-click="remove(index)"></a>
-            </div>
-        </li>
-    </ul>
+    <p ng-show="overlayLayerListOptions.layerList.length == 0" class="text-info">Import layer data first!</p>
+    <tcws-layer-list options="overlayLayerListOptions"></tcws-layer-list>
 
     <h6><strong>Base Layers</strong></h6>
-    <ul class="list-group base-layer">
-        <li ng-repeat="(index,layer) in baseMaps" class="list-group-item">
-            <tcws-layer-icon type="'raster'"></tcws-layer-icon>
-            <div class="layer-name" title="{{layer.name}}">{{layer.name}}</div>
-            <div class="button-group">
-                <a title="Show in Map" class="glyphicon glyphicon-globe" ng-class="{'active' : layer.inMap}" ng-click="setBaseMap(layer)"></a>
-            </div>
-        </li>
-    </ul>
+    <p ng-show="baseLayerListOptions.layerList.length == 0" class="text-info">No base layer available!</p>
+    <tcws-layer-list options="baseLayerListOptions"></tcws-layer-list>
 </div>

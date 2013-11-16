@@ -83,7 +83,7 @@ angular.module('TCWS.tools.symbology', ['TCWS.symbology'])
                 if($scope.currentStyle.DiaML.type == 'diagram'){
                     var diagrams = DiaML.getCanvasDiagrams($scope.currentStyle.DiaML.json, null);
                 }
-                $scope.symbolSrc = diagrams[0];
+                $scope.symbolSrc = diagrams[0].img;
 
                 $scope.columnCount = $scope.currentStyle.variableSymbology.length;
             }

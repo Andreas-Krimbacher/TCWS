@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('TCWS.map', [])
+angular.module('TCWS.map', ['TCWS.components'])
 
     .directive('tcwsMap', function () {
         return {
@@ -15,7 +15,7 @@ angular.module('TCWS.map', [])
     })
 
 
-    .controller('MapCtrl', ['$scope','OpenLayersMap',function ($scope,OpenLayersMap) {
+    .controller('MapCtrl', ['$scope','OpenLayersMap','Editor',function ($scope,OpenLayersMap,Editor) {
         OpenLayersMap.createMap('map');
 
         $scope.bigMap = false;
@@ -32,9 +32,55 @@ angular.module('TCWS.map', [])
             OpenLayersMap.setModifyInteraction(state);
             $scope.modifyInteractionState = !$scope.modifyInteractionState;
         };
+
+
+
+        $scope.bigLayerList = false;
+
+        var showLayerInMap = function(layerId){
+            Editor.addLayerToMap(layerId);
+        };
+
+        var hideLayerInMap = function(layerId){
+            Editor.removeLayerFromMap(layerId);
+        };
+
+        var updateLayerStackIndex = function(layerArray){
+            Editor.updateLayerStackIndexFromArray(layerArray);
+        };
+
+        $scope.overlayLayerListOptions = {
+            layerList : Editor.getLayerListShort(),
+            hideLayerInMap : hideLayerInMap,
+            showLayerInMap : showLayerInMap,
+            updateLayerStackIndex : updateLayerStackIndex,
+            layerTypes : ['point','line','polygon','raster']
+        };
+
+
+
+        var hideBaseLayerInMap = function(baseMapId){
+            OpenLayersMap.removeBaseMap(baseMapId);
+        };
+
+        var showBaseLayerInMap = function(baseMapId){
+            OpenLayersMap.setBaseMap(baseMapId);
+        };
+
+        $scope.baseLayerListOptions = {
+            layerList : OpenLayersMap.getBaseMaps(),
+            hideLayerInMap : hideBaseLayerInMap,
+            showLayerInMap : showBaseLayerInMap,
+            disableSort : true
+        };
+
+        $scope.$on('updateLayerList', function (event) {
+            $scope.overlayLayerListOptions.layerList =  Editor.getLayerListShort();
+            $scope.baseLayerListOptions.layerList = OpenLayersMap.getBaseMaps();
+        });
     }])
 
-    .factory('OpenLayersMap', ['SymbologyFactory',function (SymbologyFactory) {
+    .factory('OpenLayersMap', ['$rootScope','SymbologyFactory',function ($rootScope,SymbologyFactory) {
         // Service logic
         var map = null;
         var layers = {};
@@ -50,21 +96,24 @@ angular.module('TCWS.map', [])
                 source: new ol.source.MapQuestOSM()
             }),
                 name : 'Map Quest OSM',
-                id : 'mapQuestOSM'
+                id : 'mapQuestOSM',
+                layerStackIndex : 101
             };
 
             basemaps.mapQuestOpenArial = { layer : new ol.layer.Tile({
                 source: new ol.source.MapQuestOpenAerial()
             }),
                 name : 'Map Quest Open Arial',
-                id : 'mapQuestOpenArial'
+                id : 'mapQuestOpenArial',
+                layerStackIndex : 103
             };
 
             basemaps.OSM = { layer :new ol.layer.Tile({
                 source: new ol.source.OSM()
             }),
                 name : 'OSM',
-                id : 'OSM'
+                id : 'OSM',
+                layerStackIndex : 102
             };
 
             basemaps.mapBoxThema = { layer : new ol.layer.Tile({
@@ -74,7 +123,8 @@ angular.module('TCWS.map', [])
                 })
             }),
                 name : 'Map Box Thematic',
-                id : 'mapBoxThema'
+                id : 'mapBoxThema',
+                layerStackIndex : 104
             };
 
             var attribution = new ol.Attribution({
@@ -90,7 +140,8 @@ angular.module('TCWS.map', [])
                 })
             }),
                 name : 'Esri Topo',
-                id : 'esriTopo'
+                id : 'esriTopo',
+                layerStackIndex : 105
             };
         };
 
@@ -128,15 +179,17 @@ angular.module('TCWS.map', [])
                     })
                 });
 
-                //map.addLayer(basemaps.esriTopo.layer);
-                //currentBasemap = basemaps.esriTopo;
             },
             getBaseMaps : function(){
                 var result = [];
                 for (var prop in basemaps) {
                     if (basemaps.hasOwnProperty(prop)) {
-                        result.push({id : prop,
-                            name: basemaps[prop].name})
+                        result.push({
+                            id : prop,
+                            name: basemaps[prop].name,
+                            type: 'raster',
+                            layerStackIndex : basemaps[prop].layerStackIndex
+                        });
                         if(currentBasemap && result[result.length-1].id == currentBasemap.id) result[result.length-1].inMap = true;
                     }
                 }
@@ -144,13 +197,25 @@ angular.module('TCWS.map', [])
             },
             setBaseMap : function(id){
                 if(currentBasemap) map.removeLayer(currentBasemap.layer);
-                map.getLayers().insertAt(0,basemaps[id].layer);
+
+                var layersInMap = map.getLayers().getArray();
+
+                var length = layersInMap.length;
+                for (var i=0;i<length;i++)
+                {
+                    if(layersInMap[i].layerStackIndex > basemaps[id].layerStackIndex) break;
+                }
+
+                map.getLayers().insertAt(i,basemaps[id].layer);
+
                 currentBasemap = basemaps[id];
+                $rootScope.$broadcast('updateLayerList');
             },
             removeBaseMap : function(id){
                 if(currentBasemap.id == id){
                     map.removeLayer(currentBasemap.layer);
                     currentBasemap = null;
+                    $rootScope.$broadcast('updateLayerList');
                 }
             },
             setCenter: function(Lon,Lat,Zoom){
@@ -161,7 +226,7 @@ angular.module('TCWS.map', [])
                     })
                 );
             },
-            addLayer : function(layerData,zIndex){
+            addLayer : function(layerData){
 
                 if(!layerData.olLayer){
 
@@ -189,24 +254,61 @@ angular.module('TCWS.map', [])
 
                     layer.addFeatures(layerData.gmlData.features);
 
+                    layer.layerStackIndex = layerData.layerStackIndex;
+
                     layerData.olLayer = layer;
                 }
 
 
-                if(zIndex) map.getLayers().insertAt(zIndex,layerData.olLayer);
-                else map.addLayer(layerData.olLayer);
+                var layersInMap = map.getLayers().getArray();
 
-                layers[layerData.id] = layerData.olLayer;
+                var length = layersInMap.length;
+                for (var i=0;i<length;i++)
+                {
+                    if(layersInMap[i].layerStackIndex > layerData.layerStackIndex) break;
+                }
+
+                map.getLayers().insertAt(i,layerData.olLayer);
+
+                layers[layerData.id] = layerData;
+            },
+            updateLayerStackFromArray : function(layerArray){
+                var length = layerArray.length;
+                for (var i=0;i<length;i++)
+                {
+                    if(layers[layerArray[i].id]) layers[layerArray[i].id].layerStackIndex = layerArray[i].layerStackIndex;
+                }
+
+                //hack: no zIndex for layers yet, delete all and add again in right order
+
+                var layerInMapArray = [];
+                for (var prop in layers) {
+                    if (layers.hasOwnProperty(prop)) {
+                        layers[prop].olLayer.layerStackIndex = layers[prop].layerStackIndex;
+                        layerInMapArray.push(layers[prop].olLayer);
+                        map.removeLayer(layers[prop].olLayer);
+                    }
+                }
+
+                layerInMapArray.sort(function(a,b) {
+                    return parseFloat(a.layerStackIndex) - parseFloat(b.layerStackIndex)
+                });
+
+                length = layerInMapArray.length;
+                for (i=0;i<length;i++)
+                {
+                    map.addLayer(layerInMapArray[i]);
+                }
             },
             removeLayer : function(id){
-                map.removeLayer(layers[id]);
+                map.removeLayer(layers[id].olLayer);
                 delete layers[id];
             },
             selectFeature : function(layerId, featureId){
 
                 if(!layers[layerId]) return;
 
-                var features = layers[layerId].featureCache_.idLookup_;
+                var features = layers[layerId].olLayer.featureCache_.idLookup_;
                 for (var prop in features) {
                     if (features.hasOwnProperty(prop)) {
                         if(features[prop].getId() == featureId){
@@ -220,7 +322,7 @@ angular.module('TCWS.map', [])
 
                 if(!layers[layerId]) return;
 
-                var features = layers[layerId].featureCache_.idLookup_;
+                var features = layers[layerId].olLayer.featureCache_.idLookup_;
                 for (var prop in features) {
                     if (features.hasOwnProperty(prop)) {
                         if(features[prop].getId() == featureId){
