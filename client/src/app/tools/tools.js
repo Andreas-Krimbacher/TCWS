@@ -8,6 +8,7 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
 
         var inputServices = Editor.getInputServices();
         var processingServices = Editor.getProcessingServices();
+        var symbologyRepositories = Symbology.getSymbologyRepositories();
 
         //Service chain choropleth districts
 
@@ -18,10 +19,12 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             directMatch : true,
             layers : {
                 "1-10" : {
+                    layerId : "1-10",
                     "column" : "BEZIRK",
                     "columnNewTable" : []
                 },
                 "1-11" : {
+                    layerId : "1-11",
                     "column" : "BEZIRK_ID",
                     "columnNewTable" : ['BEZIRK_ID','KT_ID','DIST','T','M','W']
                 }
@@ -58,10 +61,14 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             }
         };
 
-        var symbology = {
-            layerId : '556-2',
-            symbologyType : 'polygon',
-            symbology : Symbology.getPolygonSymbology(1,1,['class'])
+        var symbology = { symbologyRepository : symbologyRepositories['1'],
+            config : {
+                layerId : '556-2',
+                type : 'polygon',
+                groupId : 1,
+                symbologyId: 1,
+                columns : ['class']
+            }
         };
 
         var show = {
@@ -75,11 +82,11 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'integrate' , config : integrate },
             {type : 'service' , config : service1 },
             {type : 'service' , config : service2 },
-            {type : 'symbologySync' , config : symbology },
+            {type : 'symbology' , config : symbology },
             {type : 'show' , config : show }
         ];
 
-        ServiceChain.executeServiceChain(serviceChain);
+        //ServiceChain.executeServiceChain(serviceChain);
 
         //service chain diaml study
 
@@ -91,10 +98,12 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             directMatch : true,
             layers : {
                 "1-12" : {
+                    layerId : "1-12",
                     "column" : "KURZ",
                     "columnNewTable" : []
                 },
                 "1-13" : {
+                    layerId : "1-13",
                     "column" : "CANTON_ID",
                     "columnNewTable" : ['CANTON_ID','POP_M_2010','POP_M_2011','POP_W_2010','POP_W_2011']
                 }
@@ -106,10 +115,12 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             directMatch : true,
             layers : {
                 "555-1" : {
+                    layerId : "555-1",
                     "column" : "CANTON_ID",
                     "columnNewTable" : ['CANTON_ID','POP_M_2010','POP_M_2011','POP_W_2010','POP_W_2011']
                 },
                 "1-14" : {
+                    layerId : "1-14",
                     "column" : "CANTON_ID",
                     "columnNewTable" : ['S_M_2010','S_M_2011','S_W_2010','S_W_2011']
                 }
@@ -178,10 +189,14 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             }
         };
 
-        var symbology = {
-            layerId : '555-3',
-            symbologyType : 'point',
-            symbology : Symbology.getPointSymbology(1,1,['s_w_2011','s_m_2011','s_m_2010','s_w_2010'])
+        var symbology = { symbologyRepository : symbologyRepositories['1'],
+            config : {
+                layerId : '555-3',
+                type : 'point',
+                groupId : 1,
+                symbologyId: 1,
+                columns : ['s_w_2011','s_m_2011','s_m_2010','s_w_2010']
+            }
         };
 
         var show1 = {
@@ -206,9 +221,9 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'manipulateTable' , config : manipulateTable2 },
             {type : 'manipulateTable' , config : manipulateTable3 },
             {type : 'manipulateTable' , config : manipulateTable4 },
-            {type : 'symbologyAsync' , config : symbology },
+            {type : 'symbology' , config : symbology },
             {type : 'show' , config : show1 },
-            {type : 'show' , config : show2 }
+//            {type : 'show' , config : show2 }
         ];
 
         ServiceChain.executeServiceChain(serviceChain);
@@ -223,10 +238,12 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             directMatch : true,
             layers : {
                 "1-10" : {
+                    layerId : "1-10",
                     "column" : "BEZIRK",
                     "columnNewTable" : []
                 },
                 "1-11" : {
+                    layerId : "1-11",
                     "column" : "BEZIRK_ID",
                     "columnNewTable" : ['BEZIRK_ID','KT_ID','DIST','T','M','W']
                 }
@@ -257,16 +274,22 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             }
         };
 
-        var symbology1 = {
-            layerId : '1-12',
-            symbologyType : 'polygon',
-            symbology : Symbology.getPolygonSymbology(2,1)
+        var symbology1 = { symbologyRepository : symbologyRepositories['1'],
+            config : {
+                layerId : '1-12',
+                type : 'polygon',
+                groupId : 2,
+                symbologyId: 1
+            }
         };
 
-        var symbology2 = {
-            layerId : '557-2',
-            symbologyType : 'point',
-            symbology : Symbology.getPointSymbology(2,1)
+        var symbology2 = { symbologyRepository : symbologyRepositories['1'],
+            config : {
+                layerId : '557-2',
+                type : 'point',
+                groupId : 2,
+                symbologyId: 1
+            }
         };
 
         var show1 = {
@@ -285,14 +308,14 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'import' , config : dataImport3 },
             {type : 'integrate' , config : integrate },
             {type : 'service' , config : service1 },
-            {type : 'symbologySync' , config : symbology1 },
-            {type : 'symbologySync' , config : symbology2 },
+            {type : 'symbology' , config : symbology1 },
+            {type : 'symbology' , config : symbology2 },
             {type : 'show' , config : show2 },
             {type : 'show' , config : show1 }
         ];
 
 
-        ServiceChain.executeServiceChain(serviceChain);
+//        ServiceChain.executeServiceChain(serviceChain);
 
 
         //        var mappingTable = {

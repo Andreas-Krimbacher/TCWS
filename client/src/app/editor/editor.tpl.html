@@ -1,7 +1,7 @@
 <div id="header">
 </div>
 <div id="content">
-    <div id="view-left" >
+    <div id="view-left" ng-class="{'big-map' : bigMap}">
         <tcws-map></tcws-map>
     </div>
     <div id="view-right" ng-controller="ToolsCtrl" ng-hide="bigMap">

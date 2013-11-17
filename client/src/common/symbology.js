@@ -2,199 +2,191 @@
 
 angular.module('TCWS.symbology', [])
 
-    .factory('Symbology', ['DiaML',function (DiaML) {
+    .factory('Symbology', ['DiaML','$http',function (DiaML,$http) {
         // Service logic
 
-        var colorScheme = {
-            '1' : {'polygon-fill' : '#7FC97F'},
-            '2' :{'polygon-fill' : '#BEAED4'},
-            '3' :{'polygon-fill' : '#FDC086'},
-            '4' :{'polygon-fill' : '#FFFF99'},
-            '5' :{'polygon-fill' : '#386CB0'}
-        };
-
-        var polygonGroupSymbology = {
-            '1':{
-                groupId : 1,
-                groupName : 'Beautiful',
-                groupStyle : {
-                    'polygon-fill' : '#ffffff',
-                    'polygon-opacity' : 0,
-                    'line-color' : '#5cb85c',
-                    'line-width' : 1
-                },
-                styleType : 'cartoCss',
-                symbologys : {
-                    '1' : {
-                        symbologyId : 1,
-                        name : 'Qualitative',
-                        style : {},
-                        styleType : 'cartoCss',
-                        variableSymbology : [
-                            {
-                                columnType : 'nominal',
-                                column : null,
-                                styles : colorScheme,
-                                values : {},
-                                styleType : 'list',
-                                maxValues : 5,
-                                minValues : 2
-                            }
-                        ]
-                    }
+        var fileRepository = {
+            variableStyle:
+            {
+                '1' : {
+                    groupId: 1, groupName: 'Qualitative Color Scheme', path: 'Symbology/variableStyle1.json', fileType: 'JSON'
                 }
             },
-            '2':{
-                groupId : 2,
-                groupName : 'Simple Styles',
-                groupStyle : {
-                    'line-color' : '#000000',
-                    'line-width' : 2,
-                    'line-opacity' : 0.8
+            pointSymbologys:
+            {
+                '1' : {
+                    groupId: 1, groupName: 'Pie Charts', path: 'Symbology/point1.json', fileType: 'JSON'
                 },
-                styleType : 'cartoCss',
-                symbologys : {
-                    '1' : {
-                        symbologyId : 1,
-                        name : 'Light Boarder',
-                        style : {},
-                        styleType : 'cartoCss',
-                        variableSymbology : []
-                    }
+                '2' : {
+                    groupId: 2, groupName: 'Dot Maps', path: 'Symbology/point2.json', fileType: 'JSON'
+                }
+            },
+            polygonSymbologys:
+            {
+                '1' : {
+                    groupId: 1, groupName: 'Beautiful', path: 'Symbology/polygon1.json', fileType: 'JSON'
+                },
+                '2' : {
+                    groupId: 2, groupName: 'Simple Styles', path: 'Symbology/polygon2.json', fileType: 'JSON'
                 }
             }
         };
 
-        var pointGroupSymbology = {
-            '1':{
-                groupId : 1,
-                groupName : 'Pie Charts',
-                groupStyle : {},
-                styleType : 'cartoCss',
-                symbologys : {
-                    '1' : {
-                        symbologyId : 1,
-                        name : 'Two Values Grouped',
-                        style : {},
-                        styleType : 'diaML',
-                        DiaML : {sourceType : 'file', config : {path : 'Symbology/DiaML/pie.xml'}, json : null, xml : null, type : 'diagram'},
-                        variableSymbology : [
-                            {
-                                columnType : 'metric',
-                                column : null,
-                                diaMLRef : 'column1'
-                            },
-                            {
-                                columnType : 'metric',
-                                column : null,
-                                diaMLRef : 'column2'
-                            },
-                            {
-                                columnType : 'metric',
-                                column : null,
-                                diaMLRef : 'column3'
-                            },
-                            {
-                                columnType : 'metric',
-                                column : null,
-                                diaMLRef : 'column4'
-                            }
-                        ]
-                    }
-                }
-            },
-            '2':{
-                groupId : 2,
-                groupName : 'Dot Maps',
-                groupStyle : {
-                    'marker-type' : 'ellipse',
-                    'marker-fill' : '#570387',
-                    'marker-fill-opacity' : '0'
-                },
-                styleType : 'cartoCss',
-                symbologys : {
-                    '1' : {
-                        symbologyId : 1,
-                        name : 'Dot Map Small',
-                        style : {
-                            'marker-width' : '2',
-                            'marker-height' : '2'
-                        },
-                        styleType : 'cartoCss',
-                        variableSymbology : []
-                    }
-                }
+        var symbologyRepositories = {
+            '1' : {
+                sourceId: 1, name: 'Hosted Symbology Files', desc: 'Symbology hosted on the Server. For free!', type : 'file' , param: fileRepository
             }
+        };
+
+        var _getFileData = function(path){
+            return $http({method: 'GET', url: path}).then(function(result){
+                return result.data;
+            });
         };
 
         // Public API here
         return {
-            getPolygonGroupSymbology : function(){
+            getSymbologyRepositories : function(){
+                return symbologyRepositories;
+            },
+            getPolygonSymbologyGroups : function(symbologyRepository){
 
-
-                return angular.copy(polygonGroupSymbology);
+                return symbologyRepository.param.polygonSymbologys;
 
             },
-            getPointGroupSymbology : function(){
+            getPointSymbologyGroups : function(symbologyRepository){
 
-                var result = angular.copy(pointGroupSymbology);
-                return DiaML.diaMLToJson(result['1'].symbologys['1'].DiaML).then(function(){
+                return symbologyRepository.param.pointSymbologys;
 
-                    return result;
+            },
+            getPolygonSymbologyGroup : function(symbologyRepository,groupId){
 
+                var path = symbologyRepository.param.polygonSymbologys[groupId].path;
+                return _getFileData(path).then(function(symbologyGroup){
+                    return symbologyGroup;
                 });
 
             },
-            getPolygonSymbology : function(groupId,symbologyId,columns){
+            getPointSymbologyGroup : function(symbologyRepository,groupId){
 
-                var symbology = angular.copy(polygonGroupSymbology[groupId].symbologys[symbologyId]);
+                var path = symbologyRepository.param.pointSymbologys[groupId].path;
+                return _getFileData(path).then(function(symbologyGroup){
+                    return symbologyGroup;
+                });
 
-                for (var prop in polygonGroupSymbology[groupId].groupStyle) {
-                    if (polygonGroupSymbology[groupId].groupStyle.hasOwnProperty(prop)) {
-
-                        if(!symbology.style[prop]){
-                            symbology.style[prop] = polygonGroupSymbology[groupId].groupStyle[prop];
-                        }
-
-                    }
-                }
-
-                var length = symbology.variableSymbology.length;
-                for (var i=0;i<length;i++)
-                {
-                    symbology.variableSymbology[i].column = columns[i];
-                }
-
-                return symbology;
             },
-            getPointSymbology : function(groupId,symbologyId,columns){
+            getPolygonSymbology : function(symbologyRepository,config){
+                //implementation for cartoCSS with variable Style
+                var path = symbologyRepository.param.polygonSymbologys[config.groupId].path;
 
-                var symbology = angular.copy(pointGroupSymbology[groupId].symbologys[symbologyId]);
-                var length = symbology.variableSymbology.length;
-                for (var i=0;i<length;i++)
-                {
-                    symbology.variableSymbology[i].column = columns[i];
-                }
+                return _getFileData(path).then(function(symbologyGroup){
 
-                if(symbology.styleType == 'diaML'){
-                    return DiaML.diaMLToJson(symbology.DiaML).then(function(){
-                        return symbology;
-                    });
-                }
-                if(symbology.styleType == 'cartoCss'){
+                    var symbology = symbologyGroup.symbologys[config.symbologyId];
 
-                    for (var prop in pointGroupSymbology[groupId].groupStyle) {
-                        if (pointGroupSymbology[groupId].groupStyle.hasOwnProperty(prop)) {
+                    for (var prop in symbologyGroup.groupStyle) {
+                        if (symbologyGroup.groupStyle.hasOwnProperty(prop)) {
 
                             if(!symbology.style[prop]){
-                                symbology.style[prop] = pointGroupSymbology[groupId].groupStyle[prop];
+                                symbology.style[prop] = symbologyGroup.groupStyle[prop];
                             }
 
                         }
                     }
 
-                    return symbology;
+                    if(config.columns){
+                        var length = symbology.variableSymbology.length;
+                        for (var i=0;i<length;i++)
+                        {
+                            symbology.variableSymbology[i].column = config.columns[i];
+                        }
+                    }
+
+                    var promise = null;
+                    length = symbology.variableSymbology.length;
+                    for (i=0;i<length;i++)
+                    {
+                        if(typeof symbology.variableSymbology[i].styles == 'string'){
+                            var variableStylePath = symbologyRepository.param.variableStyle[symbology.variableSymbology[i].styles].path;
+
+                            if(!promise){
+                                (function(i){
+                                    promise = _getFileData(variableStylePath).then(function(variableSymbology){
+                                        symbology.variableSymbology[i].styles = variableSymbology;
+                                        return symbology;
+                                    });
+                                })(i);
+                            }
+                            else{
+                                (function(i){
+                                    promise.then(function(variableSymbology){
+                                        symbology.variableSymbology[i].styles = variableSymbology;
+                                        return symbology;
+                                    });
+                                })(i);
+                            }
+
+                        }
+                    }
+
+                    if(promise) return promise;
+                    else return symbology;
+                });
+            },
+            getPointSymbology : function(symbologyRepository,config){
+                //implementation for diaml and cartoCSS without variable Style
+
+                var path = symbologyRepository.param.pointSymbologys[config.groupId].path;
+
+                return _getFileData(path).then(function(symbologyGroup){
+                    var symbology = symbologyGroup.symbologys[config.symbologyId];
+
+                    if(config.columns){
+                        var length = symbology.variableSymbology.length;
+                        for (var i=0;i<length;i++)
+                        {
+                            symbology.variableSymbology[i].column = config.columns[i];
+                        }
+                    }
+
+                    var promise = null;
+                    if(symbology.styleType == 'diaML'){
+                        if(!symbology.diaML.xml){
+                            if(symbology.diaML.sourceType == 'file'){
+                                promise = _getFileData(symbology.diaML.config.path).then(function(diaMLXml){
+                                    symbology.diaML.json = DiaML.diaMLXmlToJson(diaMLXml);
+
+                                    return symbology;
+                                });
+                            }
+                        }
+                        else{
+                            diaML.json = DiaML.diaMLXmlToJson(diaMLXml);
+                        }
+                    }
+
+                    if(symbology.styleType == 'cartoCss'){
+                        for (var prop in symbologyGroup.groupStyle) {
+                            if (symbologyGroup.groupStyle.hasOwnProperty(prop)) {
+                                if(!symbology.style[prop]){
+                                    symbology.style[prop] = symbologyGroup.groupStyle[prop];
+                                }
+                            }
+                        }
+                    }
+
+                    if(promise) return promise;
+                    else return symbology;
+                });
+            },
+            getPreview : function(symbology,symbologyType){
+                var img = '';
+
+                if(symbologyType == 'point' && symbology.styleType == 'diaML'){
+                    var diagrams = DiaML.getCanvasDiagrams(symbology.diaML.json, null);
+                    img = diagrams[0];
                 }
+
+                return img;
             }
         }
     }])
@@ -205,23 +197,13 @@ angular.module('TCWS.symbology', [])
 
         // Public API here
         return {
-            diaMLToJson : function(diaML){
+            diaMLXmlToJson : function(xml){
 
-                if(!diaML.xml){
-                    if(diaML.sourceType == 'file'){
-                        return $http({method: 'GET', url: diaML.config.path}).then(function(result){
-                            var parser = new X2JS();
-                            diaML.json = parser.xml_str2json(result.data);
+                var parser = new X2JS();
+                var json = parser.xml_str2json(xml);
 
-                        });
-                    }
-                }
-                else{
-                    var parser = new X2JS();
-                    var json = parser.xml_str2json(diaML.xml);
+                return json;
 
-                    return json;
-                }
             },
             getCanvasDiagrams : function(diaML,values){
 

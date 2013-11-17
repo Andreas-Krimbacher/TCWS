@@ -188,7 +188,7 @@ angular.module('TCWS.tools.preparation', ['TCWS.webService'])
                         requestMethods[requestMethods.length-1].children.push(
                             {
                                 id : count,
-                                text : processingServices[prop1].methods[prop2].name,
+                                text : processingServices[prop1].methods[prop2].methodName,
                                 serviceId : prop1,
                                 methodId : processingServices[prop1].methods[prop2].methodId
                             }

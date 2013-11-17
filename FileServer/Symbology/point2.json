@@ -1,0 +1,22 @@
+{
+    "groupId" : 2,
+    "groupName" : "Dot Maps",
+    "groupStyle" : {
+        "marker-type" : "ellipse",
+        "marker-fill" : "#570387",
+        "marker-fill-opacity" : "0"
+    },
+    "styleType" : "cartoCss",
+    "symbologys" : {
+        "1" : {
+            "symbologyId" : 1,
+            "name" : "Dot Map Small",
+            "style" : {
+                "marker-width" : "2",
+                "marker-height" : "2"
+            },
+            "styleType" : "cartoCss",
+            "variableSymbology" : []
+        }
+    }
+}

@@ -16,76 +16,73 @@ angular.module('TCWS.tools.symbology', ['TCWS.symbology'])
 
     .controller('SymbologyPointCtrl', ['$scope','Symbology','DiaML','Editor','DataStore',function ($scope,Symbology,DiaML,Editor,DataStore) {
 
-        var pointGroupSymbology = null;
-        $scope.symbolSrc = '';
+        var symbologyRepositories = Symbology.getSymbologyRepositories();
+        var symbologyRepository = symbologyRepositories['1'];
 
+        var pointSymbologyGroups = Symbology.getPointSymbologyGroups(symbologyRepository);
+
+        var symbologyGroupList = [];
+        for (var prop in pointSymbologyGroups) {
+            if (pointSymbologyGroups.hasOwnProperty(prop)) {
+               symbologyGroupList.push({id:pointSymbologyGroups[prop].groupId, text : pointSymbologyGroups[prop].groupName})
+            }
+        }
+        
+        $scope.symbolSrc = '';
         $scope.currentStyle = null;
 
-        var groupSymbologyList = [];
-        $scope.pointSymbologyList = [];
+        $scope.pointSymbologiesList = [];
 
-        $scope.selectOptionsGroupSymbology = {
+        $scope.selectOptionsSymbologyGroup = {
             allowClear:true,
-            data: groupSymbologyList
+            data: symbologyGroupList
         };
 
         $scope.selectOptionsPointSymbology = {
             allowClear:true,
-            data:  $scope.pointSymbologyList
+            data:  $scope.pointSymbologiesList
         };
 
 
-
-        Symbology.getPointGroupSymbology().then(function(result){
-
-            pointGroupSymbology = result;
-
-            for (var prop in pointGroupSymbology) {
-                if (pointGroupSymbology.hasOwnProperty(prop)) {
-                    groupSymbologyList.push({id:pointGroupSymbology[prop].groupId, text : pointGroupSymbology[prop].groupName})
-                }
-            }
-
-            $('#pointSymbology').select2({data : groupSymbologyList})
-        });
-
-
-        $scope.$watch('groupSymbology', function (newValue, oldValue) {
+        $scope.$watch('symbologyGroup', function (newValue, oldValue) {
             if(newValue){
+                $scope.pointSymbologiesList = [];
 
-                $scope.pointSymbologyList = [];
-                for (var prop in pointGroupSymbology[$scope.groupSymbology.id].symbologys) {
-                    if (pointGroupSymbology[$scope.groupSymbology.id].symbologys.hasOwnProperty(prop)) {
-                        $scope.pointSymbologyList.push(
-                            {
-                                id : prop,
-                                text : pointGroupSymbology[$scope.groupSymbology.id].symbologys[prop].name
-                            }
-                        );
+                Symbology.getPointSymbologyGroup(symbologyRepository,$scope.symbologyGroup.id).then(function(pointSymbologyGroup){
+
+                    for (var prop in pointSymbologyGroup.symbologys) {
+                        if (pointSymbologyGroup.symbologys.hasOwnProperty(prop)) {
+                            $scope.pointSymbologiesList.push(
+                                {
+                                    id : pointSymbologyGroup.symbologys[prop].symbologyId,
+                                    text : pointSymbologyGroup.symbologys[prop].name
+                                }
+                            );
+                        }
                     }
-                }
-                $scope.selectOptionsPointSymbology.data = $scope.pointSymbologyList;
+                    $scope.selectOptionsPointSymbology.data = $scope.pointSymbologiesList;
 
-                //Hack because options get not updated
-                $('#pointSymbology').select2($scope.selectOptionsPointSymbology);
+                    //Hack because options get not updated
+                    $('#pointSymbology').select2($scope.selectOptionsPointSymbology);
+                });
             }
             else{
-                $scope.pointSymbologyList = [];
-                $scope.selectOptionsPointSymbology.data = $scope.pointSymbologyList;
+                $scope.pointSymbologiesList = [];
+                $scope.selectOptionsPointSymbology.data = $scope.pointSymbologiesList;
                 $('#pointSymbology').select2($scope.selectOptionsPointSymbology);
             }
         });
 
         $scope.$watch('pointSymbology', function (newValue, oldValue) {
             if(newValue){
-                $scope.currentStyle = pointGroupSymbology[$scope.groupSymbology.id].symbologys[$scope.pointSymbology.id];
+                var config = {groupId : $scope.symbologyGroup.id, symbologyId : $scope.pointSymbology.id};
+                Symbology.getPointSymbology(symbologyRepository, config).then(function(symbology){
 
-                if($scope.currentStyle.DiaML.type == 'diagram'){
-                    var diagrams = DiaML.getCanvasDiagrams($scope.currentStyle.DiaML.json, null);
-                }
-                $scope.symbolSrc = diagrams[0].img;
-
-                $scope.columnCount = $scope.currentStyle.variableSymbology.length;
+                    var preview = Symbology.getPreview(symbology,'point');
+                    $scope.symbolSrc = preview.img;
+                    $scope.currentStyle = symbology;
+                    $scope.columnCount = $scope.currentStyle.variableSymbology.length;
+                });
             }
             else{
                 $scope.currentStyle = null;
@@ -140,7 +137,6 @@ angular.module('TCWS.tools.symbology', ['TCWS.symbology'])
         });
 
         $scope.applySymbology = function(){
-
             //hack, because ng-model dont work.
             var columns =  $('#columnInput').val().split(',');
             var length = columns.length;
@@ -149,7 +145,14 @@ angular.module('TCWS.tools.symbology', ['TCWS.symbology'])
                 $scope.currentStyle.variableSymbology[i].column = columns[i];
             }
 
-            Editor.applySymbology($scope.layer.id,'point',$scope.currentStyle)
+            var repositoryInfo = {
+                symbologyRepositories : symbologyRepository,
+                groupId : $scope.symbologyGroup.id,
+                symbologyId : $scope.pointSymbology.id,
+                columns : columns
+            };
+
+            Editor.applySymbology($scope.layer.id,$scope.currentStyle,'point',repositoryInfo);
         };
 
     }])
@@ -160,59 +163,74 @@ angular.module('TCWS.tools.symbology', ['TCWS.symbology'])
 
     .controller('SymbologyPolygonCtrl', ['$scope','DataStore','Editor','Symbology',function ($scope,DataStore,Editor,Symbology) {
 
-        var polygonGroupSymbology = Symbology.getPolygonGroupSymbology();
+        var symbologyRepositories = Symbology.getSymbologyRepositories();
+        var symbologyRepository = symbologyRepositories['1'];
 
-        $scope.currentStyle = null;
+        var polygonSymbologyGroups = Symbology.getPolygonSymbologyGroups(symbologyRepository);
 
-        var groupSymbologyList = [];
-        $scope.polygonSymbologyList = [];
-
-
-        for (var prop in polygonGroupSymbology) {
-            if (polygonGroupSymbology.hasOwnProperty(prop)) {
-                groupSymbologyList.push({id:polygonGroupSymbology[prop].groupId, text : polygonGroupSymbology[prop].groupName})
+        var symbologyGroupList = [];
+        for (var prop in polygonSymbologyGroups) {
+            if (polygonSymbologyGroups.hasOwnProperty(prop)) {
+                symbologyGroupList.push({id:polygonSymbologyGroups[prop].groupId, text : polygonSymbologyGroups[prop].groupName})
             }
         }
 
-        $scope.selectOptionsGroupSymbology = {
+        $scope.symbolSrc = '';
+        $scope.currentStyle = null;
+
+        $scope.polygonSymbologiesList = [];
+
+        $scope.selectOptionsSymbologyGroup = {
             allowClear:true,
-            data: groupSymbologyList
+            data: symbologyGroupList
         };
 
         $scope.selectOptionsPolygonSymbology = {
             allowClear:true,
-            data: $scope.polygonSymbologyList
+            data:  $scope.polygonSymbologiesList
         };
 
-        $scope.$watch('groupSymbology', function (newValue, oldValue) {
+
+        $scope.$watch('symbologyGroup', function (newValue, oldValue) {
             if(newValue){
+                $scope.polygonSymbologiesList = [];
 
-                $scope.polygonSymbologyList = [];
-                for (var prop in polygonGroupSymbology[$scope.groupSymbology.id].symbologys) {
-                    if (polygonGroupSymbology[$scope.groupSymbology.id].symbologys.hasOwnProperty(prop)) {
-                        $scope.polygonSymbologyList.push(
-                            {
-                                id : prop,
-                                text : polygonGroupSymbology[$scope.groupSymbology.id].symbologys[prop].name
-                            }
-                        );
+                Symbology.getPolygonSymbologyGroup(symbologyRepository,$scope.symbologyGroup.id).then(function(polygonSymbologyGroup){
+
+                    for (var prop in polygonSymbologyGroup.symbologys) {
+                        if (polygonSymbologyGroup.symbologys.hasOwnProperty(prop)) {
+                            $scope.polygonSymbologiesList.push(
+                                {
+                                    id : polygonSymbologyGroup.symbologys[prop].symbologyId,
+                                    text : polygonSymbologyGroup.symbologys[prop].name
+                                }
+                            );
+                        }
                     }
-                }
-                $scope.selectOptionsPolygonSymbology.data = $scope.polygonSymbologyList;
+                    $scope.selectOptionsPolygonSymbology.data = $scope.polygonSymbologiesList;
 
-                //Hack because options get not updated
-                $('#polygonSymbology').select2($scope.selectOptionsPolygonSymbology);
+                    //Hack because options get not updated
+                    $('#polygonSymbology').select2($scope.selectOptionsPolygonSymbology);
+                });
             }
             else{
-                $scope.polygonSymbologyList = [];
-                $scope.selectOptionsPolygonSymbology.data = $scope.polygonSymbologyList;
+                $scope.polygonSymbologiesList = [];
+                $scope.selectOptionsPolygonSymbology.data = $scope.polygonSymbologiesList;
                 $('#polygonSymbology').select2($scope.selectOptionsPolygonSymbology);
             }
         });
 
         $scope.$watch('polygonSymbology', function (newValue, oldValue) {
             if(newValue){
-                $scope.currentStyle = polygonGroupSymbology[$scope.groupSymbology.id].symbologys[$scope.polygonSymbology.id];
+                var config = {groupId : $scope.symbologyGroup.id, symbologyId : $scope.polygonSymbology.id};
+                Symbology.getPolygonSymbology(symbologyRepository, config).then(function(symbology){
+
+                    // Todo: Implement Color Scheme over Preview Img
+//                    var preview = Symbology.getPreview(symbology,'polygon');
+//                    $scope.symbolSrc = preview.img;
+                    $scope.currentStyle = symbology;
+                    $scope.columnCount = $scope.currentStyle.variableSymbology.length;
+                });
             }
             else{
                 $scope.currentStyle = null;
@@ -267,19 +285,16 @@ angular.module('TCWS.tools.symbology', ['TCWS.symbology'])
         $scope.applySymbology = function(){
 
             $scope.currentStyle.variableSymbology[0].column = $scope.column.id;
-            for (var prop in polygonGroupSymbology[$scope.groupSymbology.id].groupStyle) {
-                if (polygonGroupSymbology[$scope.groupSymbology.id].groupStyle.hasOwnProperty(prop)) {
 
-                    if(!$scope.currentStyle.style[prop]){
-                        $scope.currentStyle.style[prop] = polygonGroupSymbology[$scope.groupSymbology.id].groupStyle[prop];
-                    }
+            var repositoryInfo = {
+                symbologyRepositories : symbologyRepository,
+                groupId : $scope.symbologyGroup.id,
+                symbologyId : $scope.pointSymbology.id,
+                columns : columns
+            };
 
-                }
-            }
-
-            Editor.applySymbology($scope.layer.id,'polygon',$scope.currentStyle)
+            Editor.applySymbology($scope.layer.id,$scope.currentStyle,'polygon',repositoryInfo);
         };
-
 
     }])
 

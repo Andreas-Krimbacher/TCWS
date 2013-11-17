@@ -41,7 +41,7 @@ module.exports.importGML = function(req,tmpTableName,callback){
         console.log("The file was uploaded!");
 
         var sql = 'DROP TABLE IF EXISTS "'+pgConfig.schema+'".'+tmpTableName+';';
-        console.log(sql);
+        //console.log(sql);
         client.query(sql, function(err) {
 
             if(err) {
@@ -54,14 +54,14 @@ module.exports.importGML = function(req,tmpTableName,callback){
             cmd += '"PG:dbname='+pgConfig.database+' host='+pgConfig.host+' user='+pgConfig.user+' password='+pgConfig.password+' active_schema='+pgConfig.schema+'" ';
             cmd += tmpPath+tmpInFileName+' -lco GEOMETRY_NAME='+geomName+' -nln '+tmpTableName;
 
-            console.log(cmd);
+            //console.log(cmd);
             exec(cmd, function (err, stdout, stderr) {
                 if(err){
                     callback(err);
                 }
 
-                console.log(stdout);
-                console.log(stderr);
+                //console.log(stdout);
+                //console.log(stderr);
 
                 console.log("Table imported!");
 
@@ -82,27 +82,27 @@ module.exports.exportGML = function(tmpTableName,callback){
     cmd += '"PG:dbname='+pgConfig.database+' host='+pgConfig.host+' user='+pgConfig.user+' password='+pgConfig.password+' active_schema='+pgConfig.schema+'" ';
     cmd += ' -sql "SELECT * FROM '+tmpTableName+'" -nln '+tmpOutFileName+' -overwrite';
 
-    console.log(cmd);
+    //console.log(cmd);
     exec(cmd, function (err, stdout, stderr) {
         if(err){
             callback(err);
         }
 
-        console.log(stdout);
-        console.log(stderr);
+        //console.log(stdout);
+        //console.log(stderr);
 
         console.log("Output Shape created!");
 
         var cmd = 'ogr2ogr -f "GML" -a_srs EPSG:4326 -t_srs EPSG:4326 -preserve_fid '+tmpPath+tmpOutFileName+' '+tmpPath+tmpOutFileName+'.shp';
 
-        console.log(cmd);
+        //console.log(cmd);
         exec(cmd, function (err, stdout, stderr) {
             if(err){
                 callback(err);
             }
 
-            console.log(stdout);
-            console.log(stderr);
+            //console.log(stdout);
+            //console.log(stderr);
 
             console.log("Output GML created!");
 
@@ -127,7 +127,7 @@ module.exports.exportGML = function(tmpTableName,callback){
 };
 
 module.exports.sql = function(sql,callback){
-    console.log(sql);
+    //console.log(sql);
     client.query(sql, function(err) {
 
         callback(err);

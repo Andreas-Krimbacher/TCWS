@@ -7,7 +7,7 @@ angular.module('TCWS.inputHandler', [])
 
         var GMLParser = new ol.parser.ogc.GML_v2({readOptions:{axisOrientation: 'en'}});
 
-        var getFileData = function(layerInfo){
+        var _getFileData = function(layerInfo){
             return $http({method: 'GET', url: layerInfo.path}).then(function(result){
                 return result.data;
             });
@@ -142,7 +142,7 @@ angular.module('TCWS.inputHandler', [])
                 return data;
             },
             getDataFromFile : function(layerInfo,inputService){
-                return getFileData(layerInfo).then(function(fileData){
+                return _getFileData(layerInfo).then(function(fileData){
 
 
                     if(layerInfo.fileType == 'GML'){

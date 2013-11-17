@@ -1,0 +1,30 @@
+{
+    "groupId" : 1,
+    "groupName" : "Beautiful",
+    "groupStyle" : {
+        "polygon-fill" : "#ffffff",
+        "polygon-opacity" : 0,
+        "line-color" : "#5cb85c",
+        "line-width" : 1
+    },
+    "styleType" : "cartoCss",
+    "symbologys" : {
+        "1" : {
+            "symbologyId" : "1",
+            "name" : "Qualitative",
+            "style" : {},
+            "styleType" : "cartoCss",
+            "variableSymbology" : [
+                {
+                    "columnType" : "nominal",
+                    "column" : null,
+                    "styles" : "1",
+                    "values" : {},
+                    "styleType" : "list",
+                    "maxValues" : 5,
+                    "minValues" : 2
+                }
+            ]
+        }
+    }
+}

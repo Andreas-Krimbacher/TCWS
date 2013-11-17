@@ -79,4 +79,9 @@ angular.module('TCWS.tools.overview', ['TCWS.components'])
             $scope.baseLayerListOptions.layerList = OpenLayersMap.getBaseMaps();
         });
 
+    }])
+
+    .controller('OverviewPublishCtrl', ['$scope','ExecutionChain',function ($scope,ExecutionChain) {
+        console.log(ExecutionChain.executionChainToXML(ExecutionChain.getExecutionChainRecursive('555-3')));
+
     }]);

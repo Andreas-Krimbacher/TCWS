@@ -1,0 +1,43 @@
+{
+    "groupId" : 1,
+    "groupName" : "Pie Charts",
+    "groupStyle" : {},
+    "styleType" : "cartoCss",
+    "symbologys" : {
+        "1" : {
+            "symbologyId" : 1,
+            "name" : "Two Values Grouped",
+            "style" : {},
+            "styleType" : "diaML",
+            "diaML" : {
+                "sourceType" : "file",
+                "config" : {"path" : "Symbology/DiaML/pie.xml"},
+                "json" : null,
+                "xml" : null,
+                "type" : "diagram"
+            },
+            "variableSymbology" : [
+                {
+                    "columnType" : "metric",
+                    "column" : null,
+                    "diaMLRef" : "column1"
+                },
+                {
+                    "columnType" : "metric",
+                    "column" : null,
+                    "diaMLRef" : "column2"
+                },
+                {
+                    "columnType" : "metric",
+                    "column" : null,
+                    "diaMLRef" : "column3"
+                },
+                {
+                    "columnType" : "metric",
+                    "column" : null,
+                    "diaMLRef" : "column4"
+                }
+            ]
+        }
+    }
+}

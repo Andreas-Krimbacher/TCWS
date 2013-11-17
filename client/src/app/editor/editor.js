@@ -1,17 +1,11 @@
 'use strict';
 
-angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
+angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools','TCWS.executionChain'])
     .controller('EditorCtrl', ['$scope', 'OpenLayersMap',function ($scope, OpenLayersMap) {
-
-        var smallMapSize = {'width' : '50%', 'height' : '60%'};
-        var bigMapSize = {'width' : '100%', 'height' : '100%'};
-
         $scope.bigMap = false;
 
         $scope.$on('resizeMap', function (event, bigMap) {
             $scope.bigMap = bigMap;
-            if( $scope.bigMap) $('#view-left').css(bigMapSize);
-            else $('#view-left').css(smallMapSize);
         });
 
         $scope.$on('featureSelectedInGrid', function (event, feature) {
@@ -25,14 +19,14 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
 
     }])
 
-    .factory('Editor', ['$rootScope','DataStore','InputHandler','OpenLayersMap','Grid','WebService',function ($rootScope,DataStore,InputHandler,OpenLayersMap,Grid,WebService) {
+    .factory('Editor', ['$rootScope','DataStore','InputHandler','OpenLayersMap','Grid','WebService','Symbology','ExecutionChain',function ($rootScope,DataStore,InputHandler,OpenLayersMap,Grid,WebService,Symbology,ExecutionChain) {
         // Service logic
 
         var layersInMap = {};
         var layerInGrid = null;
 
         var _updateLayer = function(id,layerData){
-            DataStore.updateLayer(id,layerData);
+            if(layerData) DataStore.updateLayer(id,layerData);
 
             var layer = DataStore.getLayer(id);
 
@@ -45,6 +39,8 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 Grid.showData(layer);
             }
         };
+
+
 
         // Public API here
         return {
@@ -68,14 +64,17 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
             },
             updateLayer : function(id,layerData){
                 _updateLayer(id,layerData);
+
             },
             createUpdateLayer : function(method, methodInfo){
                 if(method == 'integrate'){
                     DataStore.integrateLayer(methodInfo.mappingTable,methodInfo.layerId, methodInfo.layerName);
+                    DataStore.addExecutionChainObjectToLayer(methodInfo.layerId,ExecutionChain.getExecutionChainObject('integrate', methodInfo));
                 }
 
                 if(method == 'manipulateTable'){
                     DataStore.manipulateTable(methodInfo.layerId,methodInfo.action,methodInfo.config);
+                    DataStore.addExecutionChainObjectToLayer(methodInfo.layerId,ExecutionChain.getExecutionChainObject('manipulate', methodInfo));
 
                     var layer = DataStore.getLayer(methodInfo.layerId);
 
@@ -188,7 +187,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 {
                     methodId : '1',
                     method : 'area',
-                    name : 'Calculate Area',
+                    methodName : 'Calculate Area',
                     methodGroup : 'measure',
                     methodGroupName : 'Measure',
                     requestParam :
@@ -206,7 +205,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 {
                     methodId : '1',
                     method : 'centroid',
-                    name : 'Calculate Centroid',
+                    methodName : 'Calculate Centroid',
                     methodGroup : 'analyzeGeometry',
                     methodGroupName : 'Analyze geometry',
                     requestParam :
@@ -222,7 +221,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
 
                 var sas =
                 {
-                    serviceType : 'sas',
+                    type : 'sas',
                     serviceId : '1',
                     name: 'Spatial Analysis Service',
                     url : 'http://localhost:9000/services/SAS',
@@ -237,7 +236,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 {
                     methodId : '1',
                     method : 'quantile',
-                    name : 'Quantile Classification',
+                    methodName : 'Quantile Classification',
                     methodGroup : 'classify',
                     methodGroupName : 'Classify',
                     requestParam :
@@ -255,7 +254,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
 
                 var ccs =
                 {
-                    serviceType : 'ccs',
+                    type : 'ccs',
                     serviceId : '2',
                     name: 'Classify and Cluster Service',
                     url : 'http://localhost:9000/services/CCS',
@@ -269,7 +268,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 {
                     methodId : '1',
                     method : 'dotFromArea',
-                    name : 'Dot Map From Area',
+                    methodName : 'Dot Map From Area',
                     methodGroup : 'dotMap',
                     methodGroupName : 'Dot Maps',
                     requestParam :
@@ -289,7 +288,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
 
                 var cts =
                 {
-                    serviceType : 'cts',
+                    type : 'cts',
                     serviceId : '3',
                     name: 'Cartographic Technique Service',
                     url : 'http://localhost:9000/services/CTS',
@@ -311,6 +310,8 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
 
                     if(!DataStore.getLayer(id)){
                         return InputHandler.getDataFromFile(layerInfo,param.inputService).then(function(layerData){
+
+                            layerData.executionChain = [ExecutionChain.getExecutionChainObject('import', param)];
 
                             DataStore.addLayer(layerData);
                             $rootScope.$broadcast('updateLayerList');
@@ -358,6 +359,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 return WebService.executeRequest(parameters).then(function(data){
                     if(parameters.config.resultInfo.type == 'update'){
                         _updateLayer(parameters.config.requestData.layersData[0].id, data);
+                        DataStore.addExecutionChainObjectToLayer(parameters.config.requestData.layersData[0].id,{type: 'service', config : parameters});
                     }
                     if(parameters.config.resultInfo.type == 'new'){
 
@@ -365,6 +367,9 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                         layer.id = parameters.config.resultInfo.layersId[0];
                         layer.type = parameters.config.resultInfo.layersType[0];
                         layer.name = parameters.config.resultInfo.layersName[0];
+
+                        parameters.config.requestData.layersData = [];
+                        layer.executionChain = [ExecutionChain.getExecutionChainObject('service', parameters)];
 
                         DataStore.addLayer(layer);
                     }
@@ -374,22 +379,59 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
 
                 });
             },
-            applySymbology : function(id,type,symbology){
-                if(type == 'polygon') DataStore.applyPolygonSymbology(id,symbology);
-                if(type == 'point') DataStore.applyPointSymbology(id,symbology);
+            applySymbology : function(layerId,symbology,type,repositoryInfo){
 
-                var layerData = DataStore.getLayer(id);
-                layerData.olLayer = null;
-                if(layersInMap[layerData.id]){
-                    OpenLayersMap.removeLayer(layerData.id);
-                    OpenLayersMap.addLayer(layerData);
+                var parameters = {
+                    symbologyRepository : repositoryInfo.symbologyRepositories,
+                    config : {
+                        layerId : layerId,
+                        type : type,
+                        groupId :repositoryInfo.groupId,
+                        symbologyId: repositoryInfo.symbologyId,
+                        columns : repositoryInfo.symbologyId
+                    }
+                };
+
+                if(type == 'polygon'){
+                        DataStore.applyPolygonSymbology(layerId,symbology);
+                        DataStore.addExecutionChainObjectToLayer(layerId,ExecutionChain.getExecutionChainObject('symbology', parameters));
+                        _updateLayer(layerId);
+                }
+
+                if(type == 'point'){
+                        DataStore.applyPointSymbology(layerId,symbology);
+                        DataStore.addExecutionChainObjectToLayer(layerId,ExecutionChain.getExecutionChainObject('symbology', parameters));
+                        _updateLayer(layerId);
+                }
+
+            },
+            getAndApplySymbology : function(parameters){
+
+                if(parameters.config.type == 'polygon'){
+                    return Symbology.getPolygonSymbology(parameters.symbologyRepository,parameters.config).then(function(symbology){
+
+                        DataStore.applyPolygonSymbology(parameters.config.layerId,symbology);
+                        DataStore.addExecutionChainObjectToLayer(parameters.config.layerId,ExecutionChain.getExecutionChainObject('symbology', parameters));
+
+                        _updateLayer(parameters.config.layerId);
+                    });
+                }
+
+                if(parameters.config.type == 'point'){
+                    return Symbology.getPointSymbology(parameters.symbologyRepository,parameters.config).then(function(symbology){
+
+                        DataStore.applyPointSymbology(parameters.config.layerId,symbology);
+                        DataStore.addExecutionChainObjectToLayer(parameters.config.layerId,ExecutionChain.getExecutionChainObject('symbology', parameters));
+
+                        _updateLayer(parameters.config.layerId);
+                    });
                 }
 
             }
         }
     }])
 
-    .factory('ServiceChain', ['Editor','$q',function (Editor,$q) {
+    .factory('ServiceChain', ['$q','Editor',function ($q,Editor) {
         // Service logic
 
         var _executeChainElement = function(serviceChainElement){
@@ -412,15 +454,8 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools'])
                 promise = Editor.executeServiceRequest(serviceChainElement.config);
             }
 
-            if(serviceChainElement.type == 'symbologyAsync'){
-                return serviceChainElement.config.symbology.then(function(symbology){
-                    Editor.applySymbology(serviceChainElement.config.layerId, serviceChainElement.config.symbologyType, symbology);
-                });
-            }
-
-            if(serviceChainElement.type == 'symbologySync'){
-                Editor.applySymbology(serviceChainElement.config.layerId, serviceChainElement.config.symbologyType, serviceChainElement.config.symbology);
-
+            if(serviceChainElement.type == 'symbology'){
+                promise = Editor.getAndApplySymbology(serviceChainElement.config);
             }
 
             if(serviceChainElement.type == 'show'){

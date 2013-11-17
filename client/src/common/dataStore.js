@@ -73,7 +73,12 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
             },
             addLayer : function(layer){
                 _addLayerStackIndex(layer);
+                if(!layer.executionChain || (layer.executionChain && layer.executionChain.length == 0)) console.log('added layer with empty execution chain!');
                 dataStore.layers[layer.id] = layer;
+            },
+            addExecutionChainObjectToLayer : function(layerId, element){
+                if(!dataStore.layers[layerId].executionChain) dataStore.layers[layerId].executionChain = [];
+                dataStore.layers[layerId].executionChain.push(element);
             },
             updateLayerStackIndexFromArray : function(layerArray){
                 var length = layerArray.length;
@@ -126,6 +131,8 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                         }
                     }
                 }
+
+                layerData.olLayer = null;
             },
             applyPointSymbology : function(id,symbology){
                 dataStore.layers[id].symbology = symbology;
@@ -150,7 +157,7 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                         values.push(value);
                     }
 
-                    var diagrams = DiaML.getCanvasDiagrams(layerData.symbology.DiaML.json, values);
+                    var diagrams = DiaML.getCanvasDiagrams(layerData.symbology.diaML.json, values);
 
                     length1 = layerData.gmlData.features.length;
                     for (i=0;i<length1;i++)
@@ -161,7 +168,10 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                     layerData.gmlData.features.sort(function(a,b) {
                         return parseFloat(b.values_.diaML.size) - parseFloat(a.values_.diaML.size)
                     });
+
+                    layerData.olLayer = null;
                 }
+
 
             },
             removeLayer : function(id){
@@ -298,6 +308,7 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                 layerData.featureCount = i;
 
                 _addLayerStackIndex(layerData);
+
                 dataStore.layers[layerData.id] = layerData;
             },
             manipulateTable : function(layerId,action,config){
@@ -337,6 +348,8 @@ angular.module('TCWS.dataStore', ['TCWS.inputHandler','TCWS.map','TCWS.grid'])
                     layerData.labels[config.targetColumn] = config.targetColumnName;
 
                 }
+
+
             }
         }
     }]);

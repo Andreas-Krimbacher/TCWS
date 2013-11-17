@@ -15,7 +15,7 @@ angular.module('TCWS.map', ['TCWS.components'])
     })
 
 
-    .controller('MapCtrl', ['$scope','OpenLayersMap','Editor',function ($scope,OpenLayersMap,Editor) {
+    .controller('MapCtrl', ['$scope','OpenLayersMap','Editor','$timeout',function ($scope,OpenLayersMap,Editor,$timeout) {
         OpenLayersMap.createMap('map');
 
         $scope.bigMap = false;
@@ -23,7 +23,10 @@ angular.module('TCWS.map', ['TCWS.components'])
         $scope.resizeMap = function(bigMap){
             $scope.$emit('resizeMap', bigMap);
             $scope.bigMap = bigMap;
-            OpenLayersMap.updateSize();
+            $timeout(function() {
+                OpenLayersMap.updateSize();
+            },0);
+
         };
 
         $scope.modifyInteractionState = false;

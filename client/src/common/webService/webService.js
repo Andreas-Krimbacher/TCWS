@@ -18,7 +18,7 @@ angular.module('TCWS.webService', ['TCWS.webService.spatialAnalysisService','TCW
                     requestInfo.config.requestData.layersData[i].GML = DataStore.getLayerAsGML(requestInfo.config.requestData.layersId[i]);
                 }
 
-                if(requestInfo.processingService.serviceType == 'sas'){
+                if(requestInfo.processingService.type == 'sas'){
                     return SpatialAnalysisService.executeRequest(requestInfo).then(function(gmlData){
                         var layerData = InputHandler.getDataFromGMLString(gmlData);
 
@@ -26,7 +26,7 @@ angular.module('TCWS.webService', ['TCWS.webService.spatialAnalysisService','TCW
                     });
                 }
 
-                if(requestInfo.processingService.serviceType == 'ccs'){
+                if(requestInfo.processingService.type == 'ccs'){
                     return ClassifyClusterService.executeRequest(requestInfo).then(function(gmlData){
                         var layerData = InputHandler.getDataFromGMLString(gmlData);
 
@@ -34,7 +34,7 @@ angular.module('TCWS.webService', ['TCWS.webService.spatialAnalysisService','TCW
                     });
                 }
 
-                if(requestInfo.processingService.serviceType == 'cts'){
+                if(requestInfo.processingService.type == 'cts'){
                     return CartographicTechniqueService.executeRequest(requestInfo).then(function(gmlData){
                         var layerData = InputHandler.getDataFromGMLString(gmlData);
 
