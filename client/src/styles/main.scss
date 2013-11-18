@@ -57,11 +57,14 @@ body{
   }
 }
 
+
 .ol-control-layer-list{
-  position: absolute;
-  top: 12px;
   width: 57px;
+  position: absolute;
   right: 10px;
+  top: 0px;
+  bottom: 0px;
+  margin: auto;
   z-index: 2900;
   .list-group-item{
     background: #ffffff;
@@ -99,6 +102,19 @@ body{
   width: 200px;
 }
 
+.map-title{
+  position: absolute;
+  width: 400px;
+  top: 20px;
+  left: 0px;
+  right: 0px;
+  margin: auto;
+  text-align: center;
+  height: 30px;
+  padding: 5px !important;
+  color: black !important;
+  z-index: 2900;
+}
 
 #container{
   height: 100%;
@@ -260,6 +276,45 @@ body{
   margin-right: auto;
 }
 
+#overview-publish{
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  .list-group{
+    width: 100%;
+    white-space: nowrap;
+    margin-top: 20px;
+  }
+  .list-group-item{
+    padding: 5px 10px;
+    height: 32px;
+  }
+  .layer-name{
+    position: absolute;
+    right: 34px;
+    left: 34px;
+    overflow: hidden;
+  }
+  .visibility-checkbox{
+    position: absolute;
+    right: 10px;
+  }
+  .visibility-icon{
+    position: absolute;
+    right: 11px;
+  }
+  .icon-header{
+    border: none;
+    height: 18px;
+  }
+  button{
+    margin-top: 20px;
+  }
+  .alert{
+    overflow: hidden;
+  }
+}
+
 .tool-left{
   height: 100%;
   width: 220px;
@@ -366,3 +421,26 @@ body{
   }
 }
 
+.chain-info{
+  #toast-container{
+    width: 600px;
+    right: 0px;
+    left: 0px;
+    margin: auto;
+    top: 140px;
+  }
+  #toast-container > div{
+    text-align: center;
+    padding: 5px !important;
+    width: 600px;
+  }
+  #toast-container > .toast-success{
+    background-image: none !important;
+  }
+  .toast-success {
+    background-color: #030303 !important;
+  }
+  .last{
+    background-color: #6a312e !important;
+  }
+}

@@ -43,7 +43,7 @@ angular.module('TCWS.components', ['ui.sortable'])
                 }
 
 
-                scope.layerTypes = ['attribute','point','line','polygon','raster'];
+                scope.layerTypes = ['attribute','point','line','polygon','raster','base'];
 
                 if(typeof scope.options.layerTypes == 'object') scope.layerTypes = scope.options.layerTypes;
 
@@ -52,8 +52,11 @@ angular.module('TCWS.components', ['ui.sortable'])
                     point : [],
                     line : [],
                     polygon : [],
-                    raster : []
+                    raster : [],
+                    base : []
                 };
+
+
 
                 var calculateLayerLists = function(layerList){
 
@@ -62,7 +65,8 @@ angular.module('TCWS.components', ['ui.sortable'])
                         point : [],
                         line : [],
                         polygon : [],
-                        raster : []
+                        raster : [],
+                        base : []
                     };
 
                     var length = layerList.length;

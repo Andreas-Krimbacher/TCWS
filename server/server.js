@@ -32,6 +32,8 @@ app.post('/services/CCS', anyBodyParser, CCS.handleRequest);
 app.post('/services/CTS', anyBodyParser, CTS.handleRequest);
 
 app.post('/services/saveFile', anyBodyParser, Utilities.saveFile);
+app.post('/services/saveMap', anyBodyParser, Utilities.saveMap);
+app.get('/services/getMap', anyBodyParser, Utilities.getMap);
 
 //export module
 module.exports = app;

@@ -15,16 +15,20 @@ angular.module('TCWS.map', ['TCWS.components'])
     })
 
 
-    .controller('MapCtrl', ['$scope','OpenLayersMap','Editor','$timeout',function ($scope,OpenLayersMap,Editor,$timeout) {
+    .controller('MapCtrl', ['$scope','$rootScope','OpenLayersMap','Editor','$timeout',function ($scope,$rootScope,OpenLayersMap,Editor,$timeout) {
+        $scope.viewerMode = $rootScope.viewerMode;
+
         OpenLayersMap.createMap('map');
 
         $scope.bigMap = false;
+        if($scope.viewerMode) $scope.bigMap = true;
 
         $scope.resizeMap = function(bigMap){
             $scope.$emit('resizeMap', bigMap);
             $scope.bigMap = bigMap;
             $timeout(function() {
                 OpenLayersMap.updateSize();
+                $scope.layerListHeight = $('#mapLayerList').height();
             },0);
 
         };
@@ -36,7 +40,37 @@ angular.module('TCWS.map', ['TCWS.components'])
             $scope.modifyInteractionState = !$scope.modifyInteractionState;
         };
 
+        var layerListFilter = false;
 
+        var filterLayerLists = function(){
+
+            var show;
+
+            var length2 = $scope.overlayLayerListOptions.layerList.length;
+            for (var k=length2;k--; )
+            {
+                show = false;
+                var length1 = layerListFilter.overlay.length;
+                for (var i=0;i<length1;i++)
+                {
+                    if($scope.overlayLayerListOptions.layerList[k].id == layerListFilter.overlay[i].id) show = true;
+                }
+                if(!show) $scope.overlayLayerListOptions.layerList.splice(k,1);
+            }
+
+            length2 = $scope.baseLayerListOptions.layerList.length;
+            for (k=length2;k--; )
+            {
+                show = false;
+                length1 = layerListFilter.base.length;
+                for (i=0;i<length1;i++)
+                {
+
+                    if($scope.baseLayerListOptions.layerList[k].id == layerListFilter.base[i].id) show = true;
+                }
+                if(!show) $scope.baseLayerListOptions.layerList.splice(k,1);
+            }
+        };
 
         $scope.bigLayerList = false;
 
@@ -57,7 +91,7 @@ angular.module('TCWS.map', ['TCWS.components'])
             hideLayerInMap : hideLayerInMap,
             showLayerInMap : showLayerInMap,
             updateLayerStackIndex : updateLayerStackIndex,
-            layerTypes : ['point','line','polygon','raster']
+            layerTypes : ['point','line','polygon','raster','base']
         };
 
 
@@ -77,9 +111,28 @@ angular.module('TCWS.map', ['TCWS.components'])
             disableSort : true
         };
 
-        $scope.$on('updateLayerList', function (event) {
+        $scope.$on('updateLayerList', function () {
             $scope.overlayLayerListOptions.layerList =  Editor.getLayerListShort();
             $scope.baseLayerListOptions.layerList = OpenLayersMap.getBaseMaps();
+            if(layerListFilter) filterLayerLists();
+            $timeout(function() {
+                $scope.layerListHeight = $('#mapLayerList').height();
+            },0);
+        });
+
+        $timeout(function() {
+            $scope.layerListHeight = $('#mapLayerList').height();
+        },0);
+
+
+        $scope.$on('filterLayerList', function (e,data) {
+            layerListFilter = data;
+            filterLayerLists();
+        });
+
+        $scope.$on('updateMapSize', function (e,data) {
+            OpenLayersMap.updateSize();
+            $scope.layerListHeight = $('#mapLayerList').height();
         });
     }])
 
@@ -157,6 +210,18 @@ angular.module('TCWS.map', ['TCWS.components'])
             updateSize : function(){
                 map.updateSize();
             },
+            getCenterAndZoom : function(){
+                var center =  ol.proj.transform(map.getView().getCenter(), map.getView().getProjection().code_, 'EPSG:4326');
+                return {lng : center[0], lat : center[1], zoom : map.getView().getZoom()};
+            },
+            setZoomAndCenter : function(zoom,center){
+                var view = new ol.View2D({
+                    center: ol.proj.transform(center, 'EPSG:4326', 'EPSG:3857'),
+                    zoom: zoom
+                });
+
+                map.setView(view);
+            },
             setModifyInteraction : function(state){
                 if(state){
                     map.addInteraction(_selectInteraction);
@@ -190,7 +255,7 @@ angular.module('TCWS.map', ['TCWS.components'])
                         result.push({
                             id : prop,
                             name: basemaps[prop].name,
-                            type: 'raster',
+                            type: 'base',
                             layerStackIndex : basemaps[prop].layerStackIndex
                         });
                         if(currentBasemap && result[result.length-1].id == currentBasemap.id) result[result.length-1].inMap = true;

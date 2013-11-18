@@ -17,7 +17,7 @@ angular.module('TCWS.tools.symbology', ['TCWS.symbology'])
     .controller('SymbologyPointCtrl', ['$scope','Symbology','DiaML','Editor','DataStore',function ($scope,Symbology,DiaML,Editor,DataStore) {
 
         var symbologyRepositories = Symbology.getSymbologyRepositories();
-        var symbologyRepository = symbologyRepositories['1'];
+        var symbologyRepository = symbologyRepositories['local'];
 
         var pointSymbologyGroups = Symbology.getPointSymbologyGroups(symbologyRepository);
 
@@ -164,7 +164,7 @@ angular.module('TCWS.tools.symbology', ['TCWS.symbology'])
     .controller('SymbologyPolygonCtrl', ['$scope','DataStore','Editor','Symbology',function ($scope,DataStore,Editor,Symbology) {
 
         var symbologyRepositories = Symbology.getSymbologyRepositories();
-        var symbologyRepository = symbologyRepositories['1'];
+        var symbologyRepository = symbologyRepositories['local'];
 
         var polygonSymbologyGroups = Symbology.getPolygonSymbologyGroups(symbologyRepository);
 

@@ -226,11 +226,12 @@ angular.module('TCWS.tools.preparation', ['TCWS.webService'])
                         layersId : [$scope.layer.id],
                         layersData : []
                     },
-                    requestParam : {}
+                    requestParam : {},
+                    resultInfo : {}
                 }
             };
 
-            if(info.processingService.serviceType == 'ccs'){
+            if(info.processingService.type == 'ccs'){
                 info.config.requestParam = {
                     column : 'area_size',
                     classCount : 5

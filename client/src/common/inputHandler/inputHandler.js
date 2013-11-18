@@ -141,15 +141,17 @@ angular.module('TCWS.inputHandler', [])
 
                 return data;
             },
-            getDataFromFile : function(layerInfo,inputService){
+            getDataFromFile : function(layerInfo,inputService,layerId){
                 return _getFileData(layerInfo).then(function(fileData){
+
+                    if(!layerId) layerId = inputService.sourceId + '-' + layerInfo.layerId;
 
 
                     if(layerInfo.fileType == 'GML'){
                         var GMLData = parseGMLFileData(fileData);
 
                         var layerData = {
-                            id : inputService.sourceId + '-' + layerInfo.layerId,
+                            id : layerId,
                             name : layerInfo.name,
                             layerId : layerInfo.layerId,
                             sourceId : inputService.sourceId,
@@ -188,7 +190,7 @@ angular.module('TCWS.inputHandler', [])
                         var GMLData = parseGMLFileData(fileData);
 
                         var layerData = {
-                            id : inputService.sourceId + '-' + layerInfo.layerId,
+                            id : layerId,
                             name : layerInfo.name,
                             layerId : layerInfo.layerId,
                             sourceId : inputService.sourceId,
@@ -224,7 +226,7 @@ angular.module('TCWS.inputHandler', [])
                         var JSONstatData = parseJSONstatFileData(fileData,layerInfo.param);
 
                         var layerData = {
-                            id : inputService.sourceId + '-' + layerInfo.layerId,
+                            id : layerId,
                             name : layerInfo.name,
                             layerId : layerInfo.layerId,
                             sourceId : inputService.sourceId,
@@ -243,7 +245,7 @@ angular.module('TCWS.inputHandler', [])
                         var CSVData = parseCSVFileData(fileData);
 
                         var layerData = {
-                            id : inputService.sourceId + '-' + layerInfo.layerId,
+                            id : layerId,
                             name : layerInfo.name,
                             layerId : layerInfo.layerId,
                             sourceId : inputService.sourceId,

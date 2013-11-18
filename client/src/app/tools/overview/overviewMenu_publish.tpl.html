@@ -1,5 +1,38 @@
 <div ng-controller="OverviewPublishCtrl" id="overview-publish">
     <h4>Publish</h4>
 
+    <form name="form" class="css-form" novalidate>
+
+        <h6><strong>Map Title</strong></h6>
+        <div ng-class="{'has-error': form.title.$invalid}">
+            <input class="form-control" ng-model="title" placeholder="Title" type="text" name="title" required>
+        </div>
+
+        <h6><strong>Map Extent and Zoom</strong></h6>
+        <p class="text-info">Current extent and zoom will be used.</p>
+
+        <h6><strong>Select Layer</strong></h6>
+
+        <div ng-class="{'has-error': layers.length == 0}">
+            <input id="publishLayerSelect" style="width:100%" ui-select2="layerSelectOptions" ng-model="layersSelect" data-placeholder="Select Layer(s)" required>
+        </div>
+
+        <ul class="list-group" ng-show="layers.length > 0">
+            <li class="list-group-item icon-header"><span title="Visibility" class="glyphicon glyphicon-eye-open visibility-icon"></span></li>
+            <li ng-repeat="(index,layer) in layers" class="list-group-item">
+                <tcws-layer-icon type="layer.type"></tcws-layer-icon>
+                <div class="layer-name" title="{{layer.name}}">{{layer.name}}</div>
+                <div class="visibility-checkbox"><input type="checkbox" ng-model="visibility[layer.id]"></div>
+            </li>
+        </ul>
+
+        <div class="alert alert-success" ng-show="url">
+            <h6><strong>Map Url</strong></h6>
+            <strong><a ng-href="{{url}}" target="_blank" class="small">{{url}}</a></strong>
+        </div>
+
+        <button ng-click="publish()" type="button" class="btn" ng-disabled="form.$invalid || layers.length == 0">Publish Map</button>
+
+    </form>
 
 </div>

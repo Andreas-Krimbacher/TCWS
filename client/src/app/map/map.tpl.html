@@ -1,13 +1,16 @@
-<div class="ol-control-icon resize-map-icon ol-unselectable" ng-click="resizeMap(!bigMap)">
+<div ng-hide="viewerMode" class="ol-control-icon resize-map-icon ol-unselectable" ng-click="resizeMap(!bigMap)">
     <a class="glyphicon" ng-class="{true:'glyphicon-resize-small', false:'glyphicon-fullscreen'}[bigMap]" href=""></a>
 </div>
-<div class="ol-control-icon edit-map-icon ol-unselectable" ng-click="setModifyInteraction(!modifyInteractionState)">
+<div ng-hide="viewerMode" class="ol-control-icon edit-map-icon ol-unselectable" ng-click="setModifyInteraction(!modifyInteractionState)">
     <a class="glyphicon" ng-class="{true:'glyphicon-stop', false:'glyphicon-edit'}[modifyInteractionState]" href=""></a>
 </div>
 
-<div ng-show="bigMap" class="ol-control-layer-list"  ng-class="{'big-layer-list':bigLayerList}" ng-mouseenter="bigLayerList = true" ng-mouseleave="bigLayerList = false">
+<div ng-show="bigMap" class="ol-control-layer-list"  ng-class="{'big-layer-list':bigLayerList}" ng-style="{'height':layerListHeight+'px'}" ng-mouseenter="bigLayerList = true" ng-mouseleave="bigLayerList = false">
+    <div id="mapLayerList">
     <tcws-layer-list options="overlayLayerListOptions"></tcws-layer-list>
     <tcws-layer-list options="baseLayerListOptions"></tcws-layer-list>
+    </div>
 </div>
+
 
 <div id="map"></div>

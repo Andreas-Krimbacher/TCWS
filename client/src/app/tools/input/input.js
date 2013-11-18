@@ -3,7 +3,7 @@
  */
 angular.module('TCWS.tools.input', ['TCWS.dataStore','TCWS.settings','ui.select2'])
     .run(function($rootScope) {
-        $rootScope.startInputService = 1;
+        $rootScope.startInputService = 'local';
     })
 
 
@@ -60,7 +60,7 @@ angular.module('TCWS.tools.input', ['TCWS.dataStore','TCWS.settings','ui.select2
             multiple: true,
             allowClear:true,
             data: files
-        }
+        };
 
     }]);
 

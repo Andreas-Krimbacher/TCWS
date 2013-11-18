@@ -2,41 +2,8 @@
 
 angular.module('TCWS.symbology', [])
 
-    .factory('Symbology', ['DiaML','$http',function (DiaML,$http) {
+    .factory('Symbology', ['DiaML','$http','DescriptionService',function (DiaML,$http,DescriptionService) {
         // Service logic
-
-        var fileRepository = {
-            variableStyle:
-            {
-                '1' : {
-                    groupId: 1, groupName: 'Qualitative Color Scheme', path: 'Symbology/variableStyle1.json', fileType: 'JSON'
-                }
-            },
-            pointSymbologys:
-            {
-                '1' : {
-                    groupId: 1, groupName: 'Pie Charts', path: 'Symbology/point1.json', fileType: 'JSON'
-                },
-                '2' : {
-                    groupId: 2, groupName: 'Dot Maps', path: 'Symbology/point2.json', fileType: 'JSON'
-                }
-            },
-            polygonSymbologys:
-            {
-                '1' : {
-                    groupId: 1, groupName: 'Beautiful', path: 'Symbology/polygon1.json', fileType: 'JSON'
-                },
-                '2' : {
-                    groupId: 2, groupName: 'Simple Styles', path: 'Symbology/polygon2.json', fileType: 'JSON'
-                }
-            }
-        };
-
-        var symbologyRepositories = {
-            '1' : {
-                sourceId: 1, name: 'Hosted Symbology Files', desc: 'Symbology hosted on the Server. For free!', type : 'file' , param: fileRepository
-            }
-        };
 
         var _getFileData = function(path){
             return $http({method: 'GET', url: path}).then(function(result){
@@ -47,7 +14,7 @@ angular.module('TCWS.symbology', [])
         // Public API here
         return {
             getSymbologyRepositories : function(){
-                return symbologyRepositories;
+                return DescriptionService.getSymbologyRepositories();
             },
             getPolygonSymbologyGroups : function(symbologyRepository){
 

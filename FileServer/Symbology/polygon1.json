@@ -11,7 +11,7 @@
     "symbologys" : {
         "1" : {
             "symbologyId" : "1",
-            "name" : "Qualitative",
+            "name" : "Sequential",
             "style" : {},
             "styleType" : "cartoCss",
             "variableSymbology" : [
