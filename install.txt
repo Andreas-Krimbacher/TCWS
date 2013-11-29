@@ -1,0 +1,83 @@
+--gdal install
+apt-get install gdal-bin libgdal-dev
+
+--postgresql install
+apt-get install build-essential postgresql-9.1 postgresql-server-dev-9.1 libxml2-dev libproj-dev libjson0-dev libgeos-dev xsltproc docbook-xsl docbook-mathml
+
+--Set postgresql password
+sudo -u postgres psql
+ALTER USER postgres PASSWORD 'newPassword';
+
+
+--postgis 2.0.4 install (http://trac.osgeo.org/postgis/wiki/UsersWikiPostGIS20Debian70src)
+wget http://download.osgeo.org/postgis/source/postgis-2.0.4.tar.gz
+tar xfz postgis-2.0.4.tar.gz
+cd postgis-2.0.4
+
+./configure
+make
+sudo make install
+sudo ldconfig
+sudo make comments-install
+
+sudo ln -sf /usr/share/postgresql-common/pg_wrapper /usr/local/bin/shp2pgsql
+sudo ln -sf /usr/share/postgresql-common/pg_wrapper /usr/local/bin/pgsql2shp
+sudo ln -sf /usr/share/postgresql-common/pg_wrapper /usr/local/bin/raster2pgsql
+
+su - postgres
+createdb template_postgis
+createlang plpgsql template_postgis
+psql -d template_postgis -c "UPDATE pg_database SET datistemplate=true WHERE datname='template_postgis'"
+psql -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-2.0/postgis.sql
+psql -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-2.0/spatial_ref_sys.sql
+psql -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-2.0/postgis_comments.sql
+psql -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-2.0/rtpostgis.sql
+psql -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-2.0/raster_comments.sql
+psql -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-2.0/topology.sql
+psql -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-2.0/topology_comments.sql
+
+--pgadmin install
+apt-get install pgadmin3
+
+--postgresql setup
+create user TCWS
+create db TCWS (template postgis)
+create schema Service
+add functions from PostGis folder
+
+--nvm install:
+wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh
+-add: [ -s $HOME/.nvm/nvm.sh ] && . $HOME/.nvm/nvm.sh # This loads NVM
+-to .profile
+
+--apt:
+apt-get install curl build-essential libssl-dev
+
+--install node:
+nvm install 0.11.0
+
+--install bower (global for node 0.11.0)
+npm install -g bower
+
+--install grunt (global for node 0.11.0)
+npm install -g grunt-cli
+
+--apt:
+apt-get install ruby-compass
+
+--node_modules install
+npm install
+
+--selenium install (in TCWS directory)
+./node_modules/protractor/bin/install_selenium_standalone
+-adapt: seleniumServerJar version
+-in: client/test/protractor.conf.js
+
+--chrome install
+from google page
+
+--grunt tasks
+server: grunt
+watch: grunt cw
+unit-test: grunt unit
+e2e-test: grunt e2e

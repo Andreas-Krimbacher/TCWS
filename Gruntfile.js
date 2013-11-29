@@ -91,13 +91,13 @@ module.exports = function (grunt) {
     grunt.registerTask('server', [
         'compass:server',
         'express:livereload',
-        'open',
+//        'open',
         'watch'
     ]);
 
     grunt.registerTask('cw', [
         'compass:server',
-        'open',
+//        'open',
         'watch'
     ]);
 
@@ -105,9 +105,9 @@ module.exports = function (grunt) {
         'protractor:e2e'
     ]);
 
-//    grunt.registerTask('karma', [
-//        'karma:unit:start'
-//    ]);
+    grunt.registerTask('unit', [
+        'karma:unit:start'
+    ]);
 
     grunt.registerTask('default', ['server']);
 };

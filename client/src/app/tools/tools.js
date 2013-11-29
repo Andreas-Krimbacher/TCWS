@@ -99,7 +99,7 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'show' , config : show }
         ];
 
-//        ServiceChain.executeServiceChain(serviceChain);
+        ServiceChain.executeServiceChain(serviceChain);
 
         //service chain diaml study
 
