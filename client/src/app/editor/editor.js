@@ -227,7 +227,7 @@ angular.module('TCWS.editor', ['TCWS.map', 'TCWS.grid','TCWS.tools','TCWS.execut
                         type : type,
                         groupId :repositoryInfo.groupId,
                         symbologyId: repositoryInfo.symbologyId,
-                        columns : repositoryInfo.symbologyId
+                        columns : repositoryInfo.columns
                     }
                 };
 

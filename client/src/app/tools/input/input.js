@@ -3,7 +3,7 @@
  */
 angular.module('TCWS.tools.input', ['TCWS.dataStore','TCWS.settings','ui.select2'])
     .run(function($rootScope) {
-        $rootScope.startInputService = 'local';
+        $rootScope.startInputService = 'local_attribute';
     })
 
 
@@ -22,7 +22,7 @@ angular.module('TCWS.tools.input', ['TCWS.dataStore','TCWS.settings','ui.select2
 
     }])
 
-    .controller('FileParamCtrl', ['$scope','Editor',function ($scope,Editor) {
+    .controller('LocalParamCtrl', ['$scope','Editor',function ($scope,Editor) {
         $scope.importFiles = function(){
 
             //hack, because ng-model dont work.
@@ -61,6 +61,32 @@ angular.module('TCWS.tools.input', ['TCWS.dataStore','TCWS.settings','ui.select2
             allowClear:true,
             data: files
         };
+
+        $scope.$watch('inputParam', function (newValue, oldValue) {
+            if(newValue){
+                var files = [];
+                for (var prop in $scope.inputParam.files) {
+                    if ($scope.inputParam.files.hasOwnProperty(prop)) {
+                        files.push({id:prop,
+                            text:$scope.inputParam.files[prop].name})
+                    }
+                }
+
+                $scope.selectOptions.data = files;
+
+                //Hack because options get not updated
+                $('#fileParamSelect').select2($scope.selectOptions);
+                $('#fileParamSelect').select2('val','');
+            }
+            else{
+                $scope.selectOptions.data = [];
+                $('#fileParamSelect').select2($scope.selectOptions);
+                $('#fileParamSelect').select2('val','');
+            }
+        });
+
+
+
 
     }]);
 

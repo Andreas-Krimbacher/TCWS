@@ -13,19 +13,19 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
 
         //Service chain choropleth districts
 
-        var dataImport1 = {inputService: inputServices['local'], config:{layer:11}};
-        var dataImport2 = {inputService: inputServices['local'], config:{layer:10}};
+        var dataImport1 = {inputService: inputServices['local_attribute'], config:{layer:11}};
+        var dataImport2 = {inputService: inputServices['local_spatial'], config:{layer:10}};
 
         var mappingTable = {
             directMatch : true,
             layers : {
-                "1-10" : {
-                    layerId : "1-10",
+                "local_spatial-10" : {
+                    layerId : "local_spatial-10",
                     "column" : "BEZIRK",
                     "columnNewTable" : []
                 },
-                "1-11" : {
-                    layerId : "1-11",
+                "local_attribute-11" : {
+                    layerId : "local_attribute-11",
                     "column" : "BEZIRK_ID",
                     "columnNewTable" : ['BEZIRK_ID','KT_ID','DIST','T','M','W']
                 }
@@ -99,24 +99,24 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'show' , config : show }
         ];
 
-        ServiceChain.executeServiceChain(serviceChain);
+//        ServiceChain.executeServiceChain(serviceChain);
 
         //service chain diaml study
 
-        var dataImport1 = {inputService: inputServices['local'], config:{layer:12}};
-        var dataImport2 = {inputService: inputServices['local'], config:{layer:13}};
-        var dataImport3 = {inputService: inputServices['local'], config:{layer:14}};
+        var dataImport1 = {inputService: inputServices['local_spatial'], config:{layer:12}};
+        var dataImport2 = {inputService: inputServices['local_attribute'], config:{layer:13}};
+        var dataImport3 = {inputService: inputServices['local_attribute'], config:{layer:14}};
 
         var mappingTable1 = {
             directMatch : true,
             layers : {
-                "1-12" : {
-                    layerId : "1-12",
+                "local_spatial-12" : {
+                    layerId : "local_spatial-12",
                     "column" : "KURZ",
                     "columnNewTable" : []
                 },
-                "1-13" : {
-                    layerId : "1-13",
+                "local_attribute-13" : {
+                    layerId : "local_attribute-13",
                     "column" : "CANTON_ID",
                     "columnNewTable" : ['CANTON_ID','POP_M_2010','POP_M_2011','POP_W_2010','POP_W_2011']
                 }
@@ -132,8 +132,8 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
                     "column" : "CANTON_ID",
                     "columnNewTable" : ['CANTON_ID','POP_M_2010','POP_M_2011','POP_W_2010','POP_W_2011']
                 },
-                "1-14" : {
-                    layerId : "1-14",
+                "local_attribute-14" : {
+                    layerId : "local_attribute-14",
                     "column" : "CANTON_ID",
                     "columnNewTable" : ['S_M_2010','S_M_2011','S_W_2010','S_W_2011']
                 }
@@ -243,20 +243,20 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
 
         //service chain dot map
 
-        var dataImport1 = {inputService: inputServices['local'], config:{layer:12}};
-        var dataImport2 = {inputService: inputServices['local'], config:{layer:11}};
-        var dataImport3 = {inputService: inputServices['local'], config:{layer:10}};
+        var dataImport1 = {inputService: inputServices['local_spatial'], config:{layer:12}};
+        var dataImport2 = {inputService: inputServices['local_attribute'], config:{layer:11}};
+        var dataImport3 = {inputService: inputServices['local_spatial'], config:{layer:10}};
 
         var mappingTable = {
             directMatch : true,
             layers : {
-                "1-10" : {
-                    layerId : "1-10",
+                "local_spatial-10" : {
+                    layerId : "local_spatial-10",
                     "column" : "BEZIRK",
                     "columnNewTable" : []
                 },
-                "1-11" : {
-                    layerId : "1-11",
+                "local_attribute-11" : {
+                    layerId : "local_attribute-11",
                     "column" : "BEZIRK_ID",
                     "columnNewTable" : ['BEZIRK_ID','KT_ID','DIST','T','M','W']
                 }
@@ -289,7 +289,7 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
 
         var symbology1 = { symbologyRepository : symbologyRepositories['local'],
             config : {
-                layerId : '1-12',
+                layerId : 'local_spatial-12',
                 type : 'polygon',
                 groupId : 2,
                 symbologyId: 1
@@ -306,7 +306,7 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
         };
 
         var show1 = {
-            layerId : '1-12',
+            layerId : 'local_spatial-12',
             place : 'map'
         };
 
@@ -328,7 +328,7 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
         ];
 
 
-//        ServiceChain.executeServiceChain(serviceChain);
+        ServiceChain.executeServiceChain(serviceChain);
 
 
         //        var mappingTable = {

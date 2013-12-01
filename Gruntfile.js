@@ -91,13 +91,13 @@ module.exports = function (grunt) {
     grunt.registerTask('server', [
         'compass:server',
         'express:livereload',
-//        'open',
+        'open',
         'watch'
     ]);
 
     grunt.registerTask('cw', [
         'compass:server',
-//        'open',
+        'open',
         'watch'
     ]);
 

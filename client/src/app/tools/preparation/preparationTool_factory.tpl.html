@@ -1,5 +1,5 @@
 <div ng-controller="PreparationFactoryCtrl" id="preparation-factory">
-    <h4>Factory</h4>
+    <h4>Integration</h4>
 
     <div id="factory-spatial-layer-select">
         <h6><strong>Spatial Layer</strong></h6>
@@ -21,12 +21,12 @@
         </div>
     </div>
 
-    <div class="mapping-table" ng-hide="!spatialColumn || !attributeColumn">
-        <h6><strong>Mapping Table</strong></h6>
-        <ul class="list-unstyled">
-            <li ng-repeat="value in mappingTable.layers['1-9']['index']">{{mappingTable.layers['1-5']['index'][$index]}} - {{mappingTable.layers['1-9']['index'][$index]}}</li>
-        </ul>
-    </div>
+    <!--<div class="mapping-table" ng-hide="!spatialColumn || !attributeColumn">-->
+        <!--<h6><strong>Mapping Table</strong></h6>-->
+        <!--<ul class="list-unstyled">-->
+            <!--<li ng-repeat="value in mappingTable.layers['1-9']['index']">{{mappingTable.layers['1-5']['index'][$index]}} - {{mappingTable.layers['1-9']['index'][$index]}}</li>-->
+        <!--</ul>-->
+    <!--</div>-->
 
     <button ng-hide="!spatialColumn || !attributeColumn" ng-click="createLayer()" type="button" class="btn">Create Layer</button>
 </div>

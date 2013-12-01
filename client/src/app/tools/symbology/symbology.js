@@ -289,8 +289,8 @@ angular.module('TCWS.tools.symbology', ['TCWS.symbology'])
             var repositoryInfo = {
                 symbologyRepositories : symbologyRepository,
                 groupId : $scope.symbologyGroup.id,
-                symbologyId : $scope.pointSymbology.id,
-                columns : columns
+                symbologyId : $scope.polygonSymbology.id,
+                columns : [$scope.column.id]
             };
 
             Editor.applySymbology($scope.layer.id,$scope.currentStyle,'polygon',repositoryInfo);

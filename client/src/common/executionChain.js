@@ -93,7 +93,8 @@ angular.module('TCWS.executionChain', ['TCWS.dataStore','TCWS.descriptionService
                 if(type == 'import'){
                     var inputServices = DescriptionService.getInputServices();
 
-                    configObject.config.inputService = inputServices['local'];
+                    if(chainObject.config.config.type == 'attribute') configObject.config.inputService = inputServices['local_attribute'];
+                    else configObject.config.inputService = inputServices['local_spatial'];
 
                     configObject.config.config = {};
                     configObject.config.config.layer = chainObject.config.config.layerId;

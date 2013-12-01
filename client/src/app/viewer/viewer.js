@@ -53,9 +53,11 @@ angular.module('TCWS.viewer', ['TCWS.map','TCWS.executionChain'])
                         },0);
                     },1500);
 
-                    $timeout(function() {
+
+                    $( "body" ).keypress(function() {
                         $scope.$broadcast('toaster-remove-all');
-                    },2500);
+                    });
+
 
                 });
 
