@@ -12,5 +12,12 @@
     </div>
 </div>
 
+<div class="northarrow"></div>
+<div ng-hide="!viewerMode || !mapImpress" class="ol-control-icon map-info-icon ol-unselectable" ng-click="mapImpressOpen = !mapImpressOpen">
+    <a class="glyphicon" ng-class="{true:'glyphicon-remove-circle', false:'glyphicon-info-sign'}[mapImpressOpen]" href=""></a>
+</div>
+<div ng-show="mapImpress && mapImpressOpen" class="map-impress"><span class="small-heading">Impress</span> <br> {{mapImpress}}</div>
 
+
+<div ng-show="legend" class="map-legend"> <img src="{{legend}}"/> </div>
 <div id="map"></div>

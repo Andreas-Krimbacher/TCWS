@@ -134,6 +134,18 @@ angular.module('TCWS.map', ['TCWS.components'])
             OpenLayersMap.updateSize();
             $scope.layerListHeight = $('#mapLayerList').height();
         });
+
+        $scope.mapImpress = false;
+        $scope.$on('setImpress', function (e,data) {
+            $scope.mapImpress = data;
+        });
+
+        $scope.mapImpressOpen = false;
+
+        $scope.legend = false;
+        $scope.$on('setLegend', function (e,data) {
+            $scope.legend = data;
+        });
     }])
 
     .factory('OpenLayersMap', ['$rootScope','SymbologyFactory',function ($rootScope,SymbologyFactory) {
@@ -238,9 +250,16 @@ angular.module('TCWS.map', ['TCWS.components'])
                 _selectInteraction = new ol.interaction.Select();
                 _modifyInteraction = new ol.interaction.Modify();
 
+                var scaleLineControl = new ol.control.ScaleLine({
+                    units: ol.control.ScaleLineUnits.METRIC
+                });
+
                 map = new ol.Map({
                     target: divId,
                     layers: [],
+                    controls: ol.control.defaults().extend([
+                        scaleLineControl
+                    ]),
                     view: new ol.View2D({
                         center: ol.proj.transform([8.486863,47.381258], 'EPSG:4326', 'EPSG:3857'),
                         zoom: 8

@@ -1,1 +1,192 @@
-<TCWS-Map><mapInfo><title>Dot Map Population</title><id>Dot_Map_Population</id><map><zoom>8</zoom><center><lat>46.94052775608114</lat><lng>8.33305440625</lng></center></map><layer><id>local_spatial-12</id><type>polygon</type><visibility>true</visibility></layer><layer><id>557-2</id><type>point</type><visibility>true</visibility></layer><layer><id>mapQuestOpenArial</id><type>base</type><visibility>false</visibility></layer></mapInfo><executionChain><executionChangeElement><id>1</id><type>import</type><config><inputService><desc>Spatial Data</desc><name>Hosted Data Files</name><type>local</type></inputService><config><layerId>12</layerId><type>polygon</type><name>Swiss Cantons Polygon</name><path>Areas&#x2F;Swiss&#x2F;canton_nolake.xml</path><fileType>GML-OGR</fileType></config><layerId>local_spatial-12</layerId></config></executionChangeElement><executionChangeElement><id>2</id><type>import</type><config><inputService><desc>Statistic Data</desc><name>Hosted Data Files</name><type>local</type></inputService><config><layerId>11</layerId><type>attribute</type><name>Swiss Pop Dist</name><path>Attribute&#x2F;swiss_pop_dist_2012.csv</path><fileType>CSV</fileType></config><layerId>local_attribute-11</layerId></config></executionChangeElement><executionChangeElement><id>3</id><type>import</type><config><inputService><desc>Spatial Data</desc><name>Hosted Data Files</name><type>local</type></inputService><config><layerId>10</layerId><type>polygon</type><name>Swiss Districts</name><path>Areas&#x2F;Swiss&#x2F;district.xml</path><fileType>GML</fileType></config><layerId>local_spatial-10</layerId></config></executionChangeElement><executionChangeElement><id>4</id><type>integrate</type><config><mappingTable><directMatch>true</directMatch><layers><layerId>local_spatial-10</layerId><column>BEZIRK</column><columnNewTable/></layers><layers><layerId>local_attribute-11</layerId><column>BEZIRK_ID</column><columnNewTable>BEZIRK_ID</columnNewTable><columnNewTable>KT_ID</columnNewTable><columnNewTable>DIST</columnNewTable><columnNewTable>T</columnNewTable><columnNewTable>M</columnNewTable><columnNewTable>W</columnNewTable></layers></mappingTable><layerName>Dot Map 2012</layerName><layerId>557-1</layerId></config></executionChangeElement><executionChangeElement><id>5</id><type>service</type><config><processingService><desc/><name>Cartographic Technique Service</name><type>cts</type><url>http:&#x2F;&#x2F;localhost:9000&#x2F;services&#x2F;CTS</url></processingService><config><methodId>1</methodId><requestData><layersId>557-1</layersId><layersData/></requestData><requestParam><attribute>t</attribute><keepAttribute>bezirk_id|kt_id|dist</keepAttribute><dotValue>1000</dotValue><dotDistance>0.001</dotDistance><methodGroup>dotMap</methodGroup><method>dotFromArea</method></requestParam><resultInfo><layersId>557-2</layersId><layersType>point</layersType><layersName>Dot Map</layersName><type>new</type></resultInfo><method>dotFromArea</method><methodName>Dot Map From Area</methodName><methodGroup>dotMap</methodGroup><methodGroupName>Dot Maps</methodGroupName></config></config></executionChangeElement><executionChangeElement><id>6</id><type>symbology</type><config><symbologyRepository><desc>Symbology hosted on the Server. For free!</desc><name>Hosted Symbology Files</name><type>local</type></symbologyRepository><config><layerId>local_spatial-12</layerId><type>polygon</type><groupId>2</groupId><symbologyId>1</symbologyId><fileType>JSON</fileType><groupName>Simple Styles</groupName><path>Symbology&#x2F;polygon2.json</path><method>JSON</method></config></config></executionChangeElement><executionChangeElement><id>7</id><type>symbology</type><config><symbologyRepository><desc>Symbology hosted on the Server. For free!</desc><name>Hosted Symbology Files</name><type>local</type></symbologyRepository><config><layerId>557-2</layerId><type>point</type><groupId>2</groupId><symbologyId>1</symbologyId><fileType>JSON</fileType><groupName>Dot Maps</groupName><path>Symbology&#x2F;point2.json</path><method>JSON</method></config></config></executionChangeElement></executionChain></TCWS-Map>
+<TCWS-Map>
+<mapInfo>
+<title>Dot Map Population</title>
+<id>Dot_Map_Population</id>
+<map>
+<zoom>8</zoom>
+<center>
+<lat>46.94052775608114</lat>
+<lng>8.33305440625</lng>
+</center>
+</map>
+<layer>
+<id>local_spatial-12</id>
+<type>polygon</type>
+<visibility>true</visibility>
+</layer>
+<layer>
+<id>557-2</id>
+<type>point</type>
+<visibility>true</visibility>
+</layer>
+<layer>
+<id>mapQuestOpenArial</id>
+<type>base</type>
+<visibility>false</visibility>
+</layer>
+</mapInfo>
+<executionChain>
+<executionChangeElement>
+<id>1</id>
+<type>import</type>
+<config>
+<inputService>
+<desc>Spatial Data</desc>
+<name>Hosted Data Files</name>
+<type>local</type>
+</inputService>
+<config>
+<layerId>12</layerId>
+<type>polygon</type>
+<name>Swiss Cantons Polygon</name>
+<path>Areas/Swiss/canton_nolake.xml</path>
+<fileType>GML-OGR</fileType>
+</config>
+<layerId>local_spatial-12</layerId>
+</config>
+</executionChangeElement>
+<executionChangeElement>
+<id>2</id>
+<type>import</type>
+<config>
+<inputService>
+<desc>Statistic Data</desc>
+<name>Hosted Data Files</name>
+<type>local</type>
+</inputService>
+<config>
+<layerId>11</layerId>
+<type>attribute</type>
+<name>Swiss Pop Dist</name>
+<path>Attribute/swiss_pop_dist_2012.csv</path>
+<fileType>CSV</fileType>
+</config>
+<layerId>local_attribute-11</layerId>
+</config>
+</executionChangeElement>
+<executionChangeElement>
+<id>3</id>
+<type>import</type>
+<config>
+<inputService>
+<desc>Spatial Data</desc>
+<name>Hosted Data Files</name>
+<type>local</type>
+</inputService>
+<config>
+<layerId>10</layerId>
+<type>polygon</type>
+<name>Swiss Districts</name>
+<path>Areas/Swiss/district.xml</path>
+<fileType>GML</fileType>
+</config>
+<layerId>local_spatial-10</layerId>
+</config>
+</executionChangeElement>
+<executionChangeElement>
+<id>4</id>
+<type>integrate</type>
+<config>
+<mappingTable>
+<directMatch>true</directMatch>
+<layers>
+<layerId>local_spatial-10</layerId>
+<column>BEZIRK</column>
+<columnNewTable/>
+</layers>
+<layers>
+<layerId>local_attribute-11</layerId>
+<column>BEZIRK_ID</column>
+<columnNewTable>BEZIRK_ID</columnNewTable>
+<columnNewTable>KT_ID</columnNewTable>
+<columnNewTable>DIST</columnNewTable>
+<columnNewTable>T</columnNewTable>
+<columnNewTable>M</columnNewTable>
+<columnNewTable>W</columnNewTable>
+</layers>
+</mappingTable>
+<layerName>Dot Map 2012</layerName>
+<layerId>557-1</layerId>
+</config>
+</executionChangeElement>
+<executionChangeElement>
+<id>5</id>
+<type>service</type>
+<config>
+<processingService>
+<desc/>
+<name>Cartographic Technique Service</name>
+<type>cts</type>
+<url>http://localhost:9000/services/CTS</url>
+</processingService>
+<config>
+<methodId>1</methodId>
+<requestData>
+<layersId>557-1</layersId>
+<layersData/>
+</requestData>
+<requestParam>
+<attribute>t</attribute>
+<keepAttribute>bezirk_id|kt_id|dist</keepAttribute>
+<dotValue>5000</dotValue>
+<dotDistance>0.001</dotDistance>
+<methodGroup>dotMap</methodGroup>
+<method>dotFromArea</method>
+</requestParam>
+<resultInfo>
+<layersId>557-2</layersId>
+<layersType>point</layersType>
+<layersName>Dot Map</layersName>
+<type>new</type>
+</resultInfo>
+<method>dotFromArea</method>
+<methodName>Dot Map From Area</methodName>
+<methodGroup>dotMap</methodGroup>
+<methodGroupName>Dot Maps</methodGroupName>
+</config>
+</config>
+</executionChangeElement>
+<executionChangeElement>
+<id>6</id>
+<type>symbology</type>
+<config>
+<symbologyRepository>
+<desc>Symbology hosted on the Server. For free!</desc>
+<name>Hosted Symbology Files</name>
+<type>local</type>
+</symbologyRepository>
+<config>
+<layerId>local_spatial-12</layerId>
+<type>polygon</type>
+<groupId>2</groupId>
+<symbologyId>1</symbologyId>
+<fileType>JSON</fileType>
+<groupName>Simple Styles</groupName>
+<path>Symbology/polygon2.json</path>
+<method>JSON</method>
+</config>
+</config>
+</executionChangeElement>
+<executionChangeElement>
+<id>7</id>
+<type>symbology</type>
+<config>
+<symbologyRepository>
+<desc>Symbology hosted on the Server. For free!</desc>
+<name>Hosted Symbology Files</name>
+<type>local</type>
+</symbologyRepository>
+<config>
+<layerId>557-2</layerId>
+<type>point</type>
+<groupId>2</groupId>
+<symbologyId>1</symbologyId>
+<fileType>JSON</fileType>
+<groupName>Dot Maps</groupName>
+<path>Symbology/point2.json</path>
+<method>JSON</method>
+</config>
+</config>
+</executionChangeElement>
+</executionChain>
+</TCWS-Map>

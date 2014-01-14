@@ -1,7 +1,7 @@
 {
-    "1" : {"polygon-fill" : "#993404"},
-    "2" :{"polygon-fill" : "#D95F0E"},
+    "1" :{"polygon-fill" : "#FFFFD4"},
+    "2" :{"polygon-fill" : "#FED98E"},
     "3" :{"polygon-fill" : "#FE9929"},
-    "4" :{"polygon-fill" : "#FED98E"},
-    "5" :{"polygon-fill" : "#FFFFD4"}
+    "4" :{"polygon-fill" : "#D95F0E"},
+    "5" : {"polygon-fill" : "#993404"}
 }

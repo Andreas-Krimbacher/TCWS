@@ -50,8 +50,8 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             layerId : '556-2',
             action : '/',
             config : {
-                column2 : 't',
-                column1 : 'area_size',
+                column2 : 'area_size',
+                column1 : 't',
                 targetColumn : 't_per_m2',
                 targetColumnName : 'T pro m2'
             }
@@ -99,13 +99,12 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             {type : 'show' , config : show }
         ];
 
-//        ServiceChain.executeServiceChain(serviceChain);
+        //ServiceChain.executeServiceChain(serviceChain);
 
         //service chain diaml study
 
         var dataImport1 = {inputService: inputServices['local_spatial'], config:{layer:12}};
-        var dataImport2 = {inputService: inputServices['local_attribute'], config:{layer:13}};
-        var dataImport3 = {inputService: inputServices['local_attribute'], config:{layer:14}};
+        var dataImport2 = {inputService: inputServices['local_attribute'], config:{layer:15}};
 
         var mappingTable1 = {
             directMatch : true,
@@ -113,33 +112,16 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
                 "local_spatial-12" : {
                     layerId : "local_spatial-12",
                     "column" : "KURZ",
-                    "columnNewTable" : []
+                    "columnNewTable" : ['CANTON_ID']
                 },
-                "local_attribute-13" : {
-                    layerId : "local_attribute-13",
+                "local_attribute-15" : {
+                    layerId : "local_attribute-15",
                     "column" : "CANTON_ID",
-                    "columnNewTable" : ['CANTON_ID','POP_M_2010','POP_M_2011','POP_W_2010','POP_W_2011']
+                    "columnNewTable" : ['SEC_2007','SEC_2009','TER_2007','TER_2009']
                 }
             }
         };
-        var integrate1 = {mappingTable : mappingTable1, layerName : 'Pop Canton 2010,2011', layerId : '555-1'};
-
-        var mappingTable2 = {
-            directMatch : true,
-            layers : {
-                "555-1" : {
-                    layerId : "555-1",
-                    "column" : "CANTON_ID",
-                    "columnNewTable" : ['CANTON_ID','POP_M_2010','POP_M_2011','POP_W_2010','POP_W_2011']
-                },
-                "local_attribute-14" : {
-                    layerId : "local_attribute-14",
-                    "column" : "CANTON_ID",
-                    "columnNewTable" : ['S_M_2010','S_M_2011','S_W_2010','S_W_2011']
-                }
-            }
-        };
-        var integrate2 = {mappingTable : mappingTable2, layerName : 'Study Canton 2010,2011', layerId : '555-2'};
+        var integrate1 = {mappingTable : mappingTable1, layerName : 'New Businesses 2007,2009', layerId : '555-2'};
 
         var service1 = {
             processingService : processingServices['1'],
@@ -158,57 +140,13 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
             }
         };
 
-        var manipulateTable1 = {
-            layerId : '555-3',
-            action : '/',
-            config : {
-                column2 : 'pop_m_2010',
-                column1 : 's_m_2010',
-                targetColumn : 's_m_2010',
-                targetColumnName : '[%] Swiss Man 2010'
-            }
-        };
-
-        var manipulateTable2 = {
-            layerId : '555-3',
-            action : '/',
-            config : {
-                column2 : 'pop_m_2011',
-                column1 : 's_m_2011',
-                targetColumn : 's_m_2011',
-                targetColumnName : '[%] Swiss Man 2011'
-            }
-        };
-
-        var manipulateTable3 = {
-            layerId : '555-3',
-            action : '/',
-            config : {
-                column2 : 'pop_w_2010',
-                column1 : 's_w_2010',
-                targetColumn : 's_w_2010',
-                targetColumnName : '[%] Swiss Woman 2010'
-            }
-        };
-
-        var manipulateTable4 = {
-            layerId : '555-3',
-            action : '/',
-            config : {
-                column2 : 'pop_w_2011',
-                column1 : 's_w_2011',
-                targetColumn : 's_w_2011',
-                targetColumnName : '[%] Swiss Woman 2011'
-            }
-        };
-
         var symbology = { symbologyRepository : symbologyRepositories['local'],
             config : {
                 layerId : '555-3',
                 type : 'point',
                 groupId : 1,
                 symbologyId: 1,
-                columns : ['s_w_2011','s_m_2011','s_m_2010','s_w_2010']
+                columns : ['ter_2007','sec_2007','sec_2009','ter_2009']
             }
         };
 
@@ -226,20 +164,14 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
         serviceChain = [
             {type : 'import' , config : dataImport1 },
             {type : 'import' , config : dataImport2 },
-            {type : 'import' , config : dataImport3 },
             {type : 'integrate' , config : integrate1 },
-            {type : 'integrate' , config : integrate2 },
             {type : 'service' , config : service1 },
-            {type : 'manipulateTable' , config : manipulateTable1 },
-            {type : 'manipulateTable' , config : manipulateTable2 },
-            {type : 'manipulateTable' , config : manipulateTable3 },
-            {type : 'manipulateTable' , config : manipulateTable4 },
             {type : 'symbology' , config : symbology },
             {type : 'show' , config : show1 }
 //            {type : 'show' , config : show2 }
         ];
 
-//        ServiceChain.executeServiceChain(serviceChain);
+        ServiceChain.executeServiceChain(serviceChain);
 
         //service chain dot map
 
@@ -328,7 +260,7 @@ angular.module('TCWS.tools', ['TCWS.tools.overview','TCWS.tools.input','TCWS.too
         ];
 
 
-        ServiceChain.executeServiceChain(serviceChain);
+       // ServiceChain.executeServiceChain(serviceChain);
 
 
         //        var mappingTable = {

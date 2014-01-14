@@ -12,8 +12,8 @@
             "symbologyId" : 1,
             "name" : "Dot Map Small",
             "style" : {
-                "marker-width" : "2",
-                "marker-height" : "2"
+                "marker-width" : "4",
+                "marker-height" : "4"
             },
             "styleType" : "cartoCss",
             "variableSymbology" : []

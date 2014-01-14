@@ -62,7 +62,13 @@ angular.module('TCWS.viewer', ['TCWS.map','TCWS.executionChain'])
                 });
 
                 $scope.title = mapInfo.title;
+
+                $scope.info
+
                 OpenLayersMap.setZoomAndCenter(parseFloat(mapInfo.map.zoom), [parseFloat(mapInfo.map.center.lng),parseFloat(mapInfo.map.center.lat)]);
+
+                $rootScope.$broadcast('setImpress',mapInfo.impress);
+                $rootScope.$broadcast('setLegend','Maps/' + mapInfo.id + '.png');
 
                 $rootScope.$broadcast('filterLayerList',layerListFilter);
 

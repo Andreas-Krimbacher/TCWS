@@ -168,6 +168,7 @@ angular.module('TCWS.tools.overview', ['TCWS.components'])
 
             var mapInfo = {
                 title : $scope.title,
+                impress : $scope.impress,
                 id : $scope.title.replace(/\W|_/g,'_'),
                 map : {
                     zoom : zoomCenter.zoom,

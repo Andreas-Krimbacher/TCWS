@@ -51,7 +51,8 @@ angular.module('TCWS.descriptionService', [])
             '9' : {layerId: 9, type: 'attribute', name: 'Switzerland Pop Kant', path: 'Attribute/swiss_pop_cant_2012.json', fileType: 'JSON-stat', param : swiss},
             '11' : {layerId: 11, type: 'attribute', name: 'Swiss Pop Dist', path: 'Attribute/swiss_pop_dist_2012.csv', fileType: 'CSV'},
             '13' : {layerId: 13, type: 'attribute', name: 'Pop Cantons 2010,2011', path: 'Attribute/pop_swiss_2010_2011.csv', fileType: 'CSV'},
-            '14' : {layerId: 14, type: 'attribute', name: 'Study Cantons 2010,2011', path: 'Attribute/study_swiss_2010_2011.csv', fileType: 'CSV'}}};
+            '14' : {layerId: 14, type: 'attribute', name: 'Study Cantons 2010,2011', path: 'Attribute/study_swiss_2010_2011.csv', fileType: 'CSV'},
+            '15' : {layerId: 15, type: 'attribute', name: 'New Businesses 2007,2009', path: 'Attribute/new_businesses_2007_2009.csv', fileType: 'CSV'}}};
 
         var inputServices = { 'local_spatial' : {sourceId: 'local_spatial', name: 'Hosted Data Files', desc: 'Spatial Data', type : 'local' , param: fileService_spatial},
             'local_attribute' : {sourceId: 'local_attribute', name: 'Hosted Data Files', desc: 'Statistic Data', type : 'local' , param: fileService_attribute},

@@ -350,6 +350,8 @@ angular.module('TCWS.symbology', [])
                         canvas.height = (maxRadiusValue + maxStrokeWidth + centerDistance)*2;
                         var ctx = canvas.getContext('2d');
 
+                        ctx.globalAlpha = 0.8;
+
                         var cx0 = canvas.width / 2;
                         var cy0 = canvas.height / 2;
 

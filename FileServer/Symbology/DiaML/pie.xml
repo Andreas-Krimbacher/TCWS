@@ -2,18 +2,18 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.carto.net/schnabel/mapsymbolbrewer http://www.carto.net/schnabel/mapsymbolbrewer/schemas/diaml.xsd">
     <style id="s0">
-        <fill>darkred</fill>
+        <fill>#CC7D7D</fill>
         <fill-opacity unit="percent">80</fill-opacity>
-        <stroke>#fff</stroke>
+        <stroke>#333333</stroke>
         <stroke-opacity unit="percent">100</stroke-opacity>
-        <stroke-width unit="pixel">3</stroke-width>
+        <stroke-width unit="pixel">2</stroke-width>
     </style>
     <style id="s1">
-        <fill>green</fill>
+        <fill>#7DCC7D</fill>
         <fill-opacity unit="percent">80</fill-opacity>
-        <stroke>#fff</stroke>
+        <stroke>#333333</stroke>
         <stroke-opacity unit="percent">100</stroke-opacity>
-        <stroke-width unit="pixel">3</stroke-width>
+        <stroke-width unit="pixel">2</stroke-width>
     </style>
     <primitive id="p0">
         <sector proportional="area">
@@ -21,7 +21,7 @@
             <angle scale="dataValue">40,140,70,110</angle>
         </sector>
     </primitive>
-    <diagram translationX="0" translationY="0" rotation="0" minSize="5" maxSize="50" areaRatio="10">
+    <diagram translationX="0" translationY="0" rotation="0" minSize="10" maxSize="70" areaRatio="10">
         <diagramArrangement>
             <polar>
                 <groups>2</groups>
